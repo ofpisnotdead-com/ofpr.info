@@ -50,6 +50,40 @@ RSpec.describe Ofpr::Links do
     expect(repair(html)).not_to include('<center>')
   end
 
+  describe 'a file the archive keeps under another path' do
+    before { allow(described_class).to receive(:moved).and_return(moved) }
+
+    let(:moved) { {'ofpd/islands/Normandy.zip' => 'ofpd/islands/normandy.zip'} }
+
+    it 'points the link at the path it is served from' do
+      html = '<a href="https://files.ofpisnotdead.com/files/ofpd/islands/Normandy.zip">Normandy</a>'
+
+      expect(repair(html)).to include('files/ofpd/islands/normandy.zip')
+    end
+
+    it 'moves a link that still names the host that is gone' do
+      html = '<a href="http://ftp.armedassault.info/ofpd/islands/Normandy.zip">Normandy</a>'
+
+      expect(repair(html)).to include('files/ofpd/islands/normandy.zip')
+    end
+
+    it 'leaves a path the map does not name' do
+      html = '<a href="https://files.ofpisnotdead.com/files/ofpd/islands/other.zip">Other</a>'
+
+      expect(repair(html)).to include('files/ofpd/islands/other.zip')
+    end
+
+    context 'when the path it moves to holds a space' do
+      let(:moved) { {'ofpd/mods/X.exe' => 'ofpd/mods/Conspiracies Part 1.exe'} }
+
+      it 'escapes it, because the path sits in an attribute' do
+        html = '<a href="https://files.ofpisnotdead.com/files/ofpd/mods/X.exe">part one</a>'
+
+        expect(repair(html)).to include('files/ofpd/mods/Conspiracies%20Part%201.exe')
+      end
+    end
+  end
+
   it 'leaves the armedassault website alone' do
     html = '<a href="http://www.armedassault.info/news">news</a>'
 

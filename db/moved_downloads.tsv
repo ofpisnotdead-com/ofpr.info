@@ -1,0 +1,107 @@
+# Downloads the articles name at a path the archive does not use, and the path they
+# are really served from. Mostly a difference of case. Each target answered 200 on
+# files.ofpisnotdead.com when this was written. Built by the audit in gen-docs.
+_hosted/rhs/release/RHS_Crewpack_v1.00.rar	ofpd/unofaddons2/RHS_Crewpack_v1.00.rar
+_hosted/rhs/release/RHS_Hinds_v1.00.rar	ofpd/unofaddons2/RHS_Hinds_v1.00.rar
+ofpd/campaigns/OperaceRemura.zip	ofpd/campaigns/operaceremura.zip
+ofpd/_hosted0/bwmod/download/BWMOD_Wiesel_V2.0.rar	ofpd/_hosted0/bwmod/download/bwmod_wiesel_v2.0.rar
+ofpd/islands/LEGUS.zip	ofpd/islands/legus.zip
+ofpd/islands/Normandy.zip	ofpd/islands/normandy.zip
+ofpd/islands/SGH_Mogadishu.zip	ofpd/islands/sgh_mogadishu.zip
+ofpd/islands2/Anjou_v2.0_SE.rar	ofpd/islands2/Anjou_V2.0_SE.rar
+ofpd/islands2/basra.zip	ofpd/unofaddons2/basra.zip
+ofpd/islands2/BDM_Demo_F_Gap.zip	ofpd/unofaddons2/BDM_Demo_F_Gap.zip
+ofpd/islands2/CATIntroupdtv3.rar	islands/islands-pack/179/Operation Flashpoint addons - (179 Islands Pack v1.0) - azimut.suddenlaunch.com/Desert islands/CATIntroupdtv3.rar
+ofpd/islands2/Lladno.zip	ofpd/islands2/lladno.zip
+ofpd/islands2/RIP_Maere.rar	islands/islands-pack/187/Operation Flashpoint addons - (187 addons Islands pack Update v1.2) - azimut.suddenlaunch.com/Wood/RIP_Maere.rar
+ofpd/islands2/Suursaari_release_v10.zip	ofpd/islands/Suursaari_release_v10.zip
+ofpd/islands2/Suursaari.zip	ofpd/islands2/suursaari.zip
+ofpd/missionpacks/OFP.cz_MPMissions_Pack1.zip	ofpd/missionpacks0/OFP.cz_MPMissions_Pack1.zip
+ofpd/missionpacks/OFP.cz_SPMissions_Pack6.zip	ofpd/missionpacks0/OFP.cz_SPMissions_Pack6.zip
+ofpd/missionpacks/OFP.cz_SPMissions_Pack7.zip	ofpd/missionpacks0/OFP.cz_SPMissions_Pack7.zip
+ofpd/missionpacks/Skirmish3.zip	ofpd/missionpacks0/Skirmish3.zip
+ofpd/missions/LSR_rang150.rar	ofpd/unofaddons2/LSR_rang150.rar
+ofpd/missions/OFPR_MissionPack_AvonsLaseyDaze.zip	ofpd/missions/ofpr_missionpack_avonslaseydaze.zip
+ofpd/mods/conspiracies part 1.exe	ofpd/mods/Conspiracies Part 1.exe
+ofpd/mods/I44_a.2.5.rar	ofpd/mods/I44_a.2.5.rar
+ofpd/private_addons/non_public/Anjou_v1.2.rar	islands/islands-pack/150/Operation Flashpoint addons - (150 addons Islands pack Update v1.1) - azimut.suddenlaunch.com/WWII Islands/Anjou_v1.2.rar
+ofpd/project_lavos/MT-LB_Update_Installer.exe	ofpd/unofaddons2/MT-LB_Update_Installer.exe
+ofpd/rest/SHPilot.rar	ofpd/unofaddons2/SHPilot.rar
+ofpd/unofaddons/ADF_MG.zip	ofpd/unofaddons2/ADF_MG.zip
+ofpd/unofaddons/DB5toSTD.exe	ofpd/unofaddons/DB5toStd.exe
+ofpd/unofaddons/[DsO] KTM.zip	ofpd/unofaddons/[dso] ktm.zip
+ofpd/unofaddons/Fg42.ZIP	ofpd/unofaddons2/Fg42.ZIP
+ofpd/unofaddons/G8_AB212pack.zip	ofpd/unofaddons/g8_ab212pack.zip
+ofpd/unofaddons/KH_F117.zip	ofpd/unofaddons/kh_f117.zip
+ofpd/unofaddons/mab_v1.zip	ofpd/unofaddons/MAB_V1.ZIP
+ofpd/unofaddons/mailman's_RF_weapon_pack.rar	ofpd/unofaddons2/mailman's_RF_weapon_pack.rar
+ofpd/unofaddons/MTYBell47G.exe	ofpd/unofaddons/mtybell47g.exe
+ofpd/unofaddons/MTY_B47Res.exe	ofpd/unofaddons/mty_b47res.exe
+ofpd/unofaddons/M249_RES.zip	ofpd/unofaddons2/M249_RES.zip
+ofpd/unofaddons/M60_RES.zip	ofpd/unofaddons2/M60_RES.zip
+ofpd/unofaddons/Qbz_95.zip	ofpd/unofaddons/QBZ_95.ZIP
+ofpd/unofaddons/RUS_PARA.zip	ofpd/unofaddons/RUS_PARA.ZIP
+ofpd/unofaddons/Swisspanzer.zip	ofpd/unofaddons/SwissPanzer.zip
+ofpd/unofaddons/swpack.zip	ofpd/unofaddons2/swpack.zip
+ofpd/unofaddons2/A_Pedagne20050116.zip	ofpd/unofaddons2/A_Pedagne20050116.zip
+ofpd/unofaddons2/BAS_AirWeap_v1_0.rar	ofpd/unofaddons2/Bas_Airweap_V1_0.rar
+ofpd/unofaddons2/bas_rusopfor_v1_3.rar	ofpd/unofaddons2/BAS_RusOPFOR_v1_3.rar
+ofpd/unofaddons2/BD5Resistance.rar	ofpd/unofaddons2/bd5resistance.rar
+ofpd/unofaddons2/beatencivs.rar	ofpd/unofaddons2/Beatencivs.rar
+ofpd/unofaddons2/bwmod_ef_beta.rar	ofpd/unofaddons2/BWMOD_EF_beta.rar
+ofpd/unofaddons2/BWMOD_Gepard_v1.1.rar	ofpd/unofaddons3/BWMOD_Gepard_v1.1.rar
+ofpd/unofaddons2/B45nkl6.rar	ofpd/unofaddons2/b45nkl6.rar
+ofpd/unofaddons2/CRL_CAMO_PBR.zip	ofpd/ofpgameparkcz/unofaddons/CRL_CAMO_PBR.zip
+ofpd/unofaddons2/CSJhueys.zip	ofpd/unofaddons2/CSJHueys.zip
+ofpd/unofaddons2/CZM-demo.rar	ofpd/unofaddons2/CZM-demo.rar
+ofpd/unofaddons2/Dak_Seang_SF_Highlands.zip	islands/islands-pack/187/Operation Flashpoint addons - (187 addons Islands pack Update v1.2) - azimut.suddenlaunch.com/Tropical/Dak_Seang_SF_Highlands.zip
+ofpd/unofaddons2/dkmm_rah66_112.exe	ofpd/unofaddons2/DKMM_RAH66_112.exe
+ofpd/unofaddons2/DMApackArmy.rar	ofpd/unofaddons2/DMApackARMY.rar
+ofpd/unofaddons2/FLK_SeaHarrier.zip	ofpd/news0/download/FLK_SeaHarrier.zip
+ofpd/unofaddons2/FTAddons.zip	ofpd/unofaddons2/ftaddons.zip
+ofpd/unofaddons2/FTA.ZIP	ofpd/unofaddons2/fta.zip
+ofpd/unofaddons2/F3WX_O1_V.1.0.zip	ofpd/unofaddons2/F3WX_O1_V.1.0.ZIP
+ofpd/unofaddons2/https://files.ofpisnotdead.com/files/ofpd/unofaddons2/EECP_CSLA2_Pack_1_0.rar	ofpd/unofaddons2/EECP_CSLA2_Pack_1_0.rar
+ofpd/unofaddons2/Challenger_tank.zip	ofpd/unofaddons2/challenger_tank.zip
+ofpd/unofaddons2/ICP_rfwp.rar	ofpd/unofaddons2/icp_rfwp.rar
+ofpd/unofaddons2/ikar_f14_ir.rar	ofpd/unofaddons2/IkaR_F14_ir.rar
+ofpd/unofaddons2/jam3.rar	ofpd/unofaddons2/JAM3.rar
+ofpd/unofaddons2/klinks Utilities.zip	ofpd/unofaddons2/Klinks Utilities.zip
+ofpd/unofaddons2/MAK_WW2RussianPack_1.0.rar	ofpd/unofaddons2/mak_ww2russianpack_1.0.rar
+ofpd/unofaddons2/MAP_Blaetter_Leaves.rar	ofpd/_hosted/mapfact/missionen/mapfact/biw/MAP_Blaetter_Leaves.rar
+ofpd/unofaddons2/MarineAssaultPackF.rar	ofpd/unofaddons2/MarineAssaultPackF.rar
+ofpd/unofaddons2/MID_KI04.zip	ofpd/unofaddons2/MID_KI04.ZIP
+ofpd/unofaddons2/Modul_Sky.rar	ofpd/unofaddons2/modul_sky.rar
+ofpd/unofaddons2/mortar.zip	ofpd/unofaddons/mortar.zip
+ofpd/unofaddons2/MPIV_AH64.rar	ofpd/unofaddons2/mpiv_ah64.rar
+ofpd/unofaddons2/MTYBell47GC.zip	ofpd/unofaddons2/mtybell47gc.zip
+ofpd/unofaddons2/New_AKs.zip	ofpd/unofaddons2/new_AKs.zip
+ofpd/unofaddons2/newlandbeta3.zip	ofpd/islands2/newlandbeta3.zip
+ofpd/unofaddons2/NorthKoreanSoldierADDON.zip	ofpd/unofaddons2/northkoreansoldieraddon.zip
+ofpd/unofaddons2/OFPCamera.zip	ofpd/utils/OFPCamera.zip
+ofpd/unofaddons2/OFPR_Addon_Diesel_A10.rar	ofpd/unofaddons2/ofpr_addon_diesel_a10.rar
+ofpd/unofaddons2/OFrP_armes_V3.1RC2.exe	ofpd/unofaddons2/OFrP_Armes_v3.1RC2.exe
+ofpd/unofaddons2/OFrP_Modv1.zip	ofpd/unofaddons2/OFrP_ModV1.zip
+ofpd/unofaddons2/Pcw_WillysMBPack.exe	ofpd/unofaddons2/pcw_willysmbpack.exe
+ofpd/unofaddons2/Saint-Rémy.zip	islands/islands-pack/150/Operation Flashpoint addons - (150 addons Islands pack Update v1.1) - azimut.suddenlaunch.com/Wood Islands/Saint-Rémy.zip
+ofpd/unofaddons2/splitterBW.rar	ofpd/unofaddons2/SplitterBW.rar
+ofpd/unofaddons2/SuomiSMG.zip	ofpd/unofaddons2/suomismg.zip
+ofpd/unofaddons2/syf57.zip	ofpd/unofaddons2/syf57.ZIP
+ofpd/unofaddons2/thud.zip	ofpd/unofaddons2/Thud.zip
+ofpd/unofaddons2/TMD_su22.rar	ofpd/unofaddons2/TMD_SU22.rar
+ofpd/unofaddons2/USMCBeta3.zip	ofpd/unofaddons2/USMCbeta3.zip
+ofpd/unofaddons2/VIF_NorPack.zip	ofpd/unofaddons2/vif_norpack.zip
+ofpd/unofaddons2/vitnamF4.zip	ofpd/unofaddons2/vitnamf4.zip
+ofpd/unofaddons2/WinterNogojev11.zip	ofpd/islands/WinterNogojev11.zip
+ofpd/unofaddons2/WWIIECGermanWeapons.zip	ofpd/unofaddons2/wwiiecgermanweapons.zip
+ofpd/unofaddons2/wwiiec_usweap.exe	ofpd/unofaddons2/WWIIEC_USweap.exe
+ofpd/unofaddons2/X-02wyvern.zip	ofpd/unofaddons2/X-02Wyvern.zip
+ofpd/unofaddons2/466-M4A3 Sherman.zip	ofpd/unofaddons2/466-m4a3 sherman.zip
+ofpd/utilities0/CommandEditor.zip	ofpd/utilities0/commandeditor.zip
+ofpd/videomissions/VNJ.zip	ofpd/_hosted/!Ruprt/video-missions/VNJ.zip
+ofpd/videos/ADF_Kangaroosvid.rar	ofpd/unofaddons2/ADF_Kangaroosvid.rar
+ofpd/videos/Airwolf_Start_Up.wmv	ofpd/videos/Airwolf_Start_Up.wmv
+ofpd/videos/arma_trailer.wmv	ofpd/_hosted/bwmod/missiondesigner/arma_trailer.wmv
+ofpd/videos/Jurassic park video.wmv	ofpd/videos/Jurassic park video.wmv
+ofpd/videos/LoBoDemo1.wmv	ofpd/unofaddons2/LoBoDemo1.wmv
+ofpd/videos/2004eden.rar	islands/islands-pack/150/Operation Flashpoint addons - (150 addons Islands pack Update v1.1) - azimut.suddenlaunch.com/Wood Islands/2004eden.rar
