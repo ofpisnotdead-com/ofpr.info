@@ -9,6 +9,10 @@
 # The host columns are filled from `status-dir`, which holds tab separated `path<TAB>code`
 # files written by whatever checked them: `downloads.tsv`, `images.tsv`, `pages.tsv`.
 # Without them the column reads `not checked`, because this script asks no host itself.
+#
+# `nearest.tsv` in the same folder, `wanted<TAB>nearest<TAB>score`, fills the column
+# that names the closest thing the archive holds. Usually another release of the same
+# mod, which is worth knowing and would be wrong to substitute.
 
 require 'cgi'
 require 'fileutils'
@@ -24,7 +28,7 @@ IMAGE = %r{(?:src|href)="((?:\.\./)*/?ofpgm/[^"]+\.(?:jpe?g|png|gif|bmp))"}i
 PAGE = %r{href="((?:\.\./)*/?ofpgm/[^"]+\.(?:html?|php|txt|zip|rar|exe))"}i
 KINDS = {download: DOWNLOAD, image: IMAGE, page: PAGE}.freeze
 FIELDS = %i[type path references example_article example_title in_local_archive on_host
-            note].freeze
+            nearest_in_archive note].freeze
 
 # An attribute value is html before it is a url: `&#32;` is the space in a file name.
 def clean(path)
@@ -71,12 +75,14 @@ def field(value)
 end
 
 codes = {download: statuses('downloads'), image: statuses('images'), page: statuses('pages')}
+nearest = statuses('nearest')
 rows = collect.flat_map do |kind, paths|
   paths.reject { |path, _| held?(kind, path) }.map do |path, places|
     code = codes[kind][path]
     {type: kind.to_s, path: path, references: places.size,
      example_article: places.first[0], example_title: places.first[1],
      in_local_archive: 'no', on_host: code || 'not checked',
+     nearest_in_archive: nearest[path].to_s.split("\t").first.to_s,
      note: note_for(kind, path, code)}
   end
 end

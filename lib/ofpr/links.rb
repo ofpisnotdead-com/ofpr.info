@@ -45,7 +45,8 @@ module Ofpr
     # from. Each pair here was confirmed to answer on the host before it was written
     # down; `db/moved_downloads.tsv` holds them.
     MOVED_FILE = File.expand_path('../../db/moved_downloads.tsv', __dir__)
-    LINKED_PATH = /(#{Regexp.escape(LIVE)})([^"'\s>]+)/
+    # The path runs to the closing quote: plenty of these file names hold spaces.
+    LINKED_PATH = /((?:src|href)="#{Regexp.escape(LIVE)})([^"]*)(")/i
 
     class << self
       def repair(html)
@@ -88,10 +89,9 @@ module Ofpr
         return html if moved.empty?
 
         html.gsub(LINKED_PATH) do
-          host = Regexp.last_match(1)
-          path = Regexp.last_match(2)
-          found = moved[decode(path)]
-          found ? "#{host}#{found.gsub(' ', '%20')}" : "#{host}#{path}"
+          match = Regexp.last_match
+          found = moved[decode(match[2])]
+          "#{match[1]}#{found ? found.gsub(' ', '%20') : match[2]}#{match[3]}"
         end
       end
 
