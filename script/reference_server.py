@@ -25,6 +25,11 @@ HOST = re.compile(rb'(src|href)="https?://(?:ofpr\.info\.paradoxstudio\.uk|test\
 SCRIPT = re.compile(
     rb'<script type="text/javascript">var d = new Date\(\);var acceptCookie.*?</script>',
     re.S)
+# The header banner is deliberately not the captured one: the rebuild drops the old
+# domain from it. Pointing the capture at the replacement keeps the rest comparable
+# instead of leaving a banner-shaped difference on every page.
+BANNER = re.compile(rb'(?:\.\./)*/?images/testpubFINAL3_edited\.png')
+PUBLIC = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'public'))
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -36,13 +41,16 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         full = os.path.join(ROOT, rel)
         if rel.endswith('.html') and os.path.isfile(full):
             body = SCRIPT.sub(b'', LINK.sub(b'', open(full, 'rb').read()))
-            body = HOST.sub(rb'\1="/', body)
+            body = BANNER.sub(b'/images/banner.jpg', HOST.sub(rb'\1="/', body))
             self.send_response(200)
             self.send_header('Content-Type', 'text/html; charset=utf-8')
             self.send_header('Content-Length', str(len(body)))
             self.end_headers()
             self.wfile.write(body)
             return
+        # An asset the rebuild adds has no counterpart in the mirror.
+        if not os.path.isfile(full) and os.path.isfile(os.path.join(PUBLIC, rel)):
+            self.directory = PUBLIC
         super().do_GET()
 
 

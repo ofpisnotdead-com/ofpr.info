@@ -32,6 +32,11 @@ one menu page, so development needs neither the 6.9 GB mirror nor a full import.
     MIRROR         ../ofp-archive-catalog/ofpr-mirror
     PORT           9292
 
+The header banner is the one thing that is deliberately not the captured one:
+`public/images/banner.jpg` is the same artwork with the old domain taken off the
+corner. The reference server points the captures at it so the comparison stays about
+the layout rather than about that.
+
 The layout - stylesheets, fonts, logo - ships with the app under `public/`. The CDN is
 only for article images: set `CDN_BASE` and `/ofpgm/...` redirects there, leave it unset
 and they come from the mirror through the `public/ofpgm` symlink `rake assets:link`
