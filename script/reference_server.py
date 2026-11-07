@@ -36,6 +36,8 @@ DEAD_HOST = re.compile(rb'https?://ftp\.armedassault\.info/', re.I)
 INSECURE_HOST = re.compile(rb'http://files\.ofpisnotdead\.com/', re.I)
 ANCHOR = re.compile(rb'<a\s[^>]*href="([^"]*)"[^>]*>(.*?)</a>', re.I | re.S)
 POINTER = re.compile(rb'\b(?:ftp|mirror)\s*#?\s*\d\b', re.I)
+IMAGE = re.compile(rb'<img[^>]*\ssrc="([^"]*)"', re.I)
+POINTER_IMAGE = re.compile(rb'(?:ftp|mirror)[_-]?\s*#?\s*\d', re.I)
 EMPTY_SMALL = re.compile(rb'(?:&nbsp;|\s)*<small>\s*</small>', re.I)
 EMPTY_WRAPPER = re.compile(rb'<(small|center|b)>\s*</\1>', re.I)
 DANGLING_OR = re.compile(rb'\s+or\b\s*(?=</)', re.I)
@@ -53,10 +55,21 @@ def repair_links(html):
     return b''.join(dedupe(part) for part in BODY_START.split(html))
 
 
+def is_pointer(label):
+    source = IMAGE.search(label)
+    if source and POINTER_IMAGE.search(source.group(1)):
+        return True
+    words = TAGS.sub(b'', label).replace(b'&nbsp;', b' ').strip()
+    return bool(words) and bool(POINTER.search(words))
+
+
 def dedupe(html):
     seen = {}
-    for href, _ in ANCHOR.findall(html):
+    worded = {}
+    for href, label in ANCHOR.findall(html):
         seen[href] = seen.get(href, 0) + 1
+        if not is_pointer(label):
+            worded[href] = worded.get(href, 0) + 1
     if not any(n > 1 for n in seen.values()):
         return html
 
@@ -64,11 +77,11 @@ def dedupe(html):
 
     def drop(match):
         href, label = match.group(1), match.group(2)
-        words = TAGS.sub(b'', label).replace(b'&nbsp;', b' ').strip()
-        if seen.get(href, 0) < 2 or not words or not POINTER.search(words):
+        if seen.get(href, 0) < 2 or not is_pointer(label):
             return match.group(0)
         kept[href] = kept.get(href, 0) + 1
-        return match.group(0) if kept[href] == seen[href] else b''
+        first_and_only = not worded.get(href) and kept[href] == 1
+        return match.group(0) if first_and_only else b''
 
     html = ANCHOR.sub(drop, html)
     for _ in range(4):

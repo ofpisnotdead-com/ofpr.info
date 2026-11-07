@@ -74,14 +74,19 @@ The articles were written against `ftp.armedassault.info`, which is gone. Every 
 served is on `files.ofpisnotdead.com` under `files` plus the same path, which is how
 the articles that link to both already write it, so `lib/ofpr/links.rb` moves the dead
 url across on import. Most articles carried both links already, the second as a small
-`FTP#2` pointer, and moving the first would have left two links on one file: the
-pointer goes and the link that carries the wording stays. A file never loses its last
-link, and the surviving links are written to https, which the host answers and they did
-not. That is 8,522 dead urls and 7,068 duplicate pointers across 5,638 articles.
+`FTP#2` pointer or a `downloadftp2.jpg` button beside the first, and moving the first
+would have left two links on one file: the pointer goes and the link that carries the
+wording stays. Where a file has nothing but pointers, the first of them stays, so the
+button in the table is the one that survives and a file never loses its last link. The
+surviving links are written to https, which the host answers and they did not. That is
+8,524 dead urls and 7,880 duplicate links across 5,638 articles.
+
+A file linked twice for other reasons is left alone: 103 articles name one in the prose
+and again under a screenshot, which are two ways to reach it rather than two mirrors.
 
 The search excerpts pay for it. com_search built them from the body as it was, pointers
 and all, so taking the pointers out moves the chunk boundaries: 87 of the 176 captured
-excerpts still carry the same words, where 144 did before. Working downloads are worth
+excerpts still carry the same words, where 144 did before the links were repaired. Working downloads are worth
 more than excerpts that match an archive of dead links.
 
 ## Layout

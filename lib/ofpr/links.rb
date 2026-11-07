@@ -16,6 +16,10 @@ module Ofpr
     ANCHOR = %r{<a\s[^>]*href="([^"]*)"[^>]*>(.*?)</a>}mi
     # A link that only says which mirror it is: FTP#2, (from mirror #2), and the like.
     POINTER = /\b(?:ftp|mirror)\s*#?\s*\d\b/i
+    # Often it says so with a button rather than words, and the mirror is in the file
+    # name: downloadftp1.jpg beside downloadftp2.jpg on the same download.
+    IMAGE = /<img[^>]*\ssrc="([^"]*)"/i
+    POINTER_IMAGE = /(?:ftp|mirror)[_-]?\s*#?\s*\d/i
     EMPTY_WRAPPER = %r{<(small|center|b)>\s*</\1>}i
     EMPTY_SMALL = %r{(?:&nbsp;|\s)*<small>\s*</small>}i
     # "from <a>FTP#1</a> or <a>FTP#2</a>" can lose both of its links to another block.
@@ -34,24 +38,40 @@ module Ofpr
       # Only an anchor whose own words are a mirror pointer is dropped, and only when the
       # file it points at is already linked somewhere else in the same article.
       def drop_duplicate_pointers(html)
-        seen = Hash.new(0)
-        html.scan(ANCHOR) { |href, _| seen[href] += 1 if href.match?(LIVE_URL) }
+        seen, worded = census(html)
         return html if seen.values.none? { |n| n > 1 }
 
         kept = Hash.new(0)
-        out = html.gsub(ANCHOR) do |anchor|
-          href = Regexp.last_match(1)
-          label = Regexp.last_match(2)
-          next anchor unless seen[href] > 1 && pointer?(label)
+        tidy(html.gsub(ANCHOR) { survivor(Regexp.last_match, seen, worded, kept) })
+      end
 
-          kept[href] += 1
-          # The last one standing is left alone, so a file never loses every link.
-          kept[href] == seen[href] ? anchor : ''
+      # How many links each file has, and how many of those say more than which mirror.
+      def census(html)
+        seen = Hash.new(0)
+        worded = Hash.new(0)
+        html.scan(ANCHOR) do |href, label|
+          next unless href.match?(LIVE_URL)
+
+          seen[href] += 1
+          worded[href] += 1 unless pointer?(label)
         end
-        tidy(out)
+        [seen, worded]
+      end
+
+      # A file never loses every link: where nothing but pointers link it, the first of
+      # them stays, which is the one the page leads with.
+      def survivor(match, seen, worded, kept)
+        href = match[1]
+        return match[0] unless seen[href] > 1 && pointer?(match[2])
+
+        kept[href] += 1
+        worded[href].zero? && kept[href] == 1 ? match[0] : ''
       end
 
       def pointer?(label)
+        source = label[IMAGE, 1]
+        return true if source&.match?(POINTER_IMAGE)
+
         words = label.gsub(/<[^>]*>/, '').gsub(/&nbsp;/i, ' ').strip
         !words.empty? && words.match?(POINTER)
       end
