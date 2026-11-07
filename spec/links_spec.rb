@@ -84,6 +84,34 @@ RSpec.describe Ofpr::Links do
     end
   end
 
+  it 'trims a url that was written with space inside the quotes' do
+    html = '<a href="https://files.ofpisnotdead.com/files/ofpd/mods/I44.rar ">x</a>'
+
+    expect(repair(html)).to eq('<a href="https://files.ofpisnotdead.com/files/ofpd/mods/I44.rar">x</a>')
+  end
+
+  describe 'a url the old site spliced into itself' do
+    it 'keeps the picture path that is buried in it' do
+      html = '<img src="/ofpgm/news/pics/b-25/ofpgm/news/pics/b-25/ofpgm/news/pics/' \
+             'b-25&#32;yellow&#32;rose.jpg#32;yellow/ofpgm/news/pics/b-25&#32;rose.jpg">'
+
+      expect(repair(html)).to eq('<img src="/ofpgm/news/pics/b-25&#32;yellow&#32;rose.jpg">')
+    end
+
+    it 'keeps the first whole url when it is not a picture' do
+      html = '<a href="/ofpgm/forum/index.php?showtopic=15561/ofpgm/forum/' \
+             'index.php?showtopic=15561">topic</a>'
+
+      expect(repair(html)).to eq('<a href="/ofpgm/forum/index.php?showtopic=15561">topic</a>')
+    end
+
+    it 'leaves a url that was never spliced' do
+      html = '<img src="../../ofpgm/rest/x.jpg">'
+
+      expect(repair(html)).to eq(html)
+    end
+  end
+
   it 'leaves the armedassault website alone' do
     html = '<a href="http://www.armedassault.info/news">news</a>'
 

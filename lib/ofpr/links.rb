@@ -27,6 +27,18 @@ module Ofpr
     # "from <a>FTP#1</a> or <a>FTP#2</a>" can lose both of its links to another block.
     DANGLING_OR = %r{\s+or\b\s*(?=</)}i
 
+    # A few pages carry a url that a bad search and replace on the old site turned
+    # inside out: the path is spliced into itself at every space, leaving thousands of
+    # characters where one file name belongs. The whole url is still in there, as the
+    # first run that reaches a picture's extension without starting over, or for a link
+    # that is not a picture, as everything before the path begins again.
+    # A url written with space around it inside the quotes. A browser trims that before
+    # asking for it; a lookup against the archive does not, so it is trimmed here.
+    PADDED = /((?:src|href)=")([^"]*)(")/i
+    MANGLED = %r{((?:src|href)=")([^"]*/ofpgm/[^"]*/ofpgm/[^"]*)(")}i
+    PICTURE = %r{/ofpgm/(?:(?!/ofpgm/)[^"])*?\.(?:jpe?g|png|gif|bmp)}i
+    FIRST_RUN = %r{\A[^"]*?/ofpgm/(?:(?!/ofpgm/)[^"])*}i
+
     # Some links name a path the file is not at, most often because the article wrote
     # the name in a different case than the archive stores it. Where the file is in the
     # archive under another path, the link is pointed at the path it is really served
@@ -37,8 +49,25 @@ module Ofpr
 
     class << self
       def repair(html)
-        text = html.to_s.gsub(DEAD, LIVE).gsub(INSECURE, SECURE)
+        text = unmangle(trim(html.to_s)).gsub(DEAD, LIVE).gsub(INSECURE, SECURE)
         drop_duplicate_pointers(move(text))
+      end
+
+      # The match is taken whole first: reading the url with another pattern would
+      # replace the match data the closing quote is still in.
+      def trim(html)
+        html.gsub(PADDED) do
+          match = Regexp.last_match
+          "#{match[1]}#{match[2].strip}#{match[3]}"
+        end
+      end
+
+      def unmangle(html)
+        html.gsub(MANGLED) do
+          match = Regexp.last_match
+          url = match[2]
+          "#{match[1]}#{url[PICTURE] || url[FIRST_RUN] || url}#{match[3]}"
+        end
       end
 
       def moved
