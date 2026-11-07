@@ -1,6 +1,7 @@
 require 'cgi'
 require 'json'
 require 'time'
+require_relative 'links'
 
 module Ofpr
   # Turns one captured page into a row. The capture mirrors the url space, so a page's
@@ -74,7 +75,7 @@ module Ofpr
       found = html[BODY, 1]
       raise Invalid, 'no article body' if found.nil? || found.strip.empty?
 
-      balance(found.strip)
+      Links.repair(balance(found.strip))
     end
 
     # The capture between itemFullText and itemLinks carries the closers of the

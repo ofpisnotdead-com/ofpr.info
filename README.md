@@ -68,6 +68,22 @@ visible text out of the body, so that text is read back out of the script and ke
 phrase, `ordering` is `newest`, `oldest` or `alpha`, results come five to a page and the
 header prints `Total: N results found.`
 
+## Downloads
+
+The articles were written against `ftp.armedassault.info`, which is gone. Every file it
+served is on `files.ofpisnotdead.com` under `files` plus the same path, which is how
+the articles that link to both already write it, so `lib/ofpr/links.rb` moves the dead
+url across on import. Most articles carried both links already, the second as a small
+`FTP#2` pointer, and moving the first would have left two links on one file: the
+pointer goes and the link that carries the wording stays. A file never loses its last
+link, and the surviving links are written to https, which the host answers and they did
+not. That is 8,522 dead urls and 7,068 duplicate pointers across 5,638 articles.
+
+The search excerpts pay for it. com_search built them from the body as it was, pointers
+and all, so taking the pointers out moves the chunk boundaries: 87 of the 176 captured
+excerpts still carry the same words, where 144 did before. Working downloads are worth
+more than excerpts that match an archive of dead links.
+
 ## Layout
 
 The views are the rebuild's own markup, lifted from the captures by
