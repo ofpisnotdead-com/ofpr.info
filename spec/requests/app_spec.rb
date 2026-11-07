@@ -148,12 +148,12 @@ RSpec.describe 'the site', type: :request do
       expect(last_response.body).to include('Total: 0 results found.')
     end
 
-    it 'takes the header module post from any page to the search url' do
+    it 'takes the header module post to the search url the site served' do
       post '/', searchword: 'desert', task: 'search', option: 'com_search'
 
       expect(last_response.status).to eq(303)
       expect(last_response.headers['location'])
-        .to end_with('/search?searchword=desert&ordering=newest&searchphrase=all')
+        .to end_with('/search.html?searchword=desert&ordering=newest&searchphrase=all')
     end
 
     # With no keyword the site still renders the form, and no result list.
@@ -163,6 +163,34 @@ RSpec.describe 'the site', type: :request do
       expect(last_response.body).to include('id="searchForm"')
       expect(last_response.body).not_to include('results found')
       expect(last_response.body).not_to include('class="search-results"')
+    end
+  end
+
+  describe 'the url scheme' do
+    it 'links a listing and an article with the suffix the site served' do
+      insert_article(id: 2232, url_path: '/addons/aircrafts/2232-franze', title: 'Franze',
+        section: 'addons/aircrafts')
+
+      get '/addons/aircrafts.html'
+
+      expect(last_response).to be_ok
+      expect(last_response.body).to include('href="/addons/aircrafts/2232-franze.html"')
+    end
+
+    it 'leaves the river at the root, which carried no suffix' do
+      insert_article(id: 1, url_path: '/1-a', title: 'An item')
+
+      get '/'
+
+      expect(last_response.body).to include('<link href="/" rel="canonical"')
+    end
+
+    it 'still answers without the suffix' do
+      insert_article(id: 2679, url_path: '/2679-opflashpoint-it', title: 'opflashpoint.it')
+
+      get '/2679-opflashpoint-it'
+
+      expect(last_response).to be_ok
     end
   end
 

@@ -8,5 +8,5 @@
 <% @articles.drop(5).each do |article| %><%== erb :_item, locals: {article: article, group: 'groupSecondary', nodate: true} %><% end %>
 		</div>
 <% end %>	</div>
-	<%== pager("/#{@section}", @start, @total) %>
+	<%== pager("/#{@section}.html", @start, @total) %>
 </div>

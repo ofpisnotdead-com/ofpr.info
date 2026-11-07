@@ -1,5 +1,5 @@
 <dt class="result-title">
-                                        <a href="<%= article[:url_path] %>"> <%== highlight(article[:title]) %> </a>
+                                        <a href="<%= page_url(article[:url_path]) %>"> <%== highlight(article[:title]) %> </a>
                               </dt>
                     <dd class="result-category"> <span class="small"> (<%= article[:section_label] %>) </span> </dd>
                               <dd class="result-created"> Created on <%= article[:published_at]&.strftime("%d %B %Y") %> </dd>

@@ -30,12 +30,18 @@ module Ofpr
       # place the rebuild prints them decoded.
       def page_title = @page_title ? "OFP.info 2.5 - #{CGI.unescapeHTML(@page_title.to_s)}" : 'OFP.info 2.5'
 
-      def canonical = @canonical || '/'
+      def canonical = page_url(@canonical || '/')
+
+      # The site served every page with a .html suffix except the river at the root:
+      # the Wayback Machine's crawl of ofpr.info.paradoxstudio.uk has
+      # `/addons/weapons.html?start=10` and `/10673-pfc-takes-over-ofp-info.html`, and
+      # no extensionless article or listing at all. Requests still answer either way.
+      def page_url(path) = path == '/' ? '/' : "#{path}.html"
 
       attr_reader :meta_description
 
       def search_base
-        "/search?searchword=#{Rack::Utils.escape(@query.word)}" \
+        "/search.html?searchword=#{Rack::Utils.escape(@query.word)}" \
           "&ordering=#{@query.ordering}&searchphrase=#{@query.phrase}"
       end
 
@@ -76,7 +82,7 @@ module Ofpr
 
       def consent? = settings.consent
 
-      def nav = Nav.new(NAV).for_path(nav_path)
+      def nav = Nav.new(NAV).for_path(page_url(nav_path))
 
       # An article highlights the menu item it belongs to, which for a river article is
       # News and for a section article is that section.
@@ -95,7 +101,7 @@ module Ofpr
 
       def nav_path
         return @nav_path if @nav_path
-        return request.path_info unless article_page?
+        return request.path_info.delete_suffix('.html') unless article_page?
 
         @article[:section].to_s.empty? ? '/' : "/#{@article[:section]}"
       end
@@ -107,18 +113,11 @@ module Ofpr
     get('/') { river }
     get('/index.php') { river }
 
-    get '/search' do
-      @query = SearchQuery.new(word: params['searchword'], phrase: params['searchphrase'],
-        ordering: params['ordering'], start: params['start'])
-      @page_title = 'Search'
-      @canonical = '/search'
-      @total, @articles = Article.search(@query)
-      erb :search
-    end
-
     # Both forms post: the search page's own, and the module in the header, which posts
     # to the site root the way Joomla's index.php took it. The url contract is the get,
     # so send the browser there.
+    get('/search.html') { search }
+    get('/search') { search }
     post('/search') { search_redirect }
     post('/') { search_redirect }
     post('/index.php') { search_redirect }
@@ -156,8 +155,17 @@ module Ofpr
       erb :river
     end
 
+    def search
+      @query = SearchQuery.new(word: params['searchword'], phrase: params['searchphrase'],
+        ordering: params['ordering'], start: params['start'])
+      @page_title = 'Search'
+      @canonical = '/search'
+      @total, @articles = Article.search(@query)
+      erb :search
+    end
+
     def search_redirect
-      redirect "/search?searchword=#{Rack::Utils.escape(params['searchword'].to_s)}" \
+      redirect "/search.html?searchword=#{Rack::Utils.escape(params['searchword'].to_s)}" \
                "&ordering=#{params['ordering'] || 'newest'}" \
                "&searchphrase=#{params['searchphrase'] || 'all'}", 303
     end

@@ -32,10 +32,14 @@ one menu page, so development needs neither the 6.9 GB mirror nor a full import.
     MIRROR         ../ofp-archive-catalog/ofpr-mirror
     PORT           9292
 
-The header banner is the one thing that is deliberately not the captured one:
-`public/images/banner.jpg` is the same artwork with the old domain taken off the
-corner. The reference server points the captures at it so the comparison stays about
-the layout rather than about that.
+The header banner is deliberately not the captured one: `public/images/banner.jpg` is
+the same artwork with the old domain taken off the corner. The reference server points
+the captures at it so the comparison stays about the layout rather than about that.
+
+The fonts are linked over https, where the capture asks for them over http. A browser
+refuses that on an https page, so test.ofpr.info renders its headings in Arial where
+the design asks for Bitter. That is an artefact of how the mirror is hosted rather than
+how the site looked, and the rebuild would inherit it the moment it went behind TLS.
 
 The layout - stylesheets, fonts, logo - ships with the app under `public/`. The CDN is
 only for article images: set `CDN_BASE` and `/ofpgm/...` redirects there, leave it unset
