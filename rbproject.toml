@@ -1,0 +1,12 @@
+[project]
+ruby = "4.0.7"
+name = "ofpr-info"
+description = "Serves the ofpr.info archive at the urls test.ofpr.info has, with search"
+
+[scripts]
+test = "rspec"
+lint = "rubocop"
+"lint:fix" = "rubocop -A"
+audit = "bundle-audit check --update"
+check = "rake check"
+dev = "puma -p 9292"

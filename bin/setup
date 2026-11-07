@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+echo "==> starting postgres"
+docker compose up -d db
+printf '==> waiting for postgres'
+until docker compose exec -T db psql -U ofpr -d ofpr_development -c 'select 1' >/dev/null 2>&1; do
+  printf '.'; sleep 1
+done
+echo
+
+echo "==> creating the test database"
+docker compose exec -T db psql -U ofpr -d ofpr_development \
+  -c 'CREATE DATABASE ofpr_test' >/dev/null 2>&1 || true
+
+echo "==> installing gems"
+bin/run bundle install
+
+echo "==> migrating and seeding"
+bin/run rake db:migrate db:seed
+DATABASE_URL=postgres://ofpr:ofpr@localhost:5433/ofpr_test bin/run rake db:migrate
+
+echo "==> linking the mirror assets"
+bin/run rake assets:link
+
+echo
+echo "ready. bin/dev serves on http://localhost:9292"

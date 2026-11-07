@@ -1,0 +1,661 @@
+/*
+#------------------------------------------------------------------------
+# game. - December Joomla! template (for Joomla 2.5)
+#
+# Copyright (C) 2007-2013 Gavick.com. All Rights Reserved.
+# License: Copyrighted Commercial Software
+# Website: http://www.gavick.com
+# Support: support@gavick.com 
+*/
+
+/* Common html elements */
+#k2Contaniner iframe {
+	max-height: 240px;
+}
+
+/* Containers */
+#gkContentWrap,
+#gkInset {
+	clear: both;
+	width: auto!important;
+}
+div[data-inset-pos="left"] #gkInset,
+div[data-inset-pos="right"] #gkInset {
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	-ms-box-sizing: content-box;
+	box-sizing: content-box;
+	margin-left: -20px!important;
+	margin-right: -20px!important;
+	min-width: 100%;
+	padding: 25px 20px;
+	width: auto!important;
+}
+#gkContentWrap,
+div[data-inset-pos="left"] #gkContentWrap,
+div[data-inset-pos="right"] #gkContentWrap {
+	padding: 0!important;
+	width: 100%!important;
+}
+#gkPageContent > div[data-inset-pos="left"],
+#gkPageContent > div[data-inset-pos="right"] {
+	padding: 10px 20px!important;
+}
+
+/* Menu */
+#gkTopBar {
+	min-height: 40px;
+	line-height: 40px;
+}
+#gkLogo.cssLogo {
+	margin-top: 0px!important;
+}
+
+/* Containers */
+#gkHeader {
+	margin-bottom: 20px;
+}
+#gkTopMenu > ul {
+	text-align: center;
+}
+#gkTopMenu > ul li {
+	display: inline-block;
+	float: none;
+}
+#gkTopMenu > ul li:before {
+	display: none;
+}
+#gkLogo {
+	margin: 0!important;
+}
+#gkLogo.cssLogo {
+	margin-top: 0px!important;
+}
+#gkMobileMenu {
+	margin-top: 10px!important;
+}
+#gkLogin {
+	margin: 10px;
+}
+#gkSidebar .box,
+#gkBottom1 .box,
+#gkBottom2 .box,
+#gkBottom3 .box,
+#gkInset .box,
+#gkMainbody .box,
+#gkMainbodyTop .box, 
+#gkMainbodyBottom .box,
+.gkTabsItem > div {
+	clear: both!important;
+	float: none!important;
+	margin: 0 auto!important;
+	max-width: 300px;
+	width: 100%;
+}
+#gkBottom1 .box,
+#gkBottom2 .box,
+#gkBottom3 .box {
+	margin-bottom: 20px;	
+}
+#gkBottom1 .box.double, 
+#gkBottom1 .box.double ~ .box, 
+#gkBottom2 .box.double, 
+#gkBottom2 .box.double ~ .box, 
+#gkBottom3 .box.double, 
+#gkBottom3 .box.double ~ .box {
+	width: 100%!important;
+}
+#gkSidebar > div {
+	margin-top: 20px!important;
+	padding-top: 25px!important;
+}
+#gkSidebar > div > .box {
+	float: none;
+	margin-top: 0!important;
+	margin-bottom: 12px!important;
+	width: 100%;
+}
+#gkSidebar > div > .box:nth-child(2n+1) {
+	clear: both!important;
+}
+#gkSidebar > div > .box:nth-child(odd) {
+	padding-right: 0px;	
+}
+#gkSidebar > div > .box:nth-child(even) {
+	padding-left: 0px;
+}
+.gkCols[data-cols="2"] > div,
+.gkCols[data-cols="3"] > div,
+.gkCols[data-cols="4"] > div,
+.gkCols[data-cols="5"] > div {
+	padding-bottom: 20px!important;
+	width: 100%;
+}
+
+/* limitation suffixes */
+.notablet {
+	display: block!important;
+}
+.nomobile {
+	display: none!important;
+}
+.onlytablet {
+	display: none!important;
+}
+.onlymobile {
+	display: block!important;
+}
+.notablet.nomobile {
+	display: none!important;
+}
+
+/* Fix for the user profile */
+.profile dt {
+	width: 100% !important;
+}
+
+/* Fix for the contact page */
+.contact .contact-image {
+	float: left !important;
+}
+.contact .contact-address {
+	clear: both !important;
+	padding-top: 20px !important;
+}
+.contact .contact-form input,
+.contact .contact-form textarea {
+	width: 100% !important;
+}
+
+/* Fix for the search */
+fieldset.word #search-searchword,
+fieldset.word .inputbox {
+	width: 50%;
+}
+fieldset.phrases .ordering-box,
+fieldset.only input[type="checkbox"],
+fieldset.phrases input[type="radio"] {
+	clear: both;
+}
+
+/* Fix for the register */
+#member-registration dd {
+	clear: both !important;
+	display: block !important;
+}
+
+/* Fix for tables */
+fieldset {
+	box-sizing: border-box!important;
+	max-width: 100%!important;
+	width: 100%!important;
+	overflow: hidden;
+}
+#gkMainbody table:before {
+	content: "Scroll horizontally to view the whole table";
+	height: 14px;
+	width: 100%;
+	display: block;
+	font-size: 10px;
+	margin-top: -30px;
+	margin-bottom: 10px;
+	font-family: Arial, sans-serif;
+}
+#gkMainbody table {
+	width: 540px!important;
+	display: block!important;
+	padding: 30px 0 20px 0; /* padding for the scrollbars and the top message */
+	overflow:scroll;
+	-webkit-overflow-scrolling:touch;
+}
+#gkMainbody table tbody,
+#gkMainbody table thead,
+#gkMainbody table tfoot {
+	width: 540px!important;
+	display: table;
+}
+
+@media only screen and (max-width: 320px), only screen and (max-device-width: 320px) and (-moz-max-device-pixel-ratio: 1.5), only screen and (max-device-width: 320px) and (-o-max-device-pixel-ratio: 1.5/1), only screen  and (max-device-width: 320px) and (-webkit-max-device-pixel-ratio: 1.5), only screen and (max-device-width: 320px) and (max-device-pixel-ratio: 1.5), only screen and (max-device-width: 640px) and (-moz-min-device-pixel-ratio: 2), only screen and (max-device-width: 640px) and (-o-min-device-pixel-ratio: 2/1), only screen and (max-device-width: 640px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-device-width: 640px) and (min-device-pixel-ratio: 2) {
+	#gkMainbody table {
+		width: 260px!important;
+	}
+}
+
+@media only screen and (max-width: 480px) and (orientation:landscape), only screen and (max-device-width: 480px) and (-moz-max-device-pixel-ratio: 1.5) and (orientation:landscape), only screen and (max-device-width: 480px) and (-o-max-device-pixel-ratio: 1.5/1) and (orientation:landscape), only screen  and (max-device-width: 480px) and (-webkit-max-device-pixel-ratio: 1.5) and (orientation:landscape), only screen and (max-device-width: 480px) and (max-device-pixel-ratio: 1.5) and (orientation:landscape), only screen and (max-device-width: 960px) and (-moz-min-device-pixel-ratio: 2) and (orientation:landscape), only screen and (max-device-width: 960px) and (-o-min-device-pixel-ratio: 2/1) and (orientation:landscape), only screen and (max-device-width: 960px) and (-webkit-min-device-pixel-ratio: 2) and (orientation:landscape), only screen and (max-device-width: 960px) and (min-device-pixel-ratio: 2) and (orientation:landscape) {
+	#gkMainbody table {
+		width: 420px!important;
+	}
+}
+
+/* top/bottom modules */
+.box.gkmod-1,
+.box.gkmod-2,
+.box.gkmod-3,
+.box.gkmod-4,
+.box.gkmod-more {
+	float: left!important;	
+}
+.box.gkmod-1,
+.box.gkmod-2,
+.box.gkmod-3,
+.box.gkmod-4,
+.box.gkmod-more {
+	width: 100%!important;
+}
+.box.gkmod-more.gkmod-last-1:last-child,
+.box.gkmod-more.gkmod-last-2:last-child,
+.box.gkmod-more.gkmod-last-2:nth-last-child(2),
+#gkPageWrap .box.gkmod-more.gkmod-last-3:last-child,
+#gkPageWrap .box.gkmod-more.gkmod-last-3:nth-last-child(2),
+#gkPageWrap .box.gkmod-more.gkmod-last-3:nth-last-child(3) {
+	width: 100%!important;
+}
+
+/* top/bottom modules */
+body #gkPage .box {
+	margin-bottom: 20px!important;
+}
+
+/* 3-column layout */
+.gkCols3 .box.gkmod-more:nth-child(1n) {
+	clear: both;
+}
+.gkCols3 .box.gkmod-1,
+.gkCols3 .box.gkmod-2,
+.gkCols3 .box.gkmod-3,
+.gkCols3 .box.gkmod-more,
+.gkCols3 .box.gkmod-more.gkmod-last-1:last-child,
+.gkCols3 .box.gkmod-more.gkmod-last-2:last-child,
+.gkCols3 .box.gkmod-more.gkmod-last-2:nth-last-child(2) {
+	width: 100%!important;
+}
+
+/* 4-column layout */
+body .gkCols4 .box.gkmod-more:nth-child(1n) {
+	clear: both;
+}
+body .gkCols4 .box.gkmod-1,
+body .gkCols4 .box.gkmod-2,
+body .gkCols4 .box.gkmod-3,
+body .gkCols4 .box.gkmod-4,
+body .gkCols4 .box.gkmod-more,
+body .gkCols4 .box.gkmod-more.gkmod-last-1:last-child,
+body .gkCols4 .box.gkmod-more.gkmod-last-2:last-child,
+body .gkCols4 .box.gkmod-more.gkmod-last-2:nth-last-child(2),
+body .gkCols4 .box.gkmod-more.gkmod-last-3:last-child,
+body .gkCols4 .box.gkmod-more.gkmod-last-3:nth-last-child(2),
+body .gkCols4 .box.gkmod-more.gkmod-last-3:nth-last-child(3) {
+	width: 100%!important;
+}
+
+/* 6-column layout */
+body .gkCols6 .box.gkmod-more:nth-child(1n) { 
+	clear: both; 
+}
+body .gkCols6 .box.gkmod-1,
+body .gkCols6 .box.gkmod-2,
+body .gkCols6 .box.gkmod-3,
+body .gkCols6 .box.gkmod-4,
+body .gkCols6 .box.gkmod-more,
+body .gkCols6 .box.gkmod-5,
+body .gkCols6 .box.gkmod-more,
+body .gkCols6 .box.gkmod-6,
+body .gkCols6 .box.gkmod-more,
+body .gkCols6 .box.gkmod-more.gkmod-last-1:last-child,
+body .gkCols6 .box.gkmod-more.gkmod-last-2:last-child,
+body .gkCols6 .box.gkmod-more.gkmod-last-2:nth-last-child(2),
+body .gkCols6 .box.gkmod-more.gkmod-last-3:last-child,
+body .gkCols6 .box.gkmod-more.gkmod-last-3:nth-last-child(2),
+body .gkCols6 .box.gkmod-more.gkmod-last-3:nth-last-child(3),
+body .gkCols6 .box.gkmod-more.gkmod-last-4:last-child,
+body .gkCols6 .box.gkmod-more.gkmod-last-4:nth-last-child(2),
+body .gkCols6 .box.gkmod-more.gkmod-last-4:nth-last-child(3),
+body .gkCols6 .box.gkmod-more.gkmod-last-4:nth-last-child(4),
+body .gkCols6 .box.gkmod-more.gkmod-last-5:last-child,
+body .gkCols6 .box.gkmod-more.gkmod-last-5:nth-last-child(2),
+body .gkCols6 .box.gkmod-more.gkmod-last-5:nth-last-child(3),
+body .gkCols6 .box.gkmod-more.gkmod-last-5:nth-last-child(4),
+body .gkCols6 .box.gkmod-more.gkmod-last-5:nth-last-child(5) {
+	width: 100%!important;
+}
+
+/* article fix */
+#gkContent article > time {
+	display: none!important;
+}
+#gkContent article > time + header {
+	padding-left: 0!important;
+}
+#gkContent article header li.itemDate,
+#gkContent article header li.item-date {
+	display: block;
+}
+article header ul {
+	margin: 0 0 10px;
+}
+
+/* NSP adjustments */
+.nspArtPage .nspArt {
+	border-top: 1px solid #eee!important;
+	border-left: none!important;
+	padding-bottom: 20px!important;
+	padding-top: 20px!important;
+	width: 100%!important;
+}
+.nspArtPage .nspArt:first-child {
+	border-top: none!important;
+}
+
+/* other elements */
+article header h1, 
+.category header {
+	line-height: 32px;
+	padding: 18px 0 0px;
+}
+
+article header h1, 
+.category header, 
+article header h2 {
+	font-size: 24px;
+}
+
+h1 {
+	font-size: 28px;
+}
+
+h2, 
+.componentheading,
+.category header h2 {
+	font-size: 28px;
+}
+
+article header h2 {
+	line-height: 32px;
+}
+
+h3 {
+	font-size: 24px;
+}
+
+h4 {
+	font-size: 20px;
+}
+
+h5 {
+	font-size: 16px;
+}
+
+h6 {
+	font-size: 14px;
+}
+
+#gkSocialAPI {
+	overflow: hidden;
+}
+
+.cols-2 .column-2, 
+.cols-3 .column-3 {
+	padding: 0!important;
+}
+
+.itemBody {
+	width: 100%!important;
+}
+#gkInset {
+	width: 100%!important;
+}
+
+.itemComments .itemCommentsList li img {
+	float: left;
+	margin-left: 0;
+	margin-right: 10px;
+	position: static;
+}
+
+.itemCommentsList li h3 {
+	float: none;
+	margin-top: 5px;
+}
+
+#gkMainbody .registration {
+	width: 100%;
+}
+
+#gkFooterNav {
+	text-align: center;
+}
+
+#gkFooterNav li {
+	display: inline-block;
+	float: none;
+}
+
+#gkCopyrights {
+	text-align: center;
+}
+
+/* NSP */
+.box.border .nspMain {
+	overflow: hidden;
+}
+.box.border .nspArtPage {
+	display: block;
+}
+.box.border .nspArt {
+	display: block;
+}
+.box.header .nspImageWrapper h4 {
+	font-size: 14px!important;
+}
+.nspArts,
+.nspLinksWrap {
+	clear: both;
+	float: left!important;
+	width: 100%!important;
+}
+.nspArtPage .nspArt {
+	border-top: none!important;
+}
+.nspArt .nspImageWrapper {
+	clear: both;
+	float: none;
+	margin: 0 auto 20px auto!important;
+	max-width: 240px;
+	width: 100%;
+}
+.nspArt .nspImageWrapper img {
+	max-width: 240px!important;
+	width: 100%!important;	
+}
+.nspArt .gkArtContentWrap {
+	clear: both;
+	width: 100%;
+}
+.list-small .nspArt .nspImageWrapper {
+	float: left;
+	margin: 0 10px 0 0!important;
+	max-width: 240px;
+	width: auto;
+}
+.list-small .nspArt .gkArtContentWrap {
+	clear: none;
+	width: auto;
+}
+.list-small .nspArt .nspImageWrapper img {
+	width: auto!important;
+}
+.gkNspPM-VideoGallery .gkBigBlock,
+.gkNspPM-VideoGallery .gkSmallBlock {
+	width: 100%;
+}
+
+/* IS */
+.gkIsWrapper-gk_game figcaption h2 {
+	font-size: 24px;
+	letter-spacing: -2px;
+	line-height: 36px;
+	text-indent: 0;
+}
+.gkIsWrapper-gk_game figcaption p {
+	font-size: 11px;
+	line-height: 13px;
+}
+.gkIsWrapper-gk_game .spinner {
+	margin: 70px auto;
+}
+
+/* Tabs */
+.gkTabsWrap ol li {
+    border-left: none;
+    text-align: center;
+    width: 100%;
+}
+.bigtabs .gkTabsWrap ol li {
+	padding: 0 10px!important;
+}
+.gkTabsWrap ol li:after {
+	display: none;
+}
+
+/* K2 fixes */
+.itemBody.containsItemInfo, 
+.itemOtherElements.containsItemInfo,
+.itemListView .itemBlock.containsItemInfo {
+	margin-left: 0!important;
+}
+#k2Container .itemContainer{width:100%!important;}
+#k2Container .subCategoryContainer{width:100%!important;}
+#k2Container .subCategory{height:auto!important;}
+aside.itemAsideInfo {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 20px 0!important;
+	position: static!important;
+	width: 100%!important;
+}
+.itemCommentsList li > div > div > span {
+	clear: both;
+	display: block;
+}
+.itemCommentsList li > div {
+	margin-left: 0!important;
+	padding-left: 0!important;
+}
+.itemComments h3 {
+	font-size: 20px;
+	padding: 10px 0 0;
+}
+.items-row > div {
+	margin-bottom: 30px;
+	padding: 0!important;
+}
+article header h1,
+article header h2 {
+	font-size: 24px!important;
+	line-height: 1.2;
+}
+.genericView .itemView {
+	padding: 0!important;
+	width: 100%!important;
+}
+.itemAuthorDetails {
+	clear: both;
+	margin: 0!important;
+	padding: 10px;
+}
+.itemAuthorData {
+	padding: 0;
+}
+.itemAuthorData img {
+	display: block;
+	margin: 0 0 20px 0;
+}
+.itemAuthorBlock > .gkAvatar > img {
+	margin: 12px!important;
+}
+.itemComments h3, 
+.itemAuthorContent h3 {
+	padding: 0 0 24px;
+}
+.itemComments p {
+	clear: both;
+} 
+.itemComments .itemCommentsList li span {
+	font-size: 12px;
+	margin: 0 12px 0 0;
+	clear: both;
+	float: left;
+}
+.itemComments .itemCommentsList li > img, 
+.k2LatestCommentsBlock img, 
+.itemAuthorBlock > .gkAvatar > img {
+	margin: 10px 0;
+}
+.itemComments .itemCommentsList li {
+	padding: 24px 0 12px 0;
+}
+#gkPopupCart,
+#gkPopupLogin {
+	margin-left: -150px;
+	width: 300px;
+}
+#gkPopupCart .vmGkCartProducts > div > div {
+	margin-left: 85px;
+}
+#gkPopupCart .gkTotal {
+	font-size: 40px;
+	margin: 0 0 0 85px;
+}
+span#fb-auth {
+	padding: 7px 8px 7px 7px;
+}
+.gkPopupWrap {
+	padding: 15px;
+}
+.gkPopupWrap h3 {
+	font-size: 20px;
+	font-weight: 400;
+	line-height: 24px;
+	margin: 0 0 10px;
+}
+.gkPopupWrap h3 a {
+	font-size: 14px;
+}
+
+/* Overlay menu */
+#gkMainMenu.gkMenuOverlay .gkMenu > ul > li,
+#gkMainMenu.gkMenuOverlay .gkMenu > ul > li a {
+	height: 32px;
+	line-height: 32px;
+}
+#gkMainMenu.gkMenuOverlay .gkMenu {
+	margin: 0 -10px!important;
+}
+#gkMenuOverlayWrap {
+    margin: -20px 0 0 -150px!important;
+    max-width: 300px!important;
+}
+
+#gkMenuOverlayWrap.open {
+    margin-top: 0!important;
+}
+
+#gkMenuOverlayContent .gkcol li {
+    font-size: 15px;
+}
+
+#gkMenuOverlayContent .gkcol li,
+#gkMenuOverlayContent .gkcol li a {
+    line-height: 38px;
+}
+
+#gkMenuOverlayHeader {
+    font-size: 36px;
+    line-height: 72px;
+}
+
+#gkMenuOverlayClose {
+    font-size: 20px;
+    line-height: 72px;        
+}

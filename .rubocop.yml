@@ -1,0 +1,67 @@
+plugins:
+  - rubocop-rspec
+  - rubocop-performance
+
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+  TargetRubyVersion: 3.4
+  CacheRootDirectory: tmp/rubocop
+  Exclude:
+    - 'bin/**/*'
+    - '.rb/**/*'
+    - 'tmp/**/*'
+    - 'vendor/**/*'
+
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+Style/Documentation:
+  Enabled: false
+Style/FrozenStringLiteralComment:
+  Enabled: false
+Style/SymbolArray:
+  EnforcedStyle: percent
+
+Layout/LineLength:
+  Max: 119
+Layout/SpaceInsideHashLiteralBraces:
+  EnforcedStyle: no_space
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+Layout/ArgumentAlignment:
+  EnforcedStyle: with_fixed_indentation
+
+Metrics/MethodLength:
+  Max: 20
+  Exclude:
+    - 'db/migrations/**/*'
+    - 'spec/**/*'
+Metrics/AbcSize:
+  Max: 25
+  Exclude:
+    - 'db/migrations/**/*'
+    - 'spec/**/*'
+Metrics/ClassLength:
+  Max: 160
+Metrics/ParameterLists:
+  CountKeywordArgs: false
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    - 'db/migrations/**/*'
+    - 'Rakefile'
+    - 'lib/ofpr/app.rb'
+
+RSpec/ExampleLength:
+  Max: 15
+RSpec/MultipleExpectations:
+  Max: 4
+RSpec/NestedGroups:
+  Max: 4
+RSpec/SpecFilePathFormat:
+  Enabled: false
+RSpec/DescribeClass:
+  Exclude:
+    - 'spec/requests/**/*'

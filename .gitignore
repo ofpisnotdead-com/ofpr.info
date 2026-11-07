@@ -1,0 +1,13 @@
+/.rb/
+/coverage/
+/tmp/
+*.log
+.env
+.env.local
+
+# The layout under public/ ships with the app; the article images are the CDN's and are
+# only symlinked in for development.
+/public/ofpgm
+
+# The global gitignore excludes this; it is wanted here, for rb users.
+!rbproject.toml

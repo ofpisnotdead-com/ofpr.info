@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Runs a bundled executable with whichever ruby has the gems. Plain `bundle exec` is
+# tried first; some version managers keep the bundle outside the active ruby's gem home,
+# in which case bundle check fails and this falls back to asking the manager.
+set -euo pipefail
+if bundle check >/dev/null 2>&1; then
+  exec bundle exec "$@"
+elif command -v rb >/dev/null 2>&1; then
+  exec rb x "$@"
+else
+  echo "the gems are not installed for the active ruby; run 'bundle install'" >&2
+  exit 1
+fi

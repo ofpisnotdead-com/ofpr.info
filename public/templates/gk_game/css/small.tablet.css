@@ -1,0 +1,161 @@
+/*
+#------------------------------------------------------------------------
+# game. - December Joomla! template (for Joomla 2.5)
+#
+# Copyright (C) 2007-2013 Gavick.com. All Rights Reserved.
+# License: Copyrighted Commercial Software
+# Website: http://www.gavick.com
+# Support: support@gavick.com 
+*/
+
+#gkMainMenu.gkMenuOverlay {
+	border: none;
+}
+.gkMenu > ul {
+	height: auto;
+	min-height: 21px;
+}
+.itemsContainer .itemsContainerWrap, 
+.itemContainer .itemsContainerWrap {
+	margin: 0!important;	
+}
+.demo-typo-col2,
+.demo-typo-col3,
+.demo-typo-col4 {
+	clear: both;
+	float: none;
+	padding-bottom: 20px;
+	width: 100%;
+}
+#gkBottom1 .box.double,
+#gkBottom1 .box.double ~ .box,
+#gkBottom2 .box.double,
+#gkBottom2 .box.double ~ .box,
+#gkBottom3 .box.double,
+#gkBottom3 .box.double ~ .box {
+	width: 50%!important;
+}
+#gkContentWrap {
+	margin-top: 0px;
+}
+#gkBanners > div {
+	display: none;
+}
+#gkBanners > div:first-child {
+	display: block;
+	width: 100%!important;
+}
+
+/* Overlay menu */
+#gkMenuOverlayWrap {
+    margin:  -20px 0 0 -260px!important;
+    max-width: 520px!important;
+}
+
+#gkMenuOverlayWrap.open {
+    margin-top: 0;
+}
+
+#gkMenuOverlayContent .gkcol li {
+    font-size: 20px;
+}
+
+#gkMenuOverlayContent .gkcol li,
+#gkMenuOverlayContent .gkcol li a {
+    line-height: 58px;
+}
+
+/* Footer */
+#gkFooterNav li {
+	line-height: 40px;
+}
+#gkFooterNav li:before {
+	top: 20px;
+}
+
+/* K2 */
+.itemSocialSharing .itemRatingBlock {
+	border-bottom: 1px solid #e5e5e5;
+	border-left: none;
+	float: none;
+	margin: -10px 0 20px 0;
+	padding: 20px 0;
+	width: 100%;
+}
+.itemBlock {
+	margin: 0;
+	clear: both;
+	padding-top: 10px;
+}
+.items-row > div {
+	margin-bottom: 10px;
+}
+article header h1, article header h2 {
+	font-size: 24px;
+}
+
+/* NSP */
+.showcase .nspImageWrapper:after {
+	display: none;
+}
+.gkNspPM-VideoGallery .gkSmallBlock figcaption {
+	padding: 0 0 0 80px;
+}
+.showcase-small .nspHeader,
+.gkNspPM-VideoGallery .gkSmallBlock small,
+.gkNspPM-VideoGallery .gkBigBlock figure.video:after {
+	display: none;
+} 
+.dark-area .nspHeader, 
+.dark-area .list .nspHeader {
+	font-size: 13px;
+}
+
+/* IS */
+.gkIsWrapper-gk_game figcaption h2 {
+	font-size: 50px;
+	letter-spacing: -5px;
+	line-height: 60px;
+	text-indent: 0;
+}
+.gkIsWrapper-gk_game figcaption p {
+	font-size: 12px;
+	line-height: 14px;
+}
+
+@media (max-width: 660px) {
+    body #cc-notification h2, 
+    body #cc-notification h3, 
+    body #cc-notification p {
+        font-size: 12px!important;
+        margin-bottom:0!important;
+        width: 100%!important;
+        max-width: 100%!important;
+    }
+
+    body #cc-notification h2 span, 
+    body #cc-notification h2 {
+        font-size: 12px!important;
+    }
+
+    body #cc-notification #cc-notification-wrapper {
+        padding: 10px 32px 0!important;
+    }
+
+    body #cc-notification ul.cc-notification-buttons {
+        clear: both!important;
+        width: 100%!important;
+        position: static!important;
+        text-align: center;
+    }
+
+    body #cc-notification ul.cc-notification-buttons li {
+        float: none!important;
+        display: inline-block;
+    }
+
+    body #cc-notification a, 
+    body #cc-notification a:visited {
+        font-size: 12px!important;
+    }
+}

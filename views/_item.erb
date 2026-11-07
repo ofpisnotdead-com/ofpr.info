@@ -1,0 +1,37 @@
+<div class="itemContainer itemContainerLast" style="width:99.9%;">
+								
+<article class="itemView <%= group %><%= ' itemIsFeatured' if article[:featured] %>">  		
+		
+		<div class="itemBlock">	
+				<header>
+										
+												<h2>
+																<a href="<%= article[:url_path] %>"><%== article[:title] %></a>
+																						</h2>
+										</header>
+				
+				 
+								
+				<div class="itemBody<%= ' nodate' if nodate %>">  												<div class="itemIntroText"><%== body_html(article) %> </div>
+																																				
+						 
+										</div>
+				
+								<% unless nodate %><ul>
+												<li>
+							<time datetime="<%= stamp(article[:published_at]) %>"><%= article[:published_at]&.strftime("%B %-d, %Y") %></time>
+						</li>
+						
+						
+												
+												<li>Written by <a rel="author" href="/"><%= article[:author] %></a> </li>
+						
+												
+										</ul><% end %>
+				
+				
+				 
+						</div>
+</article>
+						</div>
+												<div class="clr"></div>

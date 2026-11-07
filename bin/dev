@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+docker compose up -d db
+exec bin/run puma -p "${PORT:-9292}"

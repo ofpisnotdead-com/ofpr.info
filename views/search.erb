@@ -1,0 +1,67 @@
+<section class="search">
+		
+	
+<form id="searchForm" action="/search" method="post">
+	<fieldset class="word">
+		<input type="text" name="searchword" id="search-searchword" size="30" maxlength="200" value="<%= @query.word %>" class="inputbox" />
+		<button name="Search" onclick="this.form.submit()" class="button">Search</button>
+		<input type="hidden" name="task" value="search" />
+	</fieldset>
+
+	<div class="searchintro">
+				<% unless @query.blank? %><p><strong>Total: <%= @total %> results found.</strong></p><% end %>
+			</div>
+
+	<fieldset class="phrases">
+		<legend>Search for:</legend>
+		<div class="phrases-box">
+			<div class="controls">
+	<label for="searchphraseall" id="searchphraseall-lbl" class="radio">
+	
+	<input type="radio" name="searchphrase" id="searchphraseall" value="all"<%= ' checked="checked"' if @query.phrase == 'all' %> />All words
+	</label>
+	<label for="searchphraseany" id="searchphraseany-lbl" class="radio">
+	
+	<input type="radio" name="searchphrase" id="searchphraseany" value="any"<%= ' checked="checked"' if @query.phrase == 'any' %> />Any words
+	</label>
+	<label for="searchphraseexact" id="searchphraseexact-lbl" class="radio">
+	
+	<input type="radio" name="searchphrase" id="searchphraseexact" value="exact"<%= ' checked="checked"' if @query.phrase == 'exact' %> />Exact Phrase
+	</label>
+</div>
+		</div>
+		<div class="ordering-box">
+			<label for="ordering" class="ordering">
+				Ordering:			</label>
+			<select id="ordering" name="ordering" class="inputbox">
+	<option value="newest"<%= ' selected="selected"' if @query.ordering == 'newest' %>>Newest First</option>
+	<option value="oldest"<%= ' selected="selected"' if @query.ordering == 'oldest' %>>Oldest First</option>
+	<option value="popular"<%= ' selected="selected"' if @query.ordering == 'popular' %>>Most Popular</option>
+	<option value="alpha"<%= ' selected="selected"' if @query.ordering == 'alpha' %>>Alphabetical</option>
+	<option value="category"<%= ' selected="selected"' if @query.ordering == 'category' %>>Category</option>
+</select>
+		</div>
+	</fieldset>
+
+	
+<% unless @query.blank? %>		<div class="form-limit">
+		<label for="limit">
+			Display #		</label>
+		<select id="limit" name="limit" class="inputbox input-mini" size="1" onchange="this.form.submit()">
+	<option value="5" selected="selected">5</option>
+	<option value="10">10</option>
+	<option value="15">15</option>
+	<option value="20">20</option>
+	<option value="25">25</option>
+	<option value="30">30</option>
+	<option value="50">50</option>
+	<option value="100">100</option>
+	<option value="0">All</option>
+</select>
+	</div>
+	<p class="counter"><%= page_counter %></p>
+<% end %>	</form>	
+<% unless @query.blank? %><dl class="search-results">
+<% @articles.each do |article| %><%== erb :_result, locals: {article: article} %><% end %>
+</dl>
+<%== search_pager %><% end %></section>
