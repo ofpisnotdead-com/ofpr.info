@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><%= page_title %></title>
-  <% if meta_description %><meta name="description" content="<%= meta_description %>">
-  <% end %><link href="<%= canonical %>" rel="canonical">
+  <meta name="description" content="<%= share_description %>">
+  <link href="<%= canonical %>" rel="canonical">
   <meta property="og:site_name" content="OFP.info 2.5">
   <meta property="og:type" content="<%= share_type %>">
   <meta property="og:title" content="<%= share_title %>">
@@ -45,16 +45,20 @@
 <footer class="footer">
   <p>OFPR.info archive. The news, the addons and the missions of the Operation Flashpoint
     community, 2001 to 2019. Files hosted by <a href="https://ofpisnotdead.com/">ofpisnotdead.com</a>.</p>
-  <p><a class="report__open" href="<%= issue_url %>">Report a problem with this page</a></p>
+  <p><a class="report__open" href="<%= issue_url %>">Report a problem, or contribute</a></p>
 </footer>
 
 <!-- Without a script this is the plain link to the issue form that the footer holds. -->
 <dialog class="report" id="report">
-  <h2 class="report__title">Report a problem</h2>
-  <p>A broken download, a missing picture, an article that reads wrong.</p>
+  <h2 class="report__title">Report, or contribute</h2>
+  <p>A broken download, a missing picture, an article that reads wrong. Also a file the
+    archive does not have and you do, or an idea for what it should hold next.</p>
+  <p>The site is open source, so a fix can arrive as a pull request as readily as a
+    message.</p>
   <p class="report__links">
-    <a class="report__link" href="<%= issue_url %>">Open an issue on GitHub</a>
+    <a class="report__link" href="<%= issue_url %>"><%== erb :_github %>Open an issue</a>
     <a class="report__link report__link--quiet" href="<%= discord_url %>">Ask on Discord</a>
+    <a class="report__link report__link--quiet" href="<%= repo_url %>"><%== erb :_github %>The code</a>
   </p>
   <button class="report__close" type="button">Close</button>
 </dialog>

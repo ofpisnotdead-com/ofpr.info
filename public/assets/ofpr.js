@@ -14,14 +14,14 @@
 // The report link opens a dialog with somewhere to send it; with no script it stays
 // the plain link to the issue form that it already is.
 (() => {
-  const opener = document.querySelector('.report__open');
+  const openers = document.querySelectorAll('.report__open');
   const dialog = document.getElementById('report');
-  if (!opener || !dialog) return;
+  if (openers.length === 0 || !dialog) return;
 
-  opener.addEventListener('click', (event) => {
+  openers.forEach((opener) => opener.addEventListener('click', (event) => {
     event.preventDefault();
     dialog.showModal();
-  });
+  }));
   dialog.addEventListener('click', (event) => {
     if (event.target === dialog) dialog.close();
   });

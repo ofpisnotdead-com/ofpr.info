@@ -75,6 +75,7 @@ RSpec.describe 'the site', type: :request do
       expect(last_response.body).to include('<meta property="og:image" content="http://example.org/images/share.jpg">')
       expect(last_response.body).to include('<meta property="og:type" content="website">')
       expect(last_response.body).to include(Ofpr::App::DESCRIPTION)
+      expect(last_response.body).to include('content="News - The Operation Flashpoint archive"')
     end
   end
 
