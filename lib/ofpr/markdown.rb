@@ -37,6 +37,9 @@ module Ofpr
     # `<br>` is the second commonest tag in these bodies. It is carried as a mark until
     # the end, because every other step here collapses runs of spaces.
     BREAK = "\u0001".freeze
+    # A list inside a list is two spaces in front of the bullet, carried as a mark for
+    # the same reason.
+    INDENT = "\u0002".freeze
     # Whitespace, counting a line break mark as some of it: `strip` knows nothing
     # about the mark and would leave one inside a pair of emphasis marks.
     PADDING = /\A[\s\u0001]+|[\s\u0001]+\z/
@@ -172,6 +175,7 @@ module Ofpr
       def initialize(dom)
         @dom = dom
         @out = []
+        @depth = 0
       end
 
       def call
@@ -253,13 +257,16 @@ module Ofpr
       def rule(_node, _name) = @out << "\n\n---\n\n"
 
       def list(node, _name)
-        @out << "\n"
+        @depth += 1
+        @out << "\n" if @depth == 1
         children(node)
-        @out << "\n"
+        @out << "\n" if @depth == 1
+        @depth -= 1
       end
 
+      # A few bodies hold an `li` with no list around it, which is depth zero.
       def item(node, _name)
-        @out << "\n- "
+        @out << "\n" << (INDENT * [@depth - 1, 0].max) << '- '
         children(node)
       end
 
@@ -329,6 +336,7 @@ module Ofpr
           .gsub(/\n{3,}/, "\n\n")
           .gsub(/^(- )?(\d+)([.)])(?=\s)/, '\1\2\\\\\3')
           .gsub(BREAK, '  ')
+          .gsub(INDENT, '  ')
           .strip
       end
     end

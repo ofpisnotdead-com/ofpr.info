@@ -1,5 +1,6 @@
 require_relative 'ofpr/database'
 require_relative 'ofpr/article'
+require_relative 'ofpr/bullets'
 require_relative 'ofpr/conversion'
 require_relative 'ofpr/extractor'
 require_relative 'ofpr/links'
