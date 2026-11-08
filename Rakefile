@@ -123,9 +123,13 @@ task :links do
   known.merge(ofpr::Article.section_counts.keys.map { |section| "/#{section}" })
   broken = {}
   checked = inherited = 0
-  Net::HTTP.start(base.host, base.port) do |http|
+  Net::HTTP.start(base.host, base.port, use_ssl: base.scheme == 'https') do |http|
     pages.each do |page|
-      body = http.get(page == '/' ? page : "#{page}.html").body.to_s
+      path = page == '/' ? page : "#{page}.html"
+      page_response = http.get(path)
+      abort "#{page_response.code} for #{path}" unless page_response.code.start_with?('2')
+
+      body = page_response.body.to_s
       body.scan(%r{(?:src|href)="(/[^"]*)"}).flatten.uniq.each do |url|
         next if url == '/'
 
