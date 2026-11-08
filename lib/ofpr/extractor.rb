@@ -88,7 +88,7 @@ module Ofpr
       found = html[BODY, 1]
       raise Invalid, 'no article body' if found.nil? || found.strip.empty?
 
-      Links.repair(balance(found.strip))
+      Bullets.repair(Links.repair(balance(found.strip)))
     end
 
     # The capture between itemFullText and itemLinks carries the closers of the

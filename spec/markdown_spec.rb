@@ -115,4 +115,15 @@ RSpec.describe Ofpr::Markdown do
     expect(convert('write &lt;b&gt;bold&lt;/b&gt; in a comment'))
       .to eq('write \<b>bold\</b> in a comment')
   end
+
+  it 'indents a list inside a list item instead of starting a second list' do
+    html = '<ul><li>files:<ul><li>on a server</li><li>on an ftp</li></ul></li><li>search</li></ul>'
+
+    expect(convert(html)).to eq(<<~MARKDOWN.strip)
+      - files:
+        - on a server
+        - on an ftp
+      - search
+    MARKDOWN
+  end
 end
