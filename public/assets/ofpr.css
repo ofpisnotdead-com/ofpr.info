@@ -363,7 +363,12 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
 .pager a:hover { border-color: var(--link); color: var(--link); text-decoration: none; }
 .pager [aria-current="page"] { background: var(--link); border-color: var(--link); color: #fff; }
 .pager__step { padding-inline: calc(var(--space) * 3) !important; }
-.pager__count { border: 0; color: var(--text-faint); margin-left: calc(var(--space) * 2); }
+.pager .pager__count {
+  border: 0;
+  color: var(--text-faint);
+  margin-left: calc(var(--space) * 2);
+  padding-inline: 0;
+}
 
 /* 8 ---- article ------------------------------------------------------------ */
 
@@ -566,7 +571,10 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
 .report p { margin: 0 0 calc(var(--space) * 4); }
 .report__links { display: flex; flex-wrap: wrap; gap: calc(var(--space) * 3); }
 .report__link {
+  align-items: center;
   background: var(--link);
+  display: inline-flex;
+  gap: calc(var(--space) * 2);
   border-radius: var(--radius);
   color: #fff;
   font: 600 12px/1 var(--sans);

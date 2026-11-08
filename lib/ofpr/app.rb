@@ -17,6 +17,7 @@ module Ofpr
     DESCRIPTION = 'The news, the addons and the missions of the Operation Flashpoint ' \
                   'community, 2001 to 2019.'.freeze
     SHARE_CARD = '/images/share.jpg'.freeze
+    ARCHIVE = 'The Operation Flashpoint archive'.freeze
     # What is shared has to be a picture, and a big one: a gallery entry can link to a
     # page rather than to a picture, and the thumbnail beside it is typically 160x120,
     # which every messenger draws as a postage stamp. 2,693 articles have nothing but
@@ -93,7 +94,15 @@ module Ofpr
         @article[:section].to_s.empty? ? '/' : "/#{@article[:section]}"
       end
 
-      def share_title = @page_title ? CGI.unescapeHTML(@page_title.to_s) : 'OFP.info 2.5'
+      # An article carries its own name; everything else is a part of the site rather
+      # than a thing, and `News` on its own says nothing in a messenger.
+      def share_title
+        title = @page_title && Prose.decoded(@page_title)
+        return ARCHIVE unless title
+        return title if @article
+
+        "#{title} - #{ARCHIVE}"
+      end
 
       def share_description = meta_description || DESCRIPTION
 
@@ -119,6 +128,8 @@ module Ofpr
       end
 
       def discord_url = DISCORD
+
+      def repo_url = REPO
     end
 
     # What both probes ask, and it must not touch postgres. One database stands behind
@@ -157,6 +168,8 @@ module Ofpr
 
     not_found do
       content_type :html
+      # Whatever the route made of the url before it gave up is not a page name.
+      @page_title = 'Page not found'
       erb :not_found
     end
 
