@@ -85,6 +85,24 @@ namespace :old_ids do
 end
 
 namespace :assets do
+  desc 'Rebuild db/small_thumbs.txt from the thumbnails in the mirror (MIRROR=path)'
+  task :small_thumbs do
+    require 'shellwords'
+    require 'uri'
+    thumbs = [ofpr::Article.dataset, ofpr::Page.dataset].flat_map do |table|
+      table.select_map(:body_blocks).flat_map do |blocks|
+        shots = blocks.to_a.flat_map { |block| block['pictures'].to_a }
+        shots.select { |shot| shot['full'] }.map { |shot| shot['thumb'] }
+      end
+    end
+    small = thumbs.uniq.select do |thumb|
+      file = File.join(MIRROR, URI::DEFAULT_PARSER.unescape(thumb.delete_prefix('/')))
+      File.exist?(file) && `magick identify -format %w #{Shellwords.escape("#{file}[0]")} 2>/dev/null`.to_i < ofpr::SmallThumbs::WIDTH
+    end
+    File.write(ofpr::SmallThumbs::FILE, "#{small.sort.join("\n")}\n")
+    puts "#{small.size} of #{thumbs.uniq.size} thumbnails are too small to make out"
+  end
+
   # The layout ships with the app in public/. Only the article images are the CDN's, and
   # in development they come from the mirror through this symlink.
   desc 'Link the mirror article images into public/ofpgm (MIRROR=path)'

@@ -34,6 +34,7 @@ COPY --chown=ofpr:ofpr views views
 COPY --chown=ofpr:ofpr public public
 COPY --chown=ofpr:ofpr db/migrations db/migrations
 COPY --chown=ofpr:ofpr db/old_ids.tsv db/old_ids.tsv
+COPY --chown=ofpr:ofpr db/small_thumbs.txt db/small_thumbs.txt
 
 USER ofpr
 EXPOSE 9292
