@@ -1,4 +1,4 @@
 <article class="panel">
   <h1 class="article__title"><%== @page[:title] %></h1>
-  <%== erb :_blocks, locals: {blocks: blocks(@page)} %>
+  <%== erb :_blocks, locals: {blocks: blocks(@page), centred: false} %>
 </article>

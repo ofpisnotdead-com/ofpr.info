@@ -519,8 +519,9 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
 .gallery a:hover img { border-color: var(--link); }
 /* A thumbnail too small to make out shows its full picture at a size that can be. */
 .gallery img.is-grown { width: 160px; }
-/* A picture standing on its own, not a thumbnail of a bigger one. */
-.gallery--picture { justify-content: center; }
+/* A picture standing on its own, not a thumbnail of a bigger one. The articles had
+   nearly all of theirs centred; the menu pages kept theirs under their labels. */
+.gallery--centred { justify-content: center; }
 .gallery--picture img { border: 0; border-radius: 0; max-width: 100%; }
 .has-viewer .gallery a, .has-viewer .card__shot { cursor: zoom-in; }
 
