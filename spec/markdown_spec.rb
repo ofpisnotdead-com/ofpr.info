@@ -61,6 +61,11 @@ RSpec.describe Ofpr::Markdown do
     expect(convert(html)).to end_with('#### Finnish Defence Forces Mod')
   end
 
+  it 'writes bold inside bold once' do
+    expect(convert('<b><a href="http://www.legawarz.com/"><b>Lega Warz Website</b></a></b>'))
+      .to eq('**[Lega Warz Website](http://www.legawarz.com/)**')
+  end
+
   it 'keeps a heading as a heading' do
     html = '<h3>Modifications</h3><h4>Finnish <b>Defence</b> Forces</h4>'
 
