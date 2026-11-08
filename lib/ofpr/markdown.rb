@@ -26,6 +26,9 @@ module Ofpr
     # `Port` needs to know to tell a lost space from a kept one.
     BLOCK = (BREAKS + HEADINGS + %w[table thead tbody tfoot tr td th ul ol li br hr]).freeze
     DROP = %w[script style].freeze
+    # A heading or a list standing inside an emphasis. The marks are inline, and the
+    # newlines these need are collapsed to spaces by one, so the marks give way.
+    STRUCTURE = (HEADINGS + %w[ul ol li table]).join(', ').freeze
     # Markdown reads a bracket, a space or a quote in a url as the end of it.
     PLAIN_URL = /\A[^\s()<>"]*\z/
     # Characters no url may hold raw, and which a few of these hrefs hold anyway:
@@ -229,6 +232,8 @@ module Ofpr
 
       # Bold inside bold is bold already, and markdown cannot nest the two marks.
       def emphasis(node, name)
+        return children(node) unless node.css(STRUCTURE).empty?
+
         mark = EMPHASIS.fetch(name)
         mark = '' if node.ancestors.any? { |up| EMPHASIS[up.name.to_s.downcase] == mark }
         core, lead, tail = spaced(inner(node))
