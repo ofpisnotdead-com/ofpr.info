@@ -30,10 +30,9 @@ module Ofpr
       "#{text[0, limit].sub(/\s\S*\z/, '')}..."
     end
 
-    # The window of a text around the first search word, cut at whole words. The
-    # excerpt `Snippet` makes is com_search's own and belongs to the facsimile; it
-    # strips the tags without putting anything in their place, which welds an addon
-    # card into `AuthorSizeTheSun`.
+    # The window of a text around the first search word, cut at whole words. It reads
+    # the port rather than the stored html, which has no spaces between an addon
+    # card's cells and so welds one into `AuthorSizeTheSun`.
     def self.excerpt(text, terms, limit: 220)
       at = terms.filter_map { |term| text.index(/#{Regexp.escape(term)}/i) }.min
       return plain(text, limit: limit) if at.nil?

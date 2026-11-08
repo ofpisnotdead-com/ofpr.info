@@ -1,0 +1,12 @@
+<div class="panel">
+  <h1 class="article__title listing__title"><%= @page_title %></h1>
+  <ul class="groups">
+    <% @children.each do |child| %><li>
+      <a class="group" href="<%= page_url(child[:path]) %>">
+        <span class="group__name"><%= child[:label] %></span>
+        <span class="group__count"><%= number(counts[child[:path].delete_prefix('/')]) %></span>
+      </a>
+    </li>
+    <% end %>
+  </ul>
+</div>

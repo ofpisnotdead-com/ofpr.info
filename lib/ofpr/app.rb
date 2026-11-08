@@ -9,12 +9,6 @@ module Ofpr
     # Sinatra anchors a route pattern itself, so this carries no \A or \z.
     PATH = %r{/(?<path>[A-Za-z0-9][A-Za-z0-9._/-]*)}
 
-    NAV = File.read(File.join(Ofpr.root, 'views/legacy/nav.html')).freeze
-    # The site as it was, rendered from the same data through the captured templates.
-    # It is a verification surface and not a destination: nothing links to it, and its
-    # own links are deliberately not scoped to it, because its markup has to stay what
-    # the capture has for `rake compare` to mean anything.
-    ARCHIVE = '/archive'.freeze
     # Where a report goes. The invite is the OFP/CWA community one that
     # ofpisnotdead.com lists; if it ever expires, that page has the current one.
     REPO = 'https://github.com/ofpisnotdead-com/ofpr.info'.freeze
@@ -26,16 +20,11 @@ module Ofpr
       set :public_folder, File.join(Ofpr.root, 'public')
       set :erb, escape_html: true
       set :cdn_base, ENV.fetch('CDN_BASE', '')
-      set :consent, ENV['CONSENT'] == '1'
     end
 
     helpers Presenter
 
     helpers do
-      def renderer = @renderer ||= Renderer.new(cdn_base: settings.cdn_base)
-
-      def body_html(article) = renderer.call(article[:body_html])
-
       def pager(base, start, total) = Pager.new(base, start, total)
 
       # Stored text keeps the entities the capture had. The browser title is the one
@@ -58,13 +47,7 @@ module Ofpr
       end
 
       def search_pager
-        Pager.new(search_base, @query.offset, @total, per_page: @query.per_page,
-          close_list: false)
-      end
-
-      def page_counter
-        pages = [(@total.to_f / @query.per_page).ceil, 1].max
-        "Page #{(@query.offset / @query.per_page) + 1} of #{pages}"
+        Pager.new(search_base, @query.offset, @total, per_page: @query.per_page)
       end
 
       # com_search marks the terms in a result title as well as in its excerpt.
@@ -80,22 +63,6 @@ module Ofpr
         marked
       end
 
-      def snippet(article)
-        Snippet.new(article[:body_html], @query.terms,
-          cloak_text: article[:cloak_text]).to_html
-      end
-
-      # The capture writes the offset out in full rather than as Z.
-      def stamp(time) = time&.strftime('%FT%T+00:00')
-
-      def article_page? = !@article.nil?
-
-      def search_page? = !@query.nil?
-
-      def consent? = settings.consent
-
-      def nav = Nav.new(NAV).for_path(page_url(nav_path))
-
       # An article highlights the menu item it belongs to, which for a river article is
       # News and for a section article is that section.
       def author_link
@@ -104,16 +71,12 @@ module Ofpr
         url ? %(<a rel="author" href="#{url}">#{name}</a>) : name
       end
 
-      # Only a news item shows its author; a section article never does.
-      def river_article? = @article[:section].to_s.empty?
-
       def section_path = @article[:section].to_s.empty? ? '/' : "/#{@article[:section]}"
 
-      def meta_author = (@article || @page)[:author]
-
+      # Which menu item the page belongs to: for an article, the section it sits in.
       def nav_path
         return @nav_path if @nav_path
-        return request.path_info.delete_suffix('.html') unless article_page?
+        return request.path_info.delete_suffix('.html') unless @article
 
         @article[:section].to_s.empty? ? '/' : "/#{@article[:section]}"
       end
@@ -128,17 +91,6 @@ module Ofpr
       end
 
       def discord_url = DISCORD
-    end
-
-    # The facsimile answers at the same paths behind `/archive`, so every route below
-    # serves both and only the templates differ.
-    before do
-      path = request.path_info
-      @facsimile = path == ARCHIVE || path.start_with?("#{ARCHIVE}/")
-      next unless @facsimile
-
-      rest = path.delete_prefix(ARCHIVE)
-      request.path_info = rest.empty? ? '/' : rest
     end
 
     # The original served the front page at both, and old links still point at the php.
@@ -172,8 +124,6 @@ module Ofpr
 
     not_found do
       content_type :html
-      next erb(:'legacy/not_found', layout: false) if @facsimile
-
       erb :not_found
     end
 
@@ -187,7 +137,7 @@ module Ofpr
       @articles = Article.river(start: @start)
       @total = Article.count
       @pager_base = '/'
-      @facsimile ? erb(:'legacy/river', layout: :'legacy/layout') : erb(:listing)
+      erb :listing
     end
 
     def search
@@ -196,7 +146,7 @@ module Ofpr
       @page_title = 'Search'
       @canonical = '/search'
       @total, @articles = Article.search(@query)
-      @facsimile ? erb(:'legacy/search', layout: :'legacy/layout') : erb(:search)
+      erb :search
     end
 
     def search_redirect
@@ -209,7 +159,7 @@ module Ofpr
       @page_title = @page[:title]
       @canonical = @page[:url_path]
       @meta_description = @page[:description]
-      @facsimile ? erb(:'legacy/page', layout: :'legacy/article_layout') : erb(:page)
+      erb :page
     end
 
     def serve_article(url_path)
@@ -219,7 +169,7 @@ module Ofpr
       @page_title = @article[:title]
       @canonical = @article[:url_path]
       @meta_description = @article[:description]
-      @facsimile ? erb(:'legacy/article', layout: :'legacy/article_layout') : erb(:article)
+      erb :article
     end
 
     def serve_section(name)
@@ -228,9 +178,20 @@ module Ofpr
       @page_title = Menu.label("/#{name}") || name
       @canonical = "/#{name}"
       @total, @articles = Article.section(name, start: @start)
-      halt 404 if @total.zero?
+      return serve_group("/#{name}") if @total.zero?
+
       @pager_base = "/#{name}.html"
-      @facsimile ? erb(:'legacy/section', layout: :'legacy/layout') : erb(:listing)
+      erb :listing
+    end
+
+    # A heading the sections hang under rather than a section of its own.
+    def serve_group(path)
+      @children = Menu.children_of(path) or halt 404
+
+      @page_title = Menu.label(path)
+      @canonical = path
+      @nav_path = path
+      erb :group
     end
   end
 end

@@ -1,4 +1,5 @@
 require 'json'
+require 'rack/utils'
 
 MIRROR = ENV.fetch('MIRROR', File.expand_path('../ofp-archive-catalog/ofpr-mirror', __dir__))
 SEED = File.expand_path('db/seed.json', __dir__)
@@ -60,30 +61,6 @@ namespace :mirror do
 end
 
 namespace :assets do
-  # The capture saved Joomla's cache-busted assets with the query string baked into the
-  # filename, so `core.js?2b52...` sits on disk where a browser asks for `core.js`. The
-  # capture also saved the site's catch-all page under some of those names, so a
-  # candidate whose first bytes are html is never the asset.
-  desc 'Give the captured assets the names a browser asks for'
-  task :normalise do
-    renamed = dropped = 0
-    Dir.glob('public/{media,templates}/**/*').select { |f| File.file?(f) }.sort.each do |path|
-      clean = path.delete_suffix('.html').sub(%r{\?[^/]*\z}, '')
-      clean += File.extname(clean.sub(/\.[^.]*\z/, '')) if File.extname(clean).empty?
-      next if clean == path
-
-      if html?(path) || (File.exist?(clean) && !html?(clean))
-        FileUtils.rm_f(path)
-        dropped += 1
-      else
-        FileUtils.mv(path, clean)
-        renamed += 1
-      end
-    end
-    rewritten = rewrite_css_urls
-    puts "renamed #{renamed}, dropped #{dropped}, #{rewritten} stylesheets repointed"
-  end
-
   # The layout ships with the app in public/. Only the article images are the CDN's, and
   # in development they come from the mirror through this symlink.
   desc 'Link the mirror article images into public/ofpgm (MIRROR=path)'
@@ -180,52 +157,34 @@ def ours?(url, known)
   known.include?(path) || path.start_with?('/assets/', '/images/', '/ofpgm/', '/archive')
 end
 
-desc 'Compare the facsimile at /archive against the captured pages (MIRROR, BASE, N)'
+desc 'Check every captured listing against what the data lists (MIRROR=path)'
 task :compare do
-  require 'net/http'
-  base = URI(ENV.fetch('BASE', 'http://127.0.0.1:9292'))
-  pages = capture_pages(Integer(ENV.fetch('N', '200')))
-  same = differ = 0
-  partial = whole = truncated = 0
-  consent = false
-  Net::HTTP.start(base.host, base.port) do |http|
-    consent = http.get('/archive/').body.to_s.include?('fmalertcookies')
-    pages.each do |file, path|
-      capture = File.read(File.join(MIRROR, file), encoding: 'UTF-8')
-      capture = ofpr::Skeleton.without_consent(capture) unless consent
-      # A capture that lost its head or its closing tag was truncated in transit and
-      # describes no complete page.
-      next truncated += 1 unless capture.include?('<head>') && capture.include?('</html>')
+  same = differ = unusable = 0
+  listing_captures.each do |file, url|
+    capture = File.read(File.join(MIRROR, file), encoding: 'UTF-8')
+    # A capture that lost its closing tag was truncated in transit and lists nothing.
+    next unusable += 1 unless capture.include?('</html>')
 
-      rendered = http.get("/archive#{path}").body.to_s
-      if ofpr::Skeleton.degraded_pager?(capture)
-        partial += 1
-        want = [ofpr::Skeleton.of_without_numbers(capture), ofpr::Skeleton.pager_frame(capture)]
-        got = [ofpr::Skeleton.of_without_numbers(rendered), ofpr::Skeleton.pager_frame(rendered)]
-      else
-        whole += 1 if capture.include?(ofpr::Skeleton::PAGER_START)
-        want = [ofpr::Skeleton.of(capture), ofpr::Skeleton.pager_frame(capture)]
-        got = [ofpr::Skeleton.of(rendered), ofpr::Skeleton.pager_frame(rendered)]
-      end
-      want << ofpr::Skeleton.listed_ids(capture)
-      got << ofpr::Skeleton.listed_ids(rendered)
-      if want == got
-        same += 1
-      else
-        differ += 1
-        puts "  differs: #{path}  (capture #{want.first.size} tags, app #{got.first.size})"
-        want.zip(got).each do |mine, theirs|
-          puts "    only in capture: #{(mine - theirs).tally.first(4).inspect}" unless (mine - theirs).empty?
-          puts "    only in app:     #{(theirs - mine).tally.first(4).inspect}" unless (theirs - mine).empty?
-        end
-      end
+    want = listed_in(capture).map(&:to_i)
+    next unusable += 1 if want.empty?
+
+    got = listed_by_data(url)
+    # A listing that fits on one page carries no pager and so no count to compare.
+    said = capture[/<li class="counter">Page \d+ of (\d+)/, 1]&.to_i
+    pages = [said, said && page_count(url)]
+    if want == got && pages.uniq.size == 1
+      same += 1
+    else
+      differ += 1
+      puts "  differs: #{url}"
+      puts "    capture lists #{want.inspect}" unless want == got
+      puts "    data lists    #{got.inspect}" unless want == got
+      puts "    capture says #{said} pages, the data has #{pages.last}" if pages.uniq.size > 1
     end
   end
-  puts "#{same} identical, #{differ} differ, of #{pages.size - truncated} comparable " \
-       "(#{whole} pagers compared in full, #{partial} without the numbers the mirror " \
-       "lost, #{truncated} truncated captures skipped)"
-  puts '  the app has the cookie notice off, so the capture was compared without it' unless consent
-  abort "#{differ} pages differ" unless differ.zero?
+  puts "#{same} listings hold what the data holds, #{differ} differ, " \
+       "#{unusable} captures list nothing"
+  abort "#{differ} listings differ" unless differ.zero?
 end
 
 desc 'Check the captures still match what test.ofpr.info serves (N=pages, DELAY=secs)'
@@ -292,6 +251,65 @@ def spread(paths, take)
   paths.each_slice(paths.size / take).map(&:first).first(take)
 end
 
+# Every captured page that lists articles, paired with the url it was served at: the
+# river and its pages, each section and its pages, and the searches.
+def listing_captures
+  files = Dir.glob("#{MIRROR}/index.html*") +
+          Dir.glob("#{MIRROR}/{addons,missions}/*.html") +
+          Dir.glob("#{MIRROR}/{patches,utilities}.html*") +
+          Dir.glob("#{MIRROR}/search.html?*.html")
+  files.sort.map { |path| path.delete_prefix("#{MIRROR}/") }
+    .grep_v(ARTICLE_FILE)
+    .map { |file| [file, capture_url(file)] }
+end
+
+ARTICLE_FILE = %r{(\A|/)\d+-}
+
+# What a captured listing lists: the ids live in the hrefs, and one article has an
+# empty slug, so the capture links it as `3532-.html`.
+LIST_START = ['<div class="itemList">', '<dl class="search-results">'].freeze
+ITEM_SPLIT = /class="itemContainer|<dt class="result-title">/
+ITEM_ID = /href="[^"]*?(\d{3,5})-[a-z0-9-]*(?:\.html)?"/
+PAGER_START = '<nav class="pagination">'.freeze
+
+def listed_in(html)
+  at = LIST_START.filter_map { |marker| html.index(marker) }.min
+  return [] unless at
+
+  region = html[at...(html.index(PAGER_START, at) || html.length)]
+  region.split(ITEM_SPLIT)[1..].to_a.filter_map { |item| item[ITEM_ID, 1] }
+end
+
+# What the data puts on that page, as ids in order. This is the whole of the check:
+# the markup is ours now, the ids and their order are the archive's.
+def listed_by_data(url)
+  path, _, query = url.partition('?')
+  start = query[/start=(\d+)/, 1].to_i
+  rows = case path
+         when '/' then ofpr::Article.river(start: start)
+         when %r{\A/search} then ofpr::Article.search(query_from(query)).last
+         else ofpr::Article.section(path.delete_prefix('/'), start: start).last
+         end
+  rows.map { |row| row[:id] }
+end
+
+def page_count(url)
+  path, _, query = url.partition('?')
+  per = path.start_with?('/search') ? ofpr::SearchQuery::PER_PAGE : ofpr::Article::PER_PAGE
+  total = case path
+          when '/' then ofpr::Article.count
+          when %r{\A/search} then ofpr::Article.search(query_from(query)).first
+          else ofpr::Article.section(path.delete_prefix('/')).first
+          end
+  [(total.to_f / per).ceil, 1].max
+end
+
+def query_from(query)
+  params = Rack::Utils.parse_query(query)
+  ofpr::SearchQuery.new(word: params['searchword'], phrase: params['searchphrase'],
+    ordering: params['ordering'], start: params['start'])
+end
+
 # Captured pages paired with the url the app serves them at, spread across every page
 # type: the river and its pages, articles at each depth, section listings and searches.
 def capture_pages(limit)
@@ -345,19 +363,6 @@ def mark_featured(table)
   table.where(id: ids).update(featured: true)
 end
 
-# wget escaped the query inside stylesheets too, so font-awesome asks for
-# `fontawesome-webfont.woff2%3Fv=4.4.0` as a literal path and the icons never load.
-def rewrite_css_urls
-  Dir.glob('public/{media,templates}/**/*.css').count do |path|
-    before = File.read(path, encoding: 'UTF-8')
-    after = before.gsub(/%3F/i, '?')
-    next false if after == before
-
-    File.write(path, after)
-    true
-  end
-end
-
 # One request at a time, spaced, with a user agent naming the crawl: the live site is
 # the reference of record but it is also somebody's server.
 def fetch_live(live, path)
@@ -370,10 +375,6 @@ def fetch_live(live, path)
 rescue StandardError => e
   warn "  #{path}: #{e.class}"
   nil
-end
-
-def html?(path)
-  File.binread(path, 40).to_s.match?(/\A\s*<(!doctype html|html)/i)
 end
 
 # The blocks are a structure in a row and json text in the column, and the seed file

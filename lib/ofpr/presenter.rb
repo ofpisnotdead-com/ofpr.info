@@ -1,7 +1,6 @@
 module Ofpr
-  # What the modern templates ask for: the blocks of a body, the pieces of a card,
-  # and the small formatting the archive's data needs before it can be printed. The
-  # legacy templates use none of it.
+  # What the templates ask for: the blocks of a body, the pieces of a card, and the
+  # small formatting the archive's data needs before it can be printed.
   module Presenter
     def blocks(record) = record[:body_blocks] || []
 

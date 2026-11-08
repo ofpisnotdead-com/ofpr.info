@@ -3,12 +3,9 @@
 Serves the ofpr.info archive at the urls test.ofpr.info has, with search and images on
 the CDN. English only for now.
 
-Two sides, one database. The site at `/` is the modern one, rendered from the markdown
-and the blocks the import reads off each body. The site as it was is at `/archive/`,
-rendered from the stored html through the captured templates. That one is a
-verification surface rather than a destination: nothing links to it, and its own links
-are not scoped to it, because its markup has to stay exactly what the capture has for
-`rake compare` to mean anything.
+The site renders from the markdown and the blocks the import reads off each stored
+body. `body_html` is never written to and never rendered: it is the archival record,
+and everything shown is derived from it at import time.
 
 Content comes from the static capture in `../ofp-archive-catalog/ofpr-mirror`: 10,246
 article pages whose path below the capture root is the url, so nothing has to be mapped.
@@ -27,12 +24,11 @@ one menu page, so development needs neither the 6.9 GB mirror nor a full import.
     rake test            rake db:migrate      rake mirror:import   # all 10,246
     rake lint            rake db:seed         rake mirror:seed     # rebuild seed.json
     rake check           rake db:reset        rake assets:link     # article images -> public/
-    rake compare         # diff rendered pages against the captured ones
+    rake compare         # check every captured listing against the data
     rake verify_captures # check the captures still match what test.ofpr.info serves
     rake links           # request every link a running app renders
     rake port:verify     # assert the markdown and the blocks lost nothing
     rake port:show URL=/path  # print one body as markdown
-    rake assets:normalise  # give captured assets the names a browser asks for
 
 ## Settings
 
@@ -104,120 +100,58 @@ more than excerpts that match an archive of dead links.
 
 ## Layout
 
-`views/legacy/` is the capture's own markup, lifted from it by `script/port_layout.rb`
-and committed; it serves `/archive/`. `rake compare` requests each captured page there
-and diffs the tag, class and id skeleton against it, ignoring text and whitespace.
+`views/` is one layout, one stylesheet at `public/assets/ofpr.css` and one script, and
+no framework. It renders from `body_blocks` and `body_markdown`, so an addon card is
+laid out rather than printed as a 2003 table, and a download says its file name, size
+and mirror.
 
-`views/` is the modern site: one layout, one stylesheet at `public/assets/ofpr.css` and
-one script, and no framework. It renders from `body_blocks` and `body_markdown`, so an
-addon card is laid out rather than printed as a 2003 table, and a download says its file
-name, size and mirror. `public/templates/` and `public/media/` stay for the facsimile
-and nothing on the modern side loads them.
+Until this point the rebuild also served a facsimile of the captured markup and the
+comparison diffed the two, tag for tag and pixel for pixel. That work is finished and
+it is in the history: 1,064 of 1,064 captures identical, every page type but search
+pixel for pixel, four defects found by the pixels that the markup diff had passed. The
+design has replaced the markup, so comparing markup proves nothing any more.
 
-What is verified, and how far:
+What the comparison checks now is the thing worth keeping: **the data**.
 
-- **1,064 of 1,064 comparable captures are identical**, across the river and its pages,
-  articles at all three depths, section listings, search and the menu pages.
-  Alongside the skeleton it compares the ids each listing lists, in order, and where
-  every pager link points.
-- **Every page type but search renders pixel for pixel identical** to its capture in
-  the same browser at the same size, down to the last antialiased edge: eight pages
-  each of the river, section listings and their pages, and articles at all three
-  depths, forty-eight of forty-eight, plus the menu pages, `/index.php` and the empty
-  search form. Only search results differ, and only in the excerpt text.
-  `script/pixel_compare.py` checks one page of each type, `script/pixel_sweep.py` eight
-  of each. Search results are the exception and the excerpt is why: of 176 captured
-  excerpts 144 carry the same words, and the rest sit a word either side of a chunk
-  boundary or on a different chunk.
-- The skeleton cannot see text, colour or position, so the pixels are what check them,
-  and they found four defects it had passed. Titles were escaped a second time, so
-  `Lady&#039;s` printed literally on 994 articles. A search result printed the url
-  section where the original prints the category it came from. Thirty-eight articles
-  were mirrored with the site's own host written into their image urls, and that host
-  answers nothing today, so their screenshots were holes. And the search box in the
-  header posted to a route that did not exist.
+    rake compare   1,825 captured listings, no server needed
+
+For every captured listing - the river and all its pages, every section and its pages,
+and all 36 searches - it reads the article ids out of the capture and asks the database
+what belongs on that page. Same ids, same order, same number of pages. It is a wider
+net than the old one, which sampled a few hundred pages over http: it reads the
+captures straight off disk, so it covers all of them and needs nothing running.
+
+It found something the old comparison could not. Article 3532 has an empty title and an
+empty slug, so the capture links it as `3532-.html`; the id regex wanted a slug and
+missed it on both sides equally, which is why diffing rendered pages against each other
+never noticed. Checking against the data did.
+
+Two checks are unchanged:
+
 - **All 36 captured search pages return the same result ids in the same order**, with
   the same totals and page counts. No archive holds a search *results* page for this
   site - the Wayback Machine has 14 snapshots of the empty form at `/search.html`
   between 2018 and 2020 and the OpenSearch descriptor, but crawlers never submit a
   form, so the mirror's own captures of `fliper` and `martin` are the only reference
-  there is. The search region of those archived snapshots is identical to what the app
-  renders, five years apart.
+  there is.
 - **56 of 56 captures the live host can still address are byte-identical to what
   test.ofpr.info serves**, so comparing against the captures is comparing against the
   live site. `rake verify_captures` checks this, politely paced.
-- **The 404 page is the site's own**, taken from the Wayback Machine: test.ofpr.info
-  answers with nginx's default, but the archive caught the real Joomla error page in
-  2021 and again in 2024, byte-identical apart from the cloak id. It is committed as
-  `spec/fixtures/pages/error-404.html` and a spec holds the rendered page to it.
-- The live host is a static file mirror and cannot serve this url space itself:
-  `/2679-opflashpoint-it` answers 404 there, `/addons/aircrafts` redirects, and
-  `?start=10` is ignored and returns page one. That is a hosting artefact, not the
-  rebuild's behaviour, which is why the captures are the reference.
 
-One limit, and it is in the reference rather than the app: **514 pages lost their
-numbered pager links**, holding empty list items instead. The loss is not ours. Both
-server trees carry it, test.ofpr.info serves it, and no paginated ofpr.info url was ever
-captured by the Wayback Machine, so nothing intact exists to compare against. What
-survived the loss - Start, Prev, Next, End and the page counter - is compared on those
-pages, and the numbered links are verified against the 47 captures that kept theirs,
-including the rule that six pages or fewer are listed in full.
+The excerpt under a search result is read off the port, not off the stored html: the
+prose of the matching article with a window taken around the first search word. The
+rebuild used to reproduce com_search's own `prepareSearchContent` and `_smartSubstr`
+chunking, and that is in the history too - of 176 captured excerpts 144 carried the
+same words and 138 were byte-identical, and the rest could not be reconciled because
+com_search walked `introtext` and `fulltext` as the database held them while we only
+have the body as the page rendered it. The result *ids* still match, which is the part
+that says the search is right.
 
-The cookie-consent plugin is reproduced but off by default, and that is deliberate.
-Its three stylesheets 404 on test.ofpr.info as well, so magnific-popup opens it as a
-modal with no styles: the backdrop paints as a black band, `mfp-preloader` prints
-`Loading...` into it, and `modal: true` holds the body scroll, so a first visit can
-neither read the notice nor scroll past it. Rendering both pages in headless Chrome
-shows it plainly - the live site's DOM carries thirteen tags ours does not, every one
-of them the modal or the notice, and ours carries none the live site lacks. `CONSENT=1`
-reproduces it for comparison; left off, the page renders and scrolls.
-
-The comparison looks at what the app actually serves and sets the notice aside on the
-capture when it is off, so the app you browse is the app that gets compared.
-
-The rebuild's own IE conditional blocks are gone - the three `ie/*.css` files, `ie.js`,
-`respond.js` and the html5 shim. They only ever loaded in IE 9 and older. Nothing else
-changed with them: they sat inside `<!--[if ...]>` comments, which the comparison
-strips from both sides anyway.
-
-The excerpt under a search result follows com_search's own `prepareSearchContent` and
-`_smartSubstr`: script blocks and curly tags go, a line breaking or block closing tag
-becomes one space, the rest of the tags go without leaving a space, nothing normalises
-the whitespace, and the text is then walked in chunks of 200 characters, each extended
-to the next space, until one holds the term. Named entities are decoded first, because
-a non-breaking space counted as six characters rather than one moves the boundary and
-drops the last word.
-
-Of 176 captured excerpts, 144 carry the same words as the capture and 138 are
-byte-identical; of the other 32, fourteen end a word early or late and eighteen show a
-different chunk.
-
-The chunking itself is right: for articles 3818 and 5834 the capture's chunk is exactly
-202 and 207 characters, which is exactly where `index(' ', 200)` falls in our own text.
-What differs is the text being chunked. com_search walked the article as the database
-held it, `introtext` and `fulltext`; the rebuild only has the body as the page rendered
-it, and for those two the capture's excerpt is the opening chunk Joomla prints when the
-search word is absent, while the word sits in plain text in the body we recovered. No
-change to the algorithm can reconcile that, because the inputs differ.
-
-One part of that gap did close. Joomla cloaked email addresses as the page was rendered,
-so 675 bodies carry `This email address is being protected from spambots...` where the
-stored article held the address itself. The visible text is recovered into `cloak_text`,
-and putting it back before the chunking moved five more excerpts onto the same words.
-
-    script/port_layout.rb      captures -> views/legacy, run once and committed
-    script/reference_server.py serves the captures so a browser can render them
-    script/pixel_compare.py    renders both and counts the pixels that differ
-    script/pixel_sweep.py      the same, eight pages of every type
-    lib/ofpr/skeleton.rb       the tag/class/id skeleton rake compare diffs
-    lib/ofpr/pager.rb          Joomla's pagination markup
-    lib/ofpr/nav.rb            marks the active menu item
-    lib/ofpr/snippet.rb        the excerpt under a search result
+    lib/ofpr/pager.rb          which pages a listing links to
     lib/ofpr/extractor.rb      a captured page -> a row
     lib/ofpr/article.rb        river, section, lookup, search
     lib/ofpr/page.rb           a page the menu links straight to
     lib/ofpr/search_query.rb   search parameters -> conditions and order
-    lib/ofpr/renderer.rb       stored markup -> markup with CDN paths
     lib/ofpr/markdown.rb       stored markup -> markdown
     lib/ofpr/blocks.rb         markdown -> cards, galleries, downloads, prose
     lib/ofpr/prose.rb          markdown -> html, and the plain text of it
