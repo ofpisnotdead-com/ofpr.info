@@ -140,19 +140,20 @@ namespace :port do
     abort "#{faults.size} bodies lost something" unless faults.empty?
   end
 
-  desc 'Store the blocks these rules write for every body whose blocks differ (DRY_RUN=1 to only report)'
+  desc 'Store the port these rules write for every body whose port differs (DRY_RUN=1 to only report)'
   task :rebuild do
     changed = 0
     [ofpr::Article.dataset, ofpr::Page.dataset].each do |table|
-      table.select(:url_path, :body_markdown, :body_blocks).each do |row|
-        blocks = JSON.parse(JSON.generate(ofpr::Blocks.of(row[:body_markdown])))
-        next if blocks == row[:body_blocks].to_a
+      table.select(:url_path, :body_html, :body_markdown, :body_blocks).each do |row|
+        markdown = ofpr::Markdown.of(row[:body_html])
+        blocks = JSON.parse(JSON.generate(ofpr::Blocks.of(markdown)))
+        next if markdown == row[:body_markdown] && blocks == row[:body_blocks].to_a
 
         changed += 1
         puts "  #{row[:url_path]}"
         next if ENV['DRY_RUN']
 
-        table.where(url_path: row[:url_path]).update(body_blocks: JSON.generate(blocks))
+        table.where(url_path: row[:url_path]).update(body_markdown: markdown, body_blocks: JSON.generate(blocks))
       end
     end
     puts "#{changed} bodies #{ENV['DRY_RUN'] ? 'would change' : 'changed'}"

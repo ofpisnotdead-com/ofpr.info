@@ -227,8 +227,10 @@ module Ofpr
         @out << "![#{escape(node['alt'].to_s.strip)}](#{src})" unless src.empty?
       end
 
+      # Bold inside bold is bold already, and markdown cannot nest the two marks.
       def emphasis(node, name)
         mark = EMPHASIS.fetch(name)
+        mark = '' if node.ancestors.any? { |up| EMPHASIS[up.name.to_s.downcase] == mark }
         core, lead, tail = spaced(inner(node))
         @out << lead << (core.empty? ? '' : "#{mark}#{core}#{mark}") << tail
       end
