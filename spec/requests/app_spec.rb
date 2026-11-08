@@ -232,6 +232,20 @@ RSpec.describe 'the site', type: :request do
       expect(last_response.body).to include('2 results for')
     end
 
+    it 'pages through the results with the query kept' do
+      (3..7).each do |id|
+        insert_article(id: id, url_path: "/#{id}-sand", title: "Desert sand #{id}",
+          published_at: Time.utc(2005, 1, id))
+      end
+
+      get '/search', searchword: 'desert', ordering: 'oldest', searchphrase: 'all'
+      next_url = last_response.body[/href="([^"]*)">Next/, 1]
+      get CGI.unescapeHTML(next_url)
+
+      expect(last_response.body).to include('Page 2 of 2')
+      expect(last_response.body).to include('sand 7')
+    end
+
     # The stored html has no spaces between an addon card's cells, so an excerpt taken
     # from it comes out as `AuthorSizeTheSun`. The port holds them apart.
     it 'reads the excerpt off the port, with the cells of a card held apart' do
