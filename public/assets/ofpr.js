@@ -34,8 +34,8 @@
 (() => {
   const IMAGE = /\.(jpe?g|png|gif|bmp|webp)$/i;
   const HEADING = /^H[1-6]$/;
-  const all = [...document.querySelectorAll('.gallery a, .card__shot')]
-    .filter((link) => IMAGE.test(link.pathname));
+  const all = [...document.querySelectorAll('.body a')]
+    .filter((link) => link.querySelector('img') && IMAGE.test(link.pathname));
   if (all.length === 0) return;
 
   // A heading ends a gallery. On the mods page that gives each mod its own screenshots
