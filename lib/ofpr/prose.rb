@@ -1,3 +1,4 @@
+require 'cgi'
 require 'kramdown'
 
 module Ofpr
@@ -10,6 +11,20 @@ module Ofpr
     PICTURE = /!\[#{LABEL.source}\]#{TARGET.source}/
     LINK = /\[(#{LABEL.source})\]#{TARGET.source}/
     MARKS = /[*\\`]/
+
+    # Some captured text was encoded twice before we ever saw it: the menu page's
+    # description holds `mod&amp;#39;s`, which prints as an entity rather than as an
+    # apostrophe. Decode until it settles.
+    def self.decoded(text)
+      text = text.to_s
+      3.times do
+        once = CGI.unescapeHTML(text)
+        return text if once == text
+
+        text = once
+      end
+      text
+    end
 
     def self.to_html(markdown) = Kramdown::Document.new(markdown.to_s).to_html
 

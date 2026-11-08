@@ -41,7 +41,7 @@ module Ofpr
 
       # Stored text keeps the entities the capture had. The browser title is the one
       # place the rebuild prints them decoded.
-      def page_title = @page_title ? "OFP.info 2.5 - #{CGI.unescapeHTML(@page_title.to_s)}" : 'OFP.info 2.5'
+      def page_title = @page_title ? "OFP.info 2.5 - #{Prose.decoded(@page_title)}" : 'OFP.info 2.5'
 
       def canonical = page_url(@canonical || '/')
 
@@ -51,7 +51,7 @@ module Ofpr
       # no extensionless article or listing at all. Requests still answer either way.
       def page_url(path) = path == '/' ? '/' : "#{path}.html"
 
-      attr_reader :meta_description
+      def meta_description = @meta_description && Prose.decoded(@meta_description)
 
       def search_base
         "/search.html?searchword=#{Rack::Utils.escape(@query.word)}" \

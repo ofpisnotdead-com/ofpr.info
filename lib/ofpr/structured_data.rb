@@ -1,5 +1,7 @@
 require 'json'
 
+require_relative 'prose'
+
 module Ofpr
   # The schema.org Article block the rebuild puts in the head of every article page.
   class StructuredData
@@ -18,19 +20,21 @@ module Ofpr
         '@type' => 'Article',
         'mainEntityOfPage' => {'@type' => 'WebPage', '@id' => url},
         'url' => url,
-        'headline' => "#{SITE} - #{@article[:title]}",
+        'headline' => "#{SITE} - #{Prose.decoded(@article[:title])}",
         'datePublished' => stamp(@article[:published_at]),
         'dateModified' => stamp(@article[:modified_at]),
         'author' => {'@type' => 'Person', 'name' => @article[:author], 'url' => '/'},
         'publisher' => publisher,
         'articleSection' => section,
         'keywords' => KEYWORDS,
-        'description' => @article[:description].to_s,
-        'articleBody' => @article[:description].to_s
+        'description' => description,
+        'articleBody' => description
       )
     end
 
     private
+
+    def description = Prose.decoded(@article[:description])
 
     def url = @article[:url_path]
 
