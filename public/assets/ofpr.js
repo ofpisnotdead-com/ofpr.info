@@ -171,3 +171,16 @@
     fold(folded);
   });
 })();
+
+// A thumbnail whose file is gone shows the same tile the page draws for a picture the
+// archive never had, rather than the browser's broken picture.
+(() => {
+  const template = document.getElementById('missing-picture');
+  if (!template) return;
+
+  const swap = (img) => img.replaceWith(template.content.cloneNode(true));
+  document.querySelectorAll('.gallery img, .card__shot img, .item__shot img').forEach((img) => {
+    if (img.complete && img.naturalWidth === 0) return swap(img);
+    img.addEventListener('error', () => swap(img), {once: true});
+  });
+})();

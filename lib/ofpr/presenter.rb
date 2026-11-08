@@ -40,6 +40,9 @@ module Ofpr
       nil
     end
 
+    # The archive's own stand-in for a picture it never had.
+    def missing_picture?(shot) = shot.nil? || shot['thumb'].to_s.match?(%r{/NoAvail\.jpg\z}i)
+
     def shown_pictures(pictures) = (pictures || []).reject { |shot| shot['decoration'] }
 
     def card_fields(block)
