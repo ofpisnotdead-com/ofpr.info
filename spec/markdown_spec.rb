@@ -126,4 +126,18 @@ RSpec.describe Ofpr::Markdown do
       - search
     MARKDOWN
   end
+
+  it 'keeps a pipe somebody typed out of a table' do
+    expect(convert('<p>by <b>FoUs|0|</b></p>')).to eq('by **FoUs\\|0\\|**')
+  end
+
+  it 'leaves a ruler drawn under a line as the ruler it was' do
+    html = '<p><i>FIXES IN 1.90<br>=============<br>Fixed the thing.</i></p>'
+
+    expect(convert(html)).to eq("*FIXES IN 1.90  \n\\=============  \nFixed the thing.*")
+  end
+
+  it 'still reads a rule standing on its own as a rule' do
+    expect(convert('<p>one</p><p>---</p><p>two</p>')).to eq("one\n\n---\n\ntwo")
+  end
 end

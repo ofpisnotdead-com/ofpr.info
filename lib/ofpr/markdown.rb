@@ -31,7 +31,9 @@ module Ofpr
     # Characters no url may hold raw, and which a few of these hrefs hold anyway:
     # `href="/<br>http://..."` is in the archive exactly like that.
     INVALID = /[<>"]/
-    ESCAPE = /([\\`*<])/
+    ESCAPE = /([\\`*<|])/
+    # A row of `=` or `-` under a line of text, which a markdown reader takes as a heading.
+    RULER = /(?<=\S)\n\K([=-]{2,})(?=[ \t\u0001]*(?:\n|\z))/
     NBSP = "\u00a0".freeze
     # A line break is two spaces at the end of a line and nothing else in markdown, and
     # `<br>` is the second commonest tag in these bodies. It is carried as a mark until
@@ -318,7 +320,7 @@ module Ofpr
 
       # A row of a markdown table is one line, so a cell cannot hold a break at all.
       def flatten(cell)
-        cell.gsub('|', '\\|').gsub(BREAK, ' ').gsub(/\s*\n\s*/, ' ')
+        cell.gsub(BREAK, ' ').gsub(/\s*\n\s*/, ' ')
       end
 
       def escape(text) = text.gsub(ESCAPE, '\\\\\1')
@@ -335,6 +337,7 @@ module Ofpr
           .gsub(/^-(?=\n|\z)/, '')
           .gsub(/\n{3,}/, "\n\n")
           .gsub(/^(- )?(\d+)([.)])(?=\s)/, '\1\2\\\\\3')
+          .gsub(RULER) { "\\#{Regexp.last_match(1)}" }
           .gsub(BREAK, '  ')
           .gsub(INDENT, '  ')
           .strip
