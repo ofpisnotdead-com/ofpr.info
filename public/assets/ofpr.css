@@ -22,7 +22,7 @@
      and not a themed name: the picture has to sit on it in either theme. */
   --banner: #5a6c60;
 
-  /* the semantic layer: a theme is these eleven names pointed somewhere else */
+  /* the semantic layer: a theme is these names pointed somewhere else */
   --bg: var(--o-field);
   --surface: var(--paper);
   --surface-dim: var(--paper-dim);
@@ -31,6 +31,9 @@
   --text-faint: var(--ink-300);
   --link: var(--o-accent);
   --link-hover: var(--o-accent-dark);
+  --need: #2d6a9f;
+  --need-hover: #22557f;
+  --need-ink: #1d4a70;
   --border: var(--rule-200);
   --menu: var(--black-800);
   --footer: var(--black-900);
@@ -44,8 +47,8 @@
   --body: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-/* The dark theme is these eleven names and nothing else, which is the whole
-   argument for the layer above. */
+/* The dark theme is these names and nothing else, which is the whole argument
+   for the layer above. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
@@ -57,6 +60,9 @@
     --text-faint: #767e6c;
     --link: #ff5a5a;
     --link-hover: #ff8585;
+    --need: #4d8cc4;
+    --need-hover: #6aa3d6;
+    --need-ink: #9cc4e8;
     --border: #333a2f;
     --menu: #171b14;
     --footer: #11140f;
@@ -73,6 +79,9 @@
   --text-faint: #767e6c;
   --link: #ff5a5a;
   --link-hover: #ff8585;
+  --need: #4d8cc4;
+  --need-hover: #6aa3d6;
+  --need-ink: #9cc4e8;
   --border: #333a2f;
   --menu: #171b14;
   --footer: #11140f;
@@ -559,6 +568,86 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
 }
 .download__name::before { content: "\2193\00a0"; }
 .download__about { color: rgba(255, 255, 255, .75); font-size: 13px; }
+
+/* What a download needs: blue, so it never reads as the article's own red download. */
+.needs {
+  background: var(--surface-dim);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: calc(var(--space) * 5);
+  padding: calc(var(--space) * 4);
+}
+.needs__title {
+  color: var(--need-ink);
+  display: flex;
+  flex-wrap: wrap;
+  font: 600 11px/1 var(--sans);
+  gap: calc(var(--space) * 3);
+  justify-content: space-between;
+  letter-spacing: .08em;
+  margin: 0 0 calc(var(--space) * 3);
+  text-transform: uppercase;
+}
+.needs__total { color: var(--text-muted); font: 13px/1 var(--body); letter-spacing: 0; text-transform: none; }
+.needs__row { align-items: center; display: flex; flex-wrap: wrap; gap: calc(var(--space) * 2); }
+.need {
+  align-items: baseline;
+  background: var(--need);
+  border-radius: var(--radius);
+  color: #fff;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space) * 2);
+  padding: calc(var(--space) * 2.5) calc(var(--space) * 3.5);
+}
+.need:hover { background: var(--need-hover); color: #fff; text-decoration: none; }
+.need__name { font: 600 11px/1.4 var(--sans); letter-spacing: .04em; text-transform: uppercase; }
+.need__name::before { content: "\2193\00a0"; }
+.need__about { color: rgba(255, 255, 255, .8); font-size: 12px; }
+.need__page { color: var(--need-ink); font-size: 13px; }
+.needs__table-wrap { overflow-x: auto; }
+.needs__table { border-collapse: collapse; font-size: 14px; width: 100%; }
+.needs__table th {
+  color: var(--text-muted);
+  font: 600 10px/1 var(--sans);
+  letter-spacing: .06em;
+  padding: 0 calc(var(--space) * 2.5) calc(var(--space) * 2) 0;
+  text-align: left;
+  text-transform: uppercase;
+}
+.needs__table td {
+  border-top: 1px solid var(--border);
+  padding: calc(var(--space) * 1.75) calc(var(--space) * 2.5) calc(var(--space) * 1.75) 0;
+  vertical-align: baseline;
+}
+.needs__table .needs__size { color: var(--text-muted); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.needs__table .needs__get { padding-right: 0; text-align: right; white-space: nowrap; }
+.needs__get a {
+  background: var(--need);
+  border-radius: 2px;
+  color: #fff;
+  display: inline-block;
+  font: 600 10px/1 var(--sans);
+  letter-spacing: .05em;
+  padding: calc(var(--space) * 1.5) calc(var(--space) * 2);
+  text-transform: uppercase;
+}
+.needs__get a:hover { background: var(--need-hover); color: #fff; text-decoration: none; }
+.needs__more {
+  background: none;
+  border: 1px solid var(--need);
+  border-radius: var(--radius);
+  color: var(--need-ink);
+  cursor: pointer;
+  font: 600 11px/1 var(--sans);
+  letter-spacing: .05em;
+  margin-top: calc(var(--space) * 2.5);
+  padding: calc(var(--space) * 2) calc(var(--space) * 3);
+  text-transform: uppercase;
+}
+.needs__plain { display: grid; gap: var(--space); margin: calc(var(--space) * 3) 0 0; padding-left: calc(var(--space) * 4.5); }
+.needs__plain:first-child { margin-top: 0; }
+.needs__plain small { color: var(--text-faint); }
 
 /* 10 ---- aside ------------------------------------------------------------- */
 

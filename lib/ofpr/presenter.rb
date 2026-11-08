@@ -54,6 +54,39 @@ module Ofpr
       at && block['rows'].first&.[](at)
     end
 
+    UNITS = {'k' => 1.0 / 1024, 'm' => 1.0, 'g' => 1024.0}.freeze
+
+    def needs_pages(items)
+      urls = items.filter_map { |item| item['url'] if item['kind'] == 'file' }
+      Article.pages_for(urls, besides: @article&.[](:url_path))
+    end
+
+    def need_about(item)
+      case item['kind']
+      when 'file' then download_about(item)
+      when 'page' then 'archive page'
+      else URI(item['url']).host.to_s.delete_prefix('www.')
+      end
+    rescue URI::InvalidURIError
+      ''
+    end
+
+    # Sizes are written as the authors wrote them: `14,2 MB`, `661 KB`, `1 Mb`.
+    def needs_total(items)
+      sizes = items.filter_map { |item| megabytes(item['size']) }
+      return if sizes.size < 2
+
+      total = sizes.sum
+      return format('%.1f GB', total / 1024) if total >= 1024
+
+      total >= 10 ? "#{total.round} MB" : format('%.1f MB', total)
+    end
+
+    def megabytes(size)
+      found = size.to_s.match(/([\d.,]+)\s*([kmg])?b/i)
+      found && (found[1].tr(',', '.').to_f * UNITS.fetch(found[2].to_s.downcase, 1.0 / 1024 / 1024))
+    end
+
     def download_about(link, size = nil)
       mirror = link['mirror'] && "FTP##{link['mirror']}"
       [link['file'], link['size'] || size, mirror].reject { |part| part.to_s.empty? }.join(' - ')

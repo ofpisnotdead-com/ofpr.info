@@ -1,0 +1,23 @@
+<% items = block['items'] %><% linked = items.reject { |item| item['kind'] == 'plain' } %><% plain = items - linked %><% pages = needs_pages(linked) %><% total = needs_total(items) %><section class="needs" aria-label="Needed">
+  <p class="needs__title"><span>Needed</span><% if total %><span class="needs__total"><%= linked.size > 3 ? "#{linked.size} files, #{total}" : "#{total} in all" %></span><% end %></p>
+  <% if linked.size.between?(1, 3) %><div class="needs__row">
+    <% linked.each do |item| %><a class="need" href="<%= item['url'] %>"><span class="need__name"><%= item['name'] %></span><span class="need__about"><%= need_about(item) %></span></a>
+    <% if pages[item['url']] %><a class="need__page" href="<%= page_url(pages[item['url']]) %>">Addon page</a>
+    <% end %><% end %></div>
+  <% elsif linked.any? %><div class="needs__table-wrap">
+    <table class="needs__table">
+      <thead><tr><th>Addon</th><th class="needs__size">Size</th><th></th><th></th></tr></thead>
+      <tbody>
+        <% linked.each_with_index do |item, at| %><tr<%== ' data-fold' if at >= 8 %>>
+          <td><%= item['name'] %></td>
+          <td class="needs__size"><%= item['size'] %></td>
+          <td><% if pages[item['url']] %><a class="need__page" href="<%= page_url(pages[item['url']]) %>">Page</a><% elsif item['kind'] == 'page' %><a class="need__page" href="<%= item['url'] %>">Page</a><% end %></td>
+          <td class="needs__get"><% unless item['kind'] == 'page' %><a href="<%= item['url'] %>"><%= item['kind'] == 'file' ? 'Get' : 'Site' %></a><% end %></td>
+        </tr>
+        <% end %></tbody>
+    </table>
+  </div>
+  <% end %><% unless plain.empty? %><ul class="needs__plain">
+    <% plain.each do |item| %><li><%= item['name'] %><% if item['size'] %> <small><%= item['size'] %></small><% end %></li>
+    <% end %></ul>
+  <% end %></section>

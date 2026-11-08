@@ -19,6 +19,22 @@ module Ofpr
 
       def total = dataset.count
 
+      # The article each file is the download of, for the files an article needs. An
+      # addon's own page wins over the news that announced it.
+      def pages_for(urls, besides: nil)
+        return {} if urls.empty?
+
+        Database.connection.fetch(<<~SQL, urls).all
+          SELECT a.url_path, a.section, a.id, l->>'url' AS url
+          FROM articles a, jsonb_array_elements(a.body_blocks) b,
+               jsonb_array_elements(coalesce(b->'links', b->'downloads')) l
+          WHERE b->>'type' IN ('download', 'card') AND l->>'url' IN ?
+        SQL
+          .reject { |row| row[:url_path] == besides }
+          .sort_by { |row| [row[:section].start_with?('addons/') ? 0 : 1, row[:id]] }
+          .each_with_object({}) { |row, pages| pages[row[:url]] ||= row[:url_path] }
+      end
+
       # Every section and how much is in it, for the menu and the sidebar, in one query.
       def section_counts
         dataset.exclude(section: '').group_and_count(:section).to_hash(:section, :count)
