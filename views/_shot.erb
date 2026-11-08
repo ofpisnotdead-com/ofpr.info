@@ -1,1 +1,1 @@
-<a href="<%= asset(shot['full'] || shot['thumb']) %>"><img src="<%= asset(shot['thumb']) %>" alt="<%= shot['alt'] %>" loading="lazy"></a>
+<% grown = Ofpr::SmallThumbs.grown?(shot) %><a href="<%= asset(shot['full'] || shot['thumb']) %>"><img src="<%= asset(grown ? shot['full'] : shot['thumb']) %>"<%== ' class="is-grown"' if grown %> alt="<%= shot['alt'] %>" loading="lazy"></a>
