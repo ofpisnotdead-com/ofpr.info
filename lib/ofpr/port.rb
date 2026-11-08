@@ -103,7 +103,7 @@ module Ofpr
 
       def source(block)
         case block[:type]
-        when 'prose', 'video' then block[:markdown]
+        when 'prose', 'video', 'needs' then block[:markdown]
         when 'gallery' then block[:pictures].map { |shot| shot_source(shot) }.join(' ')
         when 'download' then block[:links].map { |link| link_source(link) }.join(' ')
         when 'card' then card_source(block)

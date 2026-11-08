@@ -30,10 +30,10 @@ RSpec.describe Ofpr::Blocks do
     expect(blocks.last[:links].first[:file]).to eq('SwissMOD_Setup.exe')
   end
 
-  it 'leaves what an addon needs in its sentence' do
+  it 'keeps what an addon needs apart from its downloads' do
     blocks = convert("Needed:  \n[**DOWNLOAD (FTP#1) - Cold War Assault v.1.99 [525 MB]**](https://files.ofpisnotdead.com/files/ofpd/p/CWA.zip)")
 
-    expect(blocks.map { |block| block[:type] }).to eq(%w[prose])
+    expect(blocks.map { |block| block[:type] }).to eq(%w[needs])
   end
 
   it 'reads a download wrapped in bold as a download' do

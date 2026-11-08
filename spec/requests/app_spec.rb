@@ -431,6 +431,35 @@ RSpec.describe 'the site', type: :request do
     end
   end
 
+  describe 'what a download needs' do
+    it 'shows it in its own panel, with the page of the addon that is that file' do
+      jam = 'https://files.ofpisnotdead.com/files/ofpd/unofaddons2/JAM3_FIXED6.rar'
+      insert_article(id: 2, url_path: '/addons/weapons/2-jam-3', section: 'addons/weapons',
+        body_html: %(<p><a href="#{jam}">DOWNLOAD - JAM 3 [14,2 MB]</a></p>))
+      insert_article(id: 3, url_path: '/3-f-18',
+        body_html: %(<p>Needed:<br>JAM 3 [14,2 MB] from <a href="#{jam}"><b>FTP#1</b></a></p>))
+
+      get '/3-f-18.html'
+
+      expect(last_response.body).to include('<section class="needs" aria-label="Needed">')
+      expect(last_response.body).to include('<span class="need__name">JAM 3</span>')
+      expect(last_response.body).to include('href="/addons/weapons/2-jam-3.html">Addon page</a>')
+    end
+  end
+
+  describe 'a long list of what a download needs' do
+    it 'is a table with the total size, folding after eight' do
+      packs = (1..9).map { |n| %(Pack #{n} [#{n} MB] from <a href="https://files.ofpisnotdead.com/files/ofpd/p/#{n}.rar">FTP#1</a>) }
+      insert_article(id: 4, url_path: '/4-big-island', body_html: "<p>Needed:<br>#{packs.join('<br>')}</p>")
+
+      get '/4-big-island.html'
+
+      expect(last_response.body).to include('9 files, 45 MB')
+      expect(last_response.body.scan('<tr data-fold>').size).to eq(1)
+      expect(last_response.body).to include('<td>Pack 9</td>')
+    end
+  end
+
   describe 'a withdrawn article' do
     it 'answers 410 at its url, under any slug, and from its old id' do
       insert_old_id(10_849, 9858)
