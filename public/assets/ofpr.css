@@ -503,6 +503,13 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
 .gallery a:hover img { border-color: var(--link); }
 .has-viewer .gallery a, .has-viewer .card__shot { cursor: zoom-in; }
 
+.video {
+  aspect-ratio: 16 / 9;
+  margin: 0 0 calc(var(--space) * 4);
+  max-width: 640px;
+}
+.video iframe { border: 0; height: 100%; width: 100%; }
+
 /* The download block. The file name, the size and the mirror are data now, so the
    button says them instead of being a picture of the word Download. */
 .downloads {

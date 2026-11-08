@@ -6,6 +6,9 @@
   <% end %><% elsif block['type'] == 'download' %><div class="downloads">
     <% block['links'].each do |link| %><%== erb :_download, locals: {link: link, size: nil} %><% end %>
   </div>
+  <% elsif block['type'] == 'video' %><div class="video">
+    <iframe src="https://www.youtube-nocookie.com/embed/<%= block['id'] %>" title="YouTube video" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+  </div>
   <% elsif block['type'] == 'card' %><div class="card">
     <% if block['picture'] %><a class="card__shot" href="<%= asset(block['picture']['full'] || block['picture']['thumb']) %>">
       <img src="<%= asset(block['picture']['thumb']) %>" alt="<%= block['picture']['alt'] %>">
