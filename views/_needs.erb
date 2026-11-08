@@ -8,7 +8,7 @@
     <table class="needs__table">
       <thead><tr><th>Addon</th><th class="needs__size">Size</th><th></th><th></th></tr></thead>
       <tbody>
-        <% linked.each_with_index do |item, at| %><tr<%== ' data-fold' if at >= 8 %>>
+        <% linked.each do |item| %><tr>
           <td><%= item['name'] %></td>
           <td class="needs__size"><%= item['size'] %></td>
           <td><% if pages[item['url']] %><a class="need__page" href="<%= page_url(pages[item['url']]) %>">Page</a><% elsif item['kind'] == 'page' %><a class="need__page" href="<%= item['url'] %>">Page</a><% end %></td>

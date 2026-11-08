@@ -150,28 +150,6 @@
   }, {passive: true});
 })();
 
-// A long list of what a download needs folds after its first eight; without
-// javascript it is simply shown whole.
-(() => {
-  document.querySelectorAll('.needs__table').forEach((table) => {
-    const rows = table.querySelectorAll('[data-fold]');
-    if (rows.length === 0) return;
-
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'needs__more';
-    const fold = (folded) => {
-      rows.forEach((row) => { row.hidden = folded; });
-      button.textContent = folded ? `Show all ${rows.length + 8}` : 'Show the first 8';
-      button.setAttribute('aria-expanded', String(!folded));
-    };
-    let folded = true;
-    button.addEventListener('click', () => { folded = !folded; fold(folded); });
-    table.parentElement.after(button);
-    fold(folded);
-  });
-})();
-
 // A thumbnail whose file is gone shows the same tile the page draws for a picture the
 // archive never had, rather than the browser's broken picture.
 (() => {
