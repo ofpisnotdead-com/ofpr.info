@@ -482,6 +482,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
   margin-bottom: calc(var(--space) * 5);
   padding: calc(var(--space) * 5);
 }
+.card__shot { max-width: 240px; }
 .card__shot img {
   border: 1px solid var(--border);
   border-radius: 2px;
@@ -510,6 +511,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
   border: 1px solid var(--border);
   border-radius: var(--radius);
   display: block;
+  max-width: min(320px, 100%);
 }
 .gallery a:hover img { border-color: var(--link); }
 .has-viewer .gallery a, .has-viewer .card__shot { cursor: zoom-in; }
