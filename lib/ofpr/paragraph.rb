@@ -3,26 +3,33 @@ module Ofpr
     NEEDS = /\b(?:need|requir)/i
 
     class << self
-      # A label and the download under it, written as one paragraph with a line break
-      # between them, are the label's prose and a download. What an addon needs is not
-      # its download, so a paragraph naming that, or holding a download above, stays whole.
+      # A download written on a line of its own inside a paragraph, split from the text
+      # round it only by line breaks, is a download and not prose. What an addon needs
+      # is not its download, so a paragraph naming that stays whole.
       def apart(chunk)
         lines = chunk.lines(chomp: true)
-        last_text = lines.rindex { |line| !downloads_only?(line) }
-        return [chunk] if last_text.nil? || last_text == lines.size - 1
+        @textless = bare?(chunk)
+        return [chunk] unless splits?(chunk, lines)
 
-        text = lines[..last_text].join("\n")
-        return [chunk] if text.match?(NEEDS) || downloads(text).any?
-
-        [text.strip, lines[(last_text + 1)..].join("\n").strip]
+        lines.chunk_while { |one, other| downloads_only?(one) == downloads_only?(other) }
+          .map { |run| run.join("\n").strip }.reject(&:empty?)
       end
 
       private
 
-      def downloads_only?(line)
-        rest = line.gsub(Blocks::ELEMENT, '').gsub(Blocks::EMPHASIS_MARKS, '')
-        rest.strip.empty? && downloads(line).any? && downloads(line).size == line.scan(Blocks::ELEMENT).size
+      def splits?(chunk, lines)
+        !chunk.match?(NEEDS) && lines.size > 1 && lines.any? { |line| downloads_only?(line) }
       end
+
+      # A line whose bold runs on into the next stays with it, unless all there is in the
+      # paragraph is links and pictures, which the bold round them does not change.
+      def downloads_only?(line)
+        return false if line.scan('**').size.odd? && !@textless
+
+        bare?(line) && downloads(line).any? && downloads(line).size == line.scan(Blocks::ELEMENT).size
+      end
+
+      def bare?(text) = text.gsub(Blocks::ELEMENT, '').gsub(Blocks::EMPHASIS_MARKS, '').strip.empty?
 
       def downloads(text)
         text.scan(Blocks::ELEMENT).select do |_, label, url|
