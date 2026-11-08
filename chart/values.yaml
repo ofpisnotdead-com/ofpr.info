@@ -26,6 +26,10 @@ ingress:
   enabled: false
   className: nginx
   host: ''
+  # Served as well as host, on the same certificate. A www name belongs here with
+  # from-to-www-redirect in annotations, which nginx answers with a 308 to host.
+  extraHosts: []
+  annotations: {}
   clusterIssuer: ''
   tlsSecretName: ''
 
