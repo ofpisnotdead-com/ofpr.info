@@ -14,6 +14,15 @@ module Ofpr
     REPO = 'https://github.com/ofpisnotdead-com/ofpr.info'.freeze
     DISCORD = 'https://discord.gg/qkpsfJHcSB'.freeze
 
+    DESCRIPTION = 'The news, the addons and the missions of the Operation Flashpoint ' \
+                  'community, 2001 to 2019.'.freeze
+    SHARE_CARD = '/images/share.jpg'.freeze
+    # What is shared has to be a picture, and a big one: a gallery entry can link to a
+    # page rather than to a picture, and the thumbnail beside it is typically 160x120,
+    # which every messenger draws as a postage stamp. 2,693 articles have nothing but
+    # that, so they are shared with the site's card instead.
+    PICTURE = %r{\A(?:/|https?://).*\.(?:jpe?g|png|gif)\z}i
+
     configure do
       set :root, Ofpr.root
       set :views, File.join(Ofpr.root, 'views')
@@ -83,6 +92,22 @@ module Ofpr
 
         @article[:section].to_s.empty? ? '/' : "/#{@article[:section]}"
       end
+
+      def share_title = @page_title ? CGI.unescapeHTML(@page_title.to_s) : 'OFP.info 2.5'
+
+      def share_description = meta_description || DESCRIPTION
+
+      def share_type = @article || @page ? 'article' : 'website'
+
+      # A page about one thing is shared with that thing's picture, at the size the
+      # thumbnail links to. Everything else gets the site's card.
+      def share_image
+        shot = (@article || @page) && first_picture(@article || @page)
+        full = shot && shot['full']
+        absolute(full&.match?(PICTURE) ? asset(full) : SHARE_CARD)
+      end
+
+      def absolute(url) = url.start_with?('http') ? url : "#{request.base_url}#{url}"
 
       def ld_json = StructuredData.new(@article || @page).to_json
 
