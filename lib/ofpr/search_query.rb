@@ -8,15 +8,17 @@ module Ofpr
       'oldest' => Sequel.asc(:published_at),
       'alpha' => Sequel.asc(:title)
     }.freeze
-    PER_PAGE = 5
+    LIMITS = [5, 10, 15, 20, 25, 30, 50, 100].freeze
+    PER_PAGE = LIMITS.first
 
-    attr_reader :word, :phrase, :ordering, :start
+    attr_reader :word, :phrase, :ordering, :start, :per_page
 
-    def initialize(word: nil, phrase: nil, ordering: nil, start: nil)
+    def initialize(word: nil, phrase: nil, ordering: nil, start: nil, limit: nil)
       @word = word.to_s.strip
       @phrase = PHRASES.include?(phrase) ? phrase : 'all'
       @ordering = ORDERINGS.key?(ordering) ? ordering : 'newest'
       @start = [start.to_i, 0].max
+      @per_page = LIMITS.include?(limit.to_i) ? limit.to_i : PER_PAGE
     end
 
     def blank? = word.empty?
@@ -34,8 +36,6 @@ module Ofpr
     end
 
     def order = ORDERINGS.fetch(ordering)
-
-    def per_page = PER_PAGE
 
     # The pager rounds down to a page boundary, the way Joomla's does.
     def offset = (start / per_page) * per_page

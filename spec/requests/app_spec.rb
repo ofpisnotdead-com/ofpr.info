@@ -246,6 +246,21 @@ RSpec.describe 'the site', type: :request do
       expect(last_response.body).to include('sand 7')
     end
 
+    it 'shows as many results a page as asked, and keeps the size in the page links' do
+      (3..13).each do |id|
+        insert_article(id: id, url_path: "/#{id}-sand", title: "Desert sand #{id}",
+          published_at: Time.utc(2005, 1, id))
+      end
+
+      get '/search', searchword: 'desert'
+      expect(last_response.body).to include('searchphrase=all&amp;start=5">Next')
+
+      get '/search', searchword: 'desert', limit: '10'
+      expect(last_response.body.scan('class="result"').size).to eq(10)
+      expect(last_response.body).to include('&amp;limit=10&amp;start=10">Next')
+      expect(last_response.body).to include('<option value="10" selected>')
+    end
+
     # The stored html has no spaces between an addon card's cells, so an excerpt taken
     # from it comes out as `AuthorSizeTheSun`. The port holds them apart.
     it 'reads the excerpt off the port, with the cells of a card held apart' do

@@ -56,8 +56,10 @@ module Ofpr
 
       def search_base
         "/search.html?searchword=#{Rack::Utils.escape(@query.word)}" \
-          "&ordering=#{@query.ordering}&searchphrase=#{@query.phrase}"
+          "&ordering=#{@query.ordering}&searchphrase=#{@query.phrase}#{search_limit}"
       end
+
+      def search_limit = @query.per_page == SearchQuery::PER_PAGE ? '' : "&limit=#{@query.per_page}"
 
       def search_pager
         Pager.new(search_base, @query.offset, @total, per_page: @query.per_page)
@@ -194,7 +196,7 @@ module Ofpr
 
     def search
       @query = SearchQuery.new(word: params['searchword'], phrase: params['searchphrase'],
-        ordering: params['ordering'], start: params['start'])
+        ordering: params['ordering'], start: params['start'], limit: params['limit'])
       @page_title = 'Search'
       @canonical = '/search'
       @total, @articles = Article.search(@query)

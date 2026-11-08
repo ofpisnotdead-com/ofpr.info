@@ -40,6 +40,12 @@ RSpec.describe Ofpr::SearchQuery do
     expect(described_class.new(word: 'o&&fp !info').tsquery).to eq('o & fp & info')
   end
 
+  it 'takes one of the page sizes the display selector offered, and five otherwise' do
+    expect(described_class.new(word: 'x', limit: '50').per_page).to eq(50)
+    expect(described_class.new(word: 'x', limit: '7').per_page).to eq(5)
+    expect(described_class.new(word: 'x', limit: '0').per_page).to eq(5)
+  end
+
   # Joomla pages search five at a time and rounds an off-boundary start down.
   it 'rounds start down to a page boundary' do
     expect(described_class.new(word: 'x', start: 12).offset).to eq(10)
