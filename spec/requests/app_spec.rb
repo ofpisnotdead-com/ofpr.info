@@ -58,6 +58,15 @@ RSpec.describe 'the site', type: :request do
       expect(last_response.body).not_to include('&amp;#39;')
     end
 
+    it 'decodes the named entities CGI leaves alone' do
+      insert_page(description: 'Spooner[541 kB] &amp;nbsp; FTP#2')
+
+      get '/mods.html'
+
+      expect(last_response.body).to include("Spooner[541 kB] \u00A0 FTP#2")
+      expect(last_response.body).not_to include('nbsp')
+    end
+
     it 'shares the site card and the site description on a listing' do
       insert_article(id: 1, url_path: '/1-a', title: 'A thing')
 

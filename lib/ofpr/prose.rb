@@ -1,5 +1,5 @@
-require 'cgi'
 require 'kramdown'
+require 'nokogiri'
 
 module Ofpr
   # A prose block is markdown. This is the only place it becomes html, so what the site
@@ -13,12 +13,13 @@ module Ofpr
     MARKS = /[*\\`]/
 
     # Some captured text was encoded twice before we ever saw it: the menu page's
-    # description holds `mod&amp;#39;s`, which prints as an entity rather than as an
-    # apostrophe. Decode until it settles.
+    # description holds `mod&amp;#39;s` and 2,192 article descriptions hold
+    # `&amp;nbsp;`. Decode until it settles, through the html parser rather than
+    # CGI.unescapeHTML, which leaves every named entity but the five it knows.
     def self.decoded(text)
       text = text.to_s
       3.times do
-        once = CGI.unescapeHTML(text)
+        once = Nokogiri::HTML5.fragment(text).text
         return text if once == text
 
         text = once
