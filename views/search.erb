@@ -8,6 +8,9 @@
     <label>Order by <select name="ordering">
       <% {'newest' => 'newest first', 'oldest' => 'oldest first', 'alpha' => 'title'}.each do |value, label| %><option value="<%= value %>"<%== ' selected' if @query.ordering == value %>><%= label %></option>
       <% end %></select></label>
+    <label>Display # <select name="limit">
+      <% Ofpr::SearchQuery::LIMITS.each do |limit| %><option value="<%= limit %>"<%== ' selected' if @query.per_page == limit %>><%= limit %></option>
+      <% end %></select></label>
     <button type="submit">Search</button>
   </form>
 
