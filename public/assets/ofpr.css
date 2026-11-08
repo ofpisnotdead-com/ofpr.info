@@ -48,6 +48,7 @@
    argument for the layer above. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
+    color-scheme: dark;
     --bg: #161a14;
     --surface: #1f241d;
     --surface-dim: #262c23;
@@ -63,6 +64,7 @@
 }
 
 :root[data-theme="dark"] {
+  color-scheme: dark;
   --bg: #161a14;
   --surface: #1f241d;
   --surface-dim: #262c23;
@@ -81,7 +83,7 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 /* The gutter is held so that locking the page behind the viewer shifts nothing. */
-html { scrollbar-gutter: stable; }
+html { overflow-y: scroll; scrollbar-gutter: stable; }
 html.is-held { overflow: hidden; }
 
 body {
