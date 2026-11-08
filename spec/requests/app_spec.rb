@@ -49,6 +49,15 @@ RSpec.describe 'the site', type: :request do
       expect(last_response.body).to include('<meta property="og:image" content="http://example.org/images/share.jpg">')
     end
 
+    it 'decodes text the capture encoded twice' do
+      insert_page(description: 'Click a mod&amp;#39;s banner')
+
+      get '/mods.html'
+
+      expect(last_response.body).to include('Click a mod&#39;s banner')
+      expect(last_response.body).not_to include('&amp;#39;')
+    end
+
     it 'shares the site card and the site description on a listing' do
       insert_article(id: 1, url_path: '/1-a', title: 'A thing')
 
