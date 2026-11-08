@@ -55,7 +55,6 @@ namespace :mirror do
     old = ofpr::OldId.load!
     puts "imported #{ok} articles, #{failed} unusable, #{featured} featured, " \
          "#{pages} menu pages, #{old} old ids"
-    Rake::Task['youtube:embed'].invoke
   end
 
   desc 'Rebuild db/seed.json from the mirror'
@@ -68,13 +67,13 @@ namespace :mirror do
 end
 
 namespace :youtube do
-  desc 'Embed every YouTube video a body links to (DRY_RUN=1 to only report)'
+  desc 'Rebuild the blocks of every body naming a YouTube video (DRY_RUN=1 to only report)'
   task :embed do
-    require_relative 'lib/ofpr/youtube'
     changed = 0
     [ofpr::Article.dataset, ofpr::Page.dataset].each do |table|
-      table.where(Sequel.ilike(:body_markdown, '%youtu%')).select(:url_path, :body_blocks).each do |row|
-        blocks = ofpr::Youtube.embed(row[:body_blocks].to_a)
+      rows = table.where(Sequel.ilike(:body_markdown, '%youtu%')).select(:url_path, :body_markdown, :body_blocks)
+      rows.each do |row|
+        blocks = JSON.parse(JSON.generate(ofpr::Blocks.of(row[:body_markdown])))
         next if blocks == row[:body_blocks].to_a
 
         changed += 1

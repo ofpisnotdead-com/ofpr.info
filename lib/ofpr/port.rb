@@ -25,7 +25,7 @@ module Ofpr
          *kept(after, Markdown.dom(render(unblock(blocks))), 'the blocks'),
          unstable(html, markdown),
          stale(stored, markdown, 'markdown'),
-         stale(stored_blocks&.reject { |block| block['type'] == 'video' }, json(blocks), 'blocks')].compact
+         stale(stored_blocks, json(blocks), 'blocks')].compact
       end
 
       # Same links, same words, same pictures, going in and coming out again.
@@ -92,7 +92,7 @@ module Ofpr
 
       def source(block)
         case block[:type]
-        when 'prose' then block[:markdown]
+        when 'prose', 'video' then block[:markdown]
         when 'gallery' then block[:pictures].map { |shot| shot_source(shot) }.join(' ')
         when 'download' then block[:links].map { |link| link_source(link) }.join(' ')
         when 'card' then card_source(block)

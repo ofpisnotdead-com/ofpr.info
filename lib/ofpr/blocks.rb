@@ -1,5 +1,6 @@
 require 'uri'
 require_relative 'links'
+require_relative 'youtube'
 
 module Ofpr
   # The markdown is the prose. These are the three things in it that are not prose, and
@@ -27,7 +28,8 @@ module Ofpr
     class << self
       def of(markdown)
         chunks = markdown.to_s.split(BLANK).map(&:strip).reject(&:empty?)
-        join(chunks.map { |chunk| block(chunk) })
+        pieces = chunks.flat_map { |chunk| chunk.match?(TABLE) ? [chunk] : Youtube.split(chunk) }
+        Youtube.after_sentences(join(pieces.map { |piece| piece.is_a?(Hash) ? piece : block(piece) }))
       end
 
       private
