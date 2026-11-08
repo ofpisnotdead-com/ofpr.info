@@ -30,6 +30,14 @@ RSpec.describe Ofpr::Blocks do
     expect(blocks.last[:links].first[:file]).to eq('SwissMOD_Setup.exe')
   end
 
+  it 'reads a download on its own line in the middle of a paragraph as a download' do
+    blocks = convert("Kegetys made a new addon.  \n" \
+                     "[Download [214 kB]](https://files.ofpisnotdead.com/files/ofpd/u/Drill.zip)  \n" \
+                     '[![](/ofpgm/rest/TN_drill2.JPG)](/ofpgm/rest/drill2.jpg)')
+
+    expect(blocks.map { |block| block[:type] }).to eq(%w[prose download gallery])
+  end
+
   it 'keeps what an addon needs apart from its downloads' do
     blocks = convert("Needed:  \n[**DOWNLOAD (FTP#1) - Cold War Assault v.1.99 [525 MB]**](https://files.ofpisnotdead.com/files/ofpd/p/CWA.zip)")
 
