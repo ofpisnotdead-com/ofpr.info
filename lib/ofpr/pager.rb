@@ -18,7 +18,7 @@ module Ofpr
 
     def window = (first..last).to_a
 
-    def url_for(page) = "#{@base}?start=#{(page - 1) * @per_page}"
+    def url_for(page) = "#{@base}#{@base.include?('?') ? '&' : '?'}start=#{(page - 1) * @per_page}"
 
     def previous_url = @current > 1 ? url_for(@current - 1) : nil
 
