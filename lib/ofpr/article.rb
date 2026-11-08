@@ -14,6 +14,13 @@ module Ofpr
 
       def count = river_scope.count
 
+      def total = dataset.count
+
+      # Every section and how much is in it, for the menu and the sidebar, in one query.
+      def section_counts
+        dataset.exclude(section: '').group_and_count(:section).to_hash(:section, :count)
+      end
+
       def river(start: 0) = newest(river_scope, start)
 
       # Returns the total alongside the page, because every listing prints it.

@@ -3,6 +3,13 @@
 Serves the ofpr.info archive at the urls test.ofpr.info has, with search and images on
 the CDN. English only for now.
 
+Two sides, one database. The site at `/` is the modern one, rendered from the markdown
+and the blocks the import reads off each body. The site as it was is at `/archive/`,
+rendered from the stored html through the captured templates. That one is a
+verification surface rather than a destination: nothing links to it, and its own links
+are not scoped to it, because its markup has to stay exactly what the capture has for
+`rake compare` to mean anything.
+
 Content comes from the static capture in `../ofp-archive-catalog/ofpr-mirror`: 10,246
 article pages whose path below the capture root is the url, so nothing has to be mapped.
 `../ofp-archive-catalog/gen-docs/ofpr-info-revival-plan.md` has the background.
@@ -23,6 +30,8 @@ one menu page, so development needs neither the 6.9 GB mirror nor a full import.
     rake compare         # diff rendered pages against the captured ones
     rake verify_captures # check the captures still match what test.ofpr.info serves
     rake links           # request every link a running app renders
+    rake port:verify     # assert the markdown and the blocks lost nothing
+    rake port:show URL=/path  # print one body as markdown
     rake assets:normalise  # give captured assets the names a browser asks for
 
 ## Settings
@@ -95,9 +104,15 @@ more than excerpts that match an archive of dead links.
 
 ## Layout
 
-The views are the rebuild's own markup, lifted from the captures by
-`script/port_layout.rb` and committed. `rake compare` renders each captured page and
-diffs the tag, class and id skeleton against it, ignoring text and whitespace.
+`views/legacy/` is the capture's own markup, lifted from it by `script/port_layout.rb`
+and committed; it serves `/archive/`. `rake compare` requests each captured page there
+and diffs the tag, class and id skeleton against it, ignoring text and whitespace.
+
+`views/` is the modern site: one layout, one stylesheet at `public/assets/ofpr.css` and
+one script, and no framework. It renders from `body_blocks` and `body_markdown`, so an
+addon card is laid out rather than printed as a 2003 table, and a download says its file
+name, size and mirror. `public/templates/` and `public/media/` stay for the facsimile
+and nothing on the modern side loads them.
 
 What is verified, and how far:
 
@@ -190,7 +205,7 @@ so 675 bodies carry `This email address is being protected from spambots...` whe
 stored article held the address itself. The visible text is recovered into `cloak_text`,
 and putting it back before the chunking moved five more excerpts onto the same words.
 
-    script/port_layout.rb      captures -> views, run once and committed
+    script/port_layout.rb      captures -> views/legacy, run once and committed
     script/reference_server.py serves the captures so a browser can render them
     script/pixel_compare.py    renders both and counts the pixels that differ
     script/pixel_sweep.py      the same, eight pages of every type
@@ -203,4 +218,10 @@ and putting it back before the chunking moved five more excerpts onto the same w
     lib/ofpr/page.rb           a page the menu links straight to
     lib/ofpr/search_query.rb   search parameters -> conditions and order
     lib/ofpr/renderer.rb       stored markup -> markup with CDN paths
+    lib/ofpr/markdown.rb       stored markup -> markdown
+    lib/ofpr/blocks.rb         markdown -> cards, galleries, downloads, prose
+    lib/ofpr/prose.rb          markdown -> html, and the plain text of it
+    lib/ofpr/port.rb           what rake port:verify asserts about both
+    lib/ofpr/presenter.rb      what the modern templates ask for
+    lib/ofpr/menu.rb           the menu, as the captured one has it
     lib/ofpr/app.rb            routes

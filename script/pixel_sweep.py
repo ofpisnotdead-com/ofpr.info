@@ -18,7 +18,8 @@ from PIL import Image
 
 MIRROR = os.environ.get('MIRROR', '../ofp-archive-catalog/ofpr-mirror')
 REF = os.environ.get('REF_BASE', 'http://127.0.0.1:9500')
-APP = os.environ.get('BASE', 'http://127.0.0.1:9292')
+# The facsimile, which is what the capture is compared with.
+APP = os.environ.get('BASE', 'http://127.0.0.1:9292') + '/archive'
 SIZE = os.environ.get('SIZE', '1280,1500')
 PER = int(sys.argv[1]) if len(sys.argv) > 1 else 6
 OUT = os.path.abspath(sys.argv[2] if len(sys.argv) > 2 else 'tmp/sweep')

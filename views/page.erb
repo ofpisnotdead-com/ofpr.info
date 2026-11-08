@@ -1,19 +1,4 @@
-<article id="k2Container" class="itemView">           
-         
-          
-           <header>
-                                                                      </header>
-                     
-                    
-          
-                     <div class="itemBody"> 
-                                                                       <div class="itemFullText"><%== body_html(@page) %> </div>
-                                        
-                                        
-                                          </div>
-          
-                    
-          
-                    </article>
-
-<!-- JoomlaWorks "K2" (v2.11.20230505) | Learn more about K2 at https://getk2.org -->
+<article class="panel">
+  <h1 class="article__title"><%== @page[:title] %></h1>
+  <%== erb :_blocks, locals: {blocks: blocks(@page)} %>
+</article>

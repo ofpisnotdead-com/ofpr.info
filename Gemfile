@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 ruby '>= 3.4'
 
 gem 'erubi'
+gem 'kramdown'
+gem 'nokogiri'
 gem 'pg'
 gem 'puma'
 gem 'rack'

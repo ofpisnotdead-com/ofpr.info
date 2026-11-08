@@ -1,0 +1,742 @@
+/* ofpr.info, modernised. A draft: one stylesheet, tokens first, no framework.
+   Sections: 1 tokens, 2 base, 3 masthead, 4 menu, 5 layout, 6 listing, 7 pager,
+   8 article, 9 the ported body, 10 aside, 11 footer, 12 narrow screens. */
+
+/* 1 ---- tokens ------------------------------------------------------------- */
+
+:root {
+  /* the ramps: olive and paper, sampled off the running site */
+  --o-field: #5b6c61;
+  --o-field-dark: #49584f;
+  --o-accent: #d82731;
+  --o-accent-dark: #a81d26;
+  --paper: #ffffff;
+  --paper-dim: #f6f6f3;
+  --ink-900: #1b2016;
+  --ink-600: #545d4a;
+  --ink-300: #9aa08f;
+  --rule-200: #e5e5e5;
+  --black-900: #1e1e1e;
+  --black-800: #262626;
+  /* The banner carries this colour baked into the jpeg, so the band behind it is this
+     and not a themed name: the picture has to sit on it in either theme. */
+  --banner: #5a6c60;
+
+  /* the semantic layer: a theme is these eleven names pointed somewhere else */
+  --bg: var(--o-field);
+  --surface: var(--paper);
+  --surface-dim: var(--paper-dim);
+  --text: var(--ink-900);
+  --text-muted: var(--ink-600);
+  --text-faint: var(--ink-300);
+  --link: var(--o-accent);
+  --link-hover: var(--o-accent-dark);
+  --border: var(--rule-200);
+  --menu: var(--black-800);
+  --footer: var(--black-900);
+
+  --space: 4px;
+  --radius: 3px;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .18);
+  --shadow-lift: 0 2px 10px rgba(0, 0, 0, .14);
+  --sans: "Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: "Bitter", Georgia, "Times New Roman", serif;
+  --body: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* The dark theme is these eleven names and nothing else, which is the whole
+   argument for the layer above. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161a14;
+    --surface: #1f241d;
+    --surface-dim: #262c23;
+    --text: #e6e8e1;
+    --text-muted: #a8b09c;
+    --text-faint: #767e6c;
+    --link: #ff5a5a;
+    --link-hover: #ff8585;
+    --border: #333a2f;
+    --menu: #171b14;
+    --footer: #11140f;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #161a14;
+  --surface: #1f241d;
+  --surface-dim: #262c23;
+  --text: #e6e8e1;
+  --text-muted: #a8b09c;
+  --text-faint: #767e6c;
+  --link: #ff5a5a;
+  --link-hover: #ff8585;
+  --border: #333a2f;
+  --menu: #171b14;
+  --footer: #11140f;
+}
+
+/* 2 ---- base --------------------------------------------------------------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* The gutter is held so that locking the page behind the viewer shifts nothing. */
+html { scrollbar-gutter: stable; }
+html.is-held { overflow: hidden; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.65 var(--body);
+  -webkit-text-size-adjust: 100%;
+}
+.page { flex: 1; }
+
+a { color: var(--link); text-decoration: none; }
+a:hover { color: var(--link-hover); text-decoration: underline; }
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}
+img { max-width: 100%; height: auto; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; margin: 0; }
+
+.draft-note {
+  background: var(--o-accent-dark);
+  color: #fff;
+  font: 600 11px/1 var(--sans);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: calc(var(--space) * 2) calc(var(--space) * 4);
+  text-align: center;
+}
+.draft-note a, .draft-note a:hover { color: #fff; text-decoration: underline; }
+
+/* 3 ---- masthead ----------------------------------------------------------- */
+
+.masthead { background: var(--banner); }
+.masthead__inner {
+  max-width: 980px;
+  margin: 0 auto;
+  /* No padding above: the banner is cut off at its own top edge, so it has to sit on
+     the top of the page. */
+  padding: 0 calc(var(--space) * 4) calc(var(--space) * 3);
+}
+.masthead__logo { display: block; }
+.masthead__logo img { display: block; margin: 0 auto; width: 980px; }
+
+.search {
+  display: flex;
+  gap: var(--space);
+  margin-left: auto;
+  /* The width of the sidebar, so its left edge runs on down the page. `min-width: 0`
+     because a flex item will not go below its content, and an input's content is as
+     wide as the browser feels like making it. */
+  flex: 0 0 260px;
+  min-width: 0;
+}
+.search input {
+  background: rgba(255, 255, 255, .07);
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: var(--radius);
+  color: #fff;
+  flex: 1;
+  font: 14px var(--body);
+  min-width: 0;
+  padding: calc(var(--space) * 2) calc(var(--space) * 2.5);
+}
+.search input::placeholder { color: rgba(255, 255, 255, .45); }
+.search button {
+  background: var(--link);
+  border: 0;
+  border-radius: var(--radius);
+  color: #fff;
+  cursor: pointer;
+  font: 600 12px/1 var(--sans);
+  letter-spacing: .06em;
+  padding: 0 calc(var(--space) * 3.5);
+  text-transform: uppercase;
+}
+.search button:hover { background: var(--link-hover); }
+
+/* 4 ---- menu --------------------------------------------------------------- */
+
+.menu { background: var(--menu); }
+.menu__inner {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 calc(var(--space) * 4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--space) * 2) 0;
+}
+.menu ul { list-style: none; margin: 0; padding: 0; }
+
+/* Hidden until the bar runs out of room for the items, and hidden for good if there
+   is no script to open the drawer: the noscript block in the head says so. */
+.menu__burger {
+  align-items: center;
+  background: none;
+  border: 0;
+  color: #d8dbd2;
+  cursor: pointer;
+  display: none;
+  gap: calc(var(--space) * 2);
+  font: 600 12px/1 var(--sans);
+  letter-spacing: .07em;
+  padding: calc(var(--space) * 4) calc(var(--space) * 2);
+  text-transform: uppercase;
+}
+.menu__burger:hover { color: #fff; }
+.menu__icon {
+  display: block;
+  fill: none;
+  height: 20px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2;
+  width: 20px;
+}
+/* The list is what gives: a flex item that will not fit wraps whole rather than
+   shrink, so if the search were the flexible one it would drop to a line of its own
+   and sit there looking stranded. The menu items wrap among themselves instead. */
+.menu__list { display: flex; flex-wrap: wrap; flex: 1 1 0; min-width: 0; }
+.menu li { position: relative; }
+.menu a {
+  color: #d8dbd2;
+  display: block;
+  font: 600 12px/1 var(--sans);
+  letter-spacing: .07em;
+  padding: calc(var(--space) * 4) clamp(8px, 0.9vw, 12px);
+  text-transform: uppercase;
+  border-bottom: 3px solid transparent;
+}
+.menu a:hover { background: rgba(255, 255, 255, .05); color: #fff; text-decoration: none; }
+.menu a[aria-current="page"], .menu li:hover > a { border-bottom-color: var(--link); color: #fff; }
+
+.menu li > ul {
+  background: var(--menu);
+  border: 1px solid rgba(255, 255, 255, .08);
+  box-shadow: var(--shadow-lift);
+  display: none;
+  left: 0;
+  min-width: 210px;
+  position: absolute;
+  top: 100%;
+  z-index: 10;
+}
+.menu li:hover > ul, .menu li:focus-within > ul { display: block; }
+.menu li > ul a { border-bottom: 0; padding: calc(var(--space) * 2.5) calc(var(--space) * 3); }
+
+/* 5 ---- layout ------------------------------------------------------------- */
+
+.page {
+  /* an auto margin on a flex item's cross axis stops it stretching, so say the width */
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: calc(var(--space) * 6) calc(var(--space) * 4) calc(var(--space) * 10);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: calc(var(--space) * 6);
+  align-items: start;
+}
+.panel {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: calc(var(--space) * 7) calc(var(--space) * 8);
+}
+
+/* 6 ---- listing ------------------------------------------------------------ */
+
+.stream { display: flex; flex-direction: column; }
+.item {
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  /* 58% of these thumbnails are 200x150, so that is the cap and nothing is blown up.
+     Below it the picture narrows with the viewport instead of dropping under the text,
+     which leaves a short line and a lot of air beside it. */
+  grid-template-columns: clamp(88px, 20vw, 200px) minmax(0, 1fr);
+  gap: clamp(12px, 2vw, 20px);
+  padding: calc(var(--space) * 6) 0;
+}
+.item:first-child { padding-top: 0; }
+.item:last-child { border-bottom: 0; padding-bottom: 0; }
+/* An item with no picture keeps the column its title starts in. */
+.item__text { grid-column: 2; }
+
+.item__shot { display: block; }
+.item__shot img {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--surface-dim);
+}
+.item__shot:hover img { border-color: var(--link); }
+
+.item__title { font-size: 21px; margin-bottom: calc(var(--space) * 2); }
+.item__title a { color: var(--text); }
+.item__title a:hover { color: var(--link); text-decoration: none; }
+
+.meta {
+  align-items: center;
+  color: var(--text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font: 600 11px/1 var(--sans);
+  gap: calc(var(--space) * 2);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.meta__sep { color: var(--text-faint); }
+.chip {
+  border: 1px solid var(--link);
+  border-radius: 2px;
+  color: var(--link);
+  padding: calc(var(--space) * .75) calc(var(--space) * 1.5);
+}
+.chip:hover { background: var(--link); color: #fff; text-decoration: none; }
+
+.item__intro { color: var(--text); margin: calc(var(--space) * 3) 0 0; }
+.item__more {
+  display: inline-block;
+  font: 600 11px/1 var(--sans);
+  letter-spacing: .06em;
+  margin-top: calc(var(--space) * 3);
+  text-transform: uppercase;
+}
+
+/* 7 ---- pager -------------------------------------------------------------- */
+
+.pager {
+  align-items: center;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: var(--space);
+  justify-content: center;
+  margin-top: calc(var(--space) * 7);
+  padding-top: calc(var(--space) * 6);
+}
+.pager a, .pager span {
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text-muted);
+  font: 600 12px/1 var(--sans);
+  min-width: 34px;
+  padding: calc(var(--space) * 2.5) 0;
+  text-align: center;
+}
+.pager a:hover { border-color: var(--link); color: var(--link); text-decoration: none; }
+.pager [aria-current="page"] { background: var(--link); border-color: var(--link); color: #fff; }
+.pager__step { padding-inline: calc(var(--space) * 3) !important; }
+.pager__count { border: 0; color: var(--text-faint); margin-left: calc(var(--space) * 2); }
+
+/* 8 ---- article ------------------------------------------------------------ */
+
+.crumbs {
+  color: var(--text-faint);
+  font: 600 11px/1 var(--sans);
+  letter-spacing: .06em;
+  margin-bottom: calc(var(--space) * 4);
+  text-transform: uppercase;
+}
+.crumbs a { color: var(--text-muted); }
+
+.article__title { font-size: 30px; margin-bottom: calc(var(--space) * 3); }
+.article__meta { border-bottom: 1px solid var(--border); padding-bottom: calc(var(--space) * 4); }
+.listing__title {
+  border-bottom: 1px solid var(--border);
+  margin-bottom: calc(var(--space) * 2);
+  padding-bottom: calc(var(--space) * 4);
+}
+
+/* 8b ---- search ------------------------------------------------------------- */
+
+.finder {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space) * 3);
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  margin: calc(var(--space) * 5) 0 calc(var(--space) * 6);
+  padding-bottom: calc(var(--space) * 5);
+}
+.finder label {
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space) * 2);
+  font: 600 11px/1 var(--sans);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.finder input, .finder select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font: 14px var(--body);
+  padding: calc(var(--space) * 2) calc(var(--space) * 2.5);
+}
+.finder__word { flex: 1 1 220px; }
+.finder button {
+  background: var(--link);
+  border: 0;
+  border-radius: var(--radius);
+  color: #fff;
+  cursor: pointer;
+  font: 600 12px/1 var(--sans);
+  letter-spacing: .06em;
+  padding: calc(var(--space) * 3) calc(var(--space) * 5);
+  text-transform: uppercase;
+}
+.finder button:hover { background: var(--link-hover); }
+.finder__total { color: var(--text-muted); margin: 0 0 calc(var(--space) * 5); }
+
+.result + .result {
+  border-top: 1px solid var(--border);
+  margin-top: calc(var(--space) * 6);
+  padding-top: calc(var(--space) * 6);
+}
+.result__title { font-size: 20px; margin-bottom: calc(var(--space) * 2); }
+.result__title a { color: var(--text); }
+.result__title a:hover { color: var(--link); text-decoration: none; }
+.result__text { color: var(--text); margin: calc(var(--space) * 3) 0 0; }
+.highlight { background: rgba(216, 39, 49, .14); color: var(--text); font-weight: 600; }
+
+/* 9 ---- the ported body ---------------------------------------------------- */
+
+.body { margin-top: calc(var(--space) * 6); }
+.body p { margin: 0 0 calc(var(--space) * 4); }
+.body > :last-child { margin-bottom: 0; }
+.body em { color: var(--text-muted); font-style: normal; }
+.body h1, .body h2, .body h3, .body h4, .body h5, .body h6 {
+  margin: calc(var(--space) * 8) 0 calc(var(--space) * 3);
+}
+.body > :first-child { margin-top: 0; }
+.body h1, .body h2 { font-size: 23px; }
+.body h3 { font-size: 21px; }
+.body h4, .body h5, .body h6 { font-size: 18px; }
+.body hr { border: 0; border-top: 1px solid var(--border); margin: calc(var(--space) * 7) 0; }
+.body ul { margin: 0 0 calc(var(--space) * 4); padding-left: calc(var(--space) * 5); }
+
+/* The addon card, from the card block: a screenshot, the labelled fields, and the
+   downloads, which the body wrote as three paragraphs around a table. */
+.card {
+  background: var(--surface-dim);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: calc(var(--space) * 5);
+  margin-bottom: calc(var(--space) * 5);
+  padding: calc(var(--space) * 5);
+}
+.card__shot img {
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  display: block;
+}
+.card__facts { margin: 0; }
+.card__facts > div + div { margin-top: calc(var(--space) * 3); }
+.card__facts dt {
+  color: var(--text-muted);
+  font: 600 11px/1 var(--sans);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.card__facts dd { font-size: 16px; margin: calc(var(--space) * 1.5) 0 0; }
+.card__downloads { grid-column: 1 / -1; }
+
+/* The gallery block: thumbnails, each linking to the full picture. */
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space) * 2);
+  margin-bottom: calc(var(--space) * 4);
+}
+.gallery a { display: block; }
+.gallery img {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: block;
+}
+.gallery a:hover img { border-color: var(--link); }
+.has-viewer .gallery a, .has-viewer .card__shot { cursor: zoom-in; }
+
+/* The download block. The file name, the size and the mirror are data now, so the
+   button says them instead of being a picture of the word Download. */
+.downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space) * 2);
+  margin-bottom: calc(var(--space) * 4);
+}
+.card__downloads { margin-bottom: 0; }
+.download {
+  align-items: baseline;
+  background: var(--link);
+  border-radius: var(--radius);
+  color: #fff;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space) * 2);
+  padding: calc(var(--space) * 3) calc(var(--space) * 5);
+}
+.download:hover { background: var(--link-hover); color: #fff; text-decoration: none; }
+.download__name {
+  font: 600 12px/1.4 var(--sans);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.download__name::before { content: "\2193\00a0"; }
+.download__about { color: rgba(255, 255, 255, .75); font-size: 13px; }
+
+/* 10 ---- aside ------------------------------------------------------------- */
+
+.aside { display: flex; flex-direction: column; gap: calc(var(--space) * 4); }
+.block {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: calc(var(--space) * 5);
+}
+.block__title {
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font: 600 11px/1 var(--sans);
+  letter-spacing: .08em;
+  margin-bottom: calc(var(--space) * 3);
+  padding-bottom: calc(var(--space) * 2.5);
+  text-transform: uppercase;
+}
+.block ul { list-style: none; margin: 0; padding: 0; }
+.block li + li { margin-top: calc(var(--space) * 1.5); }
+.block li a { color: var(--text); font-size: 14px; }
+.block li a:hover { color: var(--link); text-decoration: none; }
+.block li span { color: var(--text-faint); font-size: 12px; }
+
+/* 10b ---- reporting a problem ---------------------------------------------- */
+
+.report {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lift);
+  color: var(--text);
+  max-width: 460px;
+  padding: calc(var(--space) * 7);
+}
+.report::backdrop { background: rgba(10, 12, 9, .7); }
+.report__title { font-size: 21px; margin-bottom: calc(var(--space) * 3); }
+.report p { margin: 0 0 calc(var(--space) * 4); }
+.report__links { display: flex; flex-wrap: wrap; gap: calc(var(--space) * 3); }
+.report__link {
+  background: var(--link);
+  border-radius: var(--radius);
+  color: #fff;
+  font: 600 12px/1 var(--sans);
+  letter-spacing: .05em;
+  padding: calc(var(--space) * 3) calc(var(--space) * 5);
+  text-transform: uppercase;
+}
+.report__link:hover { background: var(--link-hover); color: #fff; text-decoration: none; }
+.report__link--quiet {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.report__link--quiet:hover { background: var(--surface-dim); color: var(--text); }
+.report__close {
+  background: none;
+  border: 0;
+  color: var(--text-muted);
+  cursor: pointer;
+  font: 600 11px/1 var(--sans);
+  letter-spacing: .06em;
+  margin-top: calc(var(--space) * 5);
+  padding: 0;
+  text-transform: uppercase;
+}
+.report__close:hover { color: var(--link); }
+
+.report__open {
+  font: 600 11px/1 var(--sans);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* 11 ---- footer ------------------------------------------------------------ */
+
+.footer {
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  background: var(--footer);
+  color: rgba(255, 255, 255, .5);
+  font-size: 13px;
+  padding: calc(var(--space) * 8) calc(var(--space) * 4);
+  text-align: center;
+}
+.footer a { color: rgba(255, 255, 255, .8); }
+.footer a:hover { color: #fff; }
+
+/* 12 ---- the picture viewer ------------------------------------------------ */
+
+/* The picture, and as little else as will still work. The only thing here that says
+   which site it is, is the type: the same micro caps the meta lines are set in. */
+.viewer {
+  background: none;
+  border: 0;
+  color: #fff;
+  display: none;
+  inset: 0;
+  height: 100dvh;
+  width: 100vw;
+  max-width: none;
+  max-height: none;
+  padding: 0;
+}
+/* The whole screen, so the controls sit at its edges and a click anywhere off the
+   picture is a click on the dialog itself, which is what closes it. */
+.viewer[open] {
+  align-content: center;
+  align-items: center;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: calc(var(--space) * 4);
+  padding: calc(var(--space) * 5);
+}
+.viewer::backdrop {
+  background: rgba(10, 12, 9, .94);
+  backdrop-filter: blur(4px);
+}
+
+.viewer__picture {
+  grid-column: 2;
+  justify-self: center;
+  display: block;
+  max-width: 100%;
+  max-height: calc(100dvh - var(--space) * 28);
+  border-radius: var(--radius);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, .6);
+  opacity: 0;
+  transition: opacity .2s ease-out;
+}
+.viewer__picture.is-ready { opacity: 1; }
+
+/* No chrome until it is wanted: a quiet mark, a generous target, the site's red on
+   hover, which is what every other control here does. */
+.viewer__button {
+  align-items: center;
+  background: none;
+  border: 0;
+  border-radius: var(--radius);
+  color: rgba(255, 255, 255, .5);
+  cursor: pointer;
+  display: flex;
+  height: 60px;
+  justify-content: center;
+  padding: 0;
+  transition: color .15s, background-color .15s;
+  width: 60px;
+}
+.viewer__button:hover { background: rgba(255, 255, 255, .08); color: #fff; }
+.viewer__icon {
+  display: block;
+  fill: none;
+  height: 26px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.75;
+  width: 26px;
+}
+.viewer__close { position: fixed; right: calc(var(--space) * 4); top: calc(var(--space) * 4); }
+
+.viewer__caption {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space) * 3);
+  grid-column: 2;
+  justify-content: center;
+  margin: 0;
+  font: 600 11px/1.4 var(--sans);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.viewer__count { color: rgba(255, 255, 255, .45); }
+/* A file name is not a heading: it keeps the case it has on the server. */
+.viewer__file {
+  color: rgba(255, 255, 255, .7);
+  font: 13px/1.4 var(--body);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viewer__picture, .viewer__button { transition: none; }
+}
+
+/* 12 ---- narrow screens ---------------------------------------------------- */
+
+/* A phone has no room for a wide gutter, and every pixel of it comes off the line. */
+@media (max-width: 480px) {
+  .page { padding-inline: calc(var(--space) * 3); }
+  .panel { padding: calc(var(--space) * 5) calc(var(--space) * 3); }
+  .masthead__inner { padding-inline: calc(var(--space) * 3); }
+  .menu__inner { padding-inline: calc(var(--space) * 3); }
+  .item__title { font-size: 19px; }
+  .article__title { font-size: 25px; }
+}
+
+/* Below this the eight items and the search no longer share a line, and a menu that
+   has wrapped onto two rows reads as a mistake. The drawer also gives the two
+   dropdowns a way in on a touch screen, which hovering never did. */
+@media (max-width: 1024px) {
+  .menu__burger { display: inline-flex; }
+  .menu__inner { gap: calc(var(--space) * 2) 0; }
+  /* The list drops below the bar; the search stays up beside the burger. */
+  .menu__list { display: none; flex: 1 1 100%; flex-direction: column; order: 1; }
+  .menu__list.is-open { display: flex; }
+  .menu__list > li > a { padding-inline: calc(var(--space) * 2); }
+  /* In the drawer a dropdown is just an indented list, open and reachable. */
+  .menu li > ul {
+    border: 0;
+    box-shadow: none;
+    display: block;
+    min-width: 0;
+    position: static;
+  }
+  .menu li > ul a {
+    color: rgba(255, 255, 255, .62);
+    padding: calc(var(--space) * 2) calc(var(--space) * 2) calc(var(--space) * 2)
+      calc(var(--space) * 7);
+  }
+}
+
+@media (max-width: 860px) {
+  .page { grid-template-columns: minmax(0, 1fr); }
+  .panel { padding: calc(var(--space) * 5) calc(var(--space) * 4); }
+  .masthead__inner { padding: 0 calc(var(--space) * 2) calc(var(--space) * 3); }
+  .card { grid-template-columns: minmax(0, 1fr); gap: calc(var(--space) * 4); }
+  /* The arrows move under the picture, where a thumb can reach them. */
+  .viewer[open] { grid-template-columns: minmax(0, 1fr); padding: calc(var(--space) * 4); }
+  .viewer__picture { max-height: calc(100dvh - var(--space) * 40); }
+  .viewer__step { grid-row: 3; }
+  .viewer__step[data-step="-1"] { justify-self: start; }
+  .viewer__step[data-step="1"] { justify-self: end; }
+  .viewer__caption { grid-row: 2; }
+  .menu__inner { padding: 0 calc(var(--space) * 2); }
+  /* No sidebar to line up with any more, so the search takes the rest of the bar. */
+  .search { flex: 1 1 200px; }
+}

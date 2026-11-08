@@ -1,6 +1,7 @@
 ENV['DATABASE_URL'] ||= 'postgres://ofpr:ofpr@localhost:5433/ofpr_test'
 ENV['RACK_ENV'] = 'test'
 
+require 'json'
 require 'rack/test'
 require_relative '../lib/ofpr'
 require_relative '../lib/ofpr/app'
@@ -21,14 +22,21 @@ module FixtureHelpers
     row = {id: 1, slug: 'a-thing', url_path: '/1-a-thing', section: '',
            title: 'A thing', body_html: '<p>body</p>',
            published_at: Time.utc(2004, 3, 7)}.merge(attrs)
-    Ofpr::Article.dataset.insert(row)
+    Ofpr::Article.dataset.insert(ported(row))
     row
   end
 
   def insert_page(**attrs)
     row = {url_path: '/mods', title: 'MODS', body_html: '<p>mods</p>'}.merge(attrs)
-    Ofpr::Page.dataset.insert(row)
+    Ofpr::Page.dataset.insert(ported(row))
     row
+  end
+
+  # The same columns the import writes, so a fixture is the shape a real row is.
+  def ported(row)
+    markdown = Ofpr::Markdown.of(row[:body_html])
+    row.merge(body_markdown: markdown, body_port: Ofpr::Markdown::VERSION,
+      body_blocks: JSON.generate(Ofpr::Blocks.of(markdown)))
   end
 end
 

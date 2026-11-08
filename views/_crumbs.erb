@@ -1,0 +1,1 @@
+<p class="crumbs"><% steps.each_with_index do |step, at| %><% if step[:path] %><a href="<%= page_url(step[:path]) %>"><%= step[:label] %></a><% else %><%= step[:label] %><% end %><% if tail || at < steps.size - 1 %> / <% end %><% end %><%== tail %></p>

@@ -18,7 +18,9 @@ from PIL import Image
 
 OUT = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else 'tmp/pixels')
 REF = os.environ.get('REF_BASE', 'http://127.0.0.1:9500')
-APP = os.environ.get('BASE', 'http://127.0.0.1:9292')
+# The facsimile, which is what the capture is compared with; the modern site is at
+# the same paths without the prefix.
+APP = os.environ.get('BASE', 'http://127.0.0.1:9292') + '/archive'
 SIZE = os.environ.get('SIZE', '1280,1500')
 PAIRS = [
     ('river', '/index.html', '/'),

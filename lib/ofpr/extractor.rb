@@ -1,7 +1,9 @@
 require 'cgi'
 require 'json'
 require 'time'
+require_relative 'blocks'
 require_relative 'links'
+require_relative 'markdown'
 
 module Ofpr
   # Turns one captured page into a row. The capture mirrors the url space, so a page's
@@ -23,10 +25,11 @@ module Ofpr
 
     Row = Struct.new(:id, :slug, :url_path, :section, :section_label, :title, :description,
       :author, :author_url, :published_at, :modified_at, :hits, :body_html, :cloak_text,
-      keyword_init: true)
+      :body_markdown, :body_blocks, :body_port, keyword_init: true)
 
     PageRow = Struct.new(:url_path, :title, :description, :author, :author_url,
-      :published_at, :modified_at, :body_html, keyword_init: true)
+      :published_at, :modified_at, :body_html, :body_markdown, :body_blocks,
+      :body_port, keyword_init: true)
 
     class Invalid < StandardError; end
 
@@ -49,11 +52,13 @@ module Ofpr
 
     def menu_page
       article = article_block or raise Invalid, 'no ld+json Article block'
+      body_html = body
 
       PageRow.new(url_path: url_path, title: menu_title, description: description(article),
         author: author(article), author_url: author_url,
         published_at: time(article['datePublished']),
-        modified_at: time(article['dateModified']), body_html: body)
+        modified_at: time(article['dateModified']), body_html: body_html,
+        **ported(body_html))
     end
 
     private
@@ -68,7 +73,15 @@ module Ofpr
         author_url: author_url,
         published_at: time(article['datePublished']),
         modified_at: time(article['dateModified']), hits: hits, body_html: body_html,
-        cloak_text: cloak_text)
+        cloak_text: cloak_text, **ported(body_html))
+    end
+
+    # The import is the only thing that writes a row, so the conversion belongs here
+    # beside `Links.repair`: anything mended in the database is lost at the next one.
+    def ported(body_html)
+      markdown = Markdown.of(body_html)
+      {body_markdown: markdown, body_blocks: Blocks.of(markdown),
+       body_port: Markdown::VERSION}
     end
 
     def body

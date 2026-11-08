@@ -1,0 +1,23 @@
+<nav class="menu" aria-label="Sections">
+  <div class="menu__inner">
+    <button class="menu__burger" type="button" aria-expanded="false" aria-controls="menu-list">
+      <svg class="menu__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M3 6h18M3 12h18M3 18h18"/>
+      </svg>
+      <span>Menu</span>
+    </button>
+    <ul class="menu__list" id="menu-list">
+      <% Ofpr::Menu::ITEMS.each do |item| %><li>
+        <a href="<%= menu_href(item) %>"<%== ' aria-current="page"' if menu_active?(item) %>><%= item[:label] %></a>
+        <% if item[:children] %><ul>
+          <% item[:children].each do |child| %><li><a href="<%= page_url(child[:path]) %>"><%= child[:label] %></a></li>
+          <% end %></ul>
+        <% end %></li>
+      <% end %>
+    </ul>
+    <form class="search" action="/search.html" role="search">
+      <input type="search" name="searchword" value="<%= @query&.word %>" placeholder="Search the archive" aria-label="Search the archive">
+      <button type="submit">Go</button>
+    </form>
+  </div>
+</nav>

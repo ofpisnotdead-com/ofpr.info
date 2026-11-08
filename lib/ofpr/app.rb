@@ -1,6 +1,7 @@
 require 'cgi'
 require 'sinatra/base'
 require_relative '../ofpr'
+require_relative 'presenter'
 
 module Ofpr
   class App < Sinatra::Base
@@ -8,7 +9,16 @@ module Ofpr
     # Sinatra anchors a route pattern itself, so this carries no \A or \z.
     PATH = %r{/(?<path>[A-Za-z0-9][A-Za-z0-9._/-]*)}
 
-    NAV = File.read(File.join(Ofpr.root, 'views/nav.html')).freeze
+    NAV = File.read(File.join(Ofpr.root, 'views/legacy/nav.html')).freeze
+    # The site as it was, rendered from the same data through the captured templates.
+    # It is a verification surface and not a destination: nothing links to it, and its
+    # own links are deliberately not scoped to it, because its markup has to stay what
+    # the capture has for `rake compare` to mean anything.
+    ARCHIVE = '/archive'.freeze
+    # Where a report goes. The invite is the OFP/CWA community one that
+    # ofpisnotdead.com lists; if it ever expires, that page has the current one.
+    REPO = 'https://github.com/ofpisnotdead-com/ofpr.info'.freeze
+    DISCORD = 'https://discord.gg/qkpsfJHcSB'.freeze
 
     configure do
       set :root, Ofpr.root
@@ -19,12 +29,14 @@ module Ofpr
       set :consent, ENV['CONSENT'] == '1'
     end
 
+    helpers Presenter
+
     helpers do
       def renderer = @renderer ||= Renderer.new(cdn_base: settings.cdn_base)
 
       def body_html(article) = renderer.call(article[:body_html])
 
-      def pager(base, start, total) = Pager.new(base, start, total).to_html
+      def pager(base, start, total) = Pager.new(base, start, total)
 
       # Stored text keeps the entities the capture had. The browser title is the one
       # place the rebuild prints them decoded.
@@ -47,7 +59,7 @@ module Ofpr
 
       def search_pager
         Pager.new(search_base, @query.offset, @total, per_page: @query.per_page,
-          close_list: false).to_html
+          close_list: false)
       end
 
       def page_counter
@@ -107,6 +119,26 @@ module Ofpr
       end
 
       def ld_json = StructuredData.new(@article || @page).to_json
+
+      def structured_data? = !(@article || @page).nil?
+
+      # The page being reported on, so a report says which one it is about.
+      def issue_url
+        "#{REPO}/issues/new?body=#{Rack::Utils.escape("Page: #{request.path}\n\n")}"
+      end
+
+      def discord_url = DISCORD
+    end
+
+    # The facsimile answers at the same paths behind `/archive`, so every route below
+    # serves both and only the templates differ.
+    before do
+      path = request.path_info
+      @facsimile = path == ARCHIVE || path.start_with?("#{ARCHIVE}/")
+      next unless @facsimile
+
+      rest = path.delete_prefix(ARCHIVE)
+      request.path_info = rest.empty? ? '/' : rest
     end
 
     # The original served the front page at both, and old links still point at the php.
@@ -140,7 +172,9 @@ module Ofpr
 
     not_found do
       content_type :html
-      erb :not_found, layout: false
+      next erb(:'legacy/not_found', layout: false) if @facsimile
+
+      erb :not_found
     end
 
     private
@@ -152,7 +186,8 @@ module Ofpr
       @nav_path = '/'
       @articles = Article.river(start: @start)
       @total = Article.count
-      erb :river
+      @pager_base = '/'
+      @facsimile ? erb(:'legacy/river', layout: :'legacy/layout') : erb(:listing)
     end
 
     def search
@@ -161,7 +196,7 @@ module Ofpr
       @page_title = 'Search'
       @canonical = '/search'
       @total, @articles = Article.search(@query)
-      erb :search
+      @facsimile ? erb(:'legacy/search', layout: :'legacy/layout') : erb(:search)
     end
 
     def search_redirect
@@ -174,7 +209,7 @@ module Ofpr
       @page_title = @page[:title]
       @canonical = @page[:url_path]
       @meta_description = @page[:description]
-      erb :page, layout: :article_layout
+      @facsimile ? erb(:'legacy/page', layout: :'legacy/article_layout') : erb(:page)
     end
 
     def serve_article(url_path)
@@ -184,17 +219,18 @@ module Ofpr
       @page_title = @article[:title]
       @canonical = @article[:url_path]
       @meta_description = @article[:description]
-      erb :article, layout: :article_layout
+      @facsimile ? erb(:'legacy/article', layout: :'legacy/article_layout') : erb(:article)
     end
 
     def serve_section(name)
       @start = params['start'].to_i
       @section = name
-      @page_title = name
+      @page_title = Menu.label("/#{name}") || name
       @canonical = "/#{name}"
       @total, @articles = Article.section(name, start: @start)
       halt 404 if @total.zero?
-      erb :section
+      @pager_base = "/#{name}.html"
+      @facsimile ? erb(:'legacy/section', layout: :'legacy/layout') : erb(:listing)
     end
   end
 end

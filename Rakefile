@@ -29,7 +29,7 @@ namespace :db do
     [[ofpr::Article.dataset, seed.fetch(:articles)],
      [ofpr::Page.dataset, seed.fetch(:pages)]].each do |table, rows|
       table.delete
-      rows.each { |row| table.insert(row) }
+      rows.each { |row| table.insert(insertable(row)) }
     end
     puts "seeded #{seed[:articles].size} articles and #{seed[:pages].size} pages"
   end
@@ -43,7 +43,7 @@ namespace :mirror do
     ok = failed = 0
     article_pages(MIRROR).each do |path|
       row = extract(path)
-      row ? (table.insert(row) and ok += 1) : failed += 1
+      row ? (table.insert(insertable(row)) and ok += 1) : failed += 1
     end
     featured = mark_featured(table)
     pages = import_menu_pages
@@ -98,6 +98,41 @@ namespace :assets do
   end
 end
 
+# The verification renders the markdown back to html to compare the two, which the
+# app itself has no reason to do, so it is loaded here rather than with the rest.
+def port
+  require_relative 'lib/ofpr/port'
+  ofpr::Port
+end
+
+namespace :port do
+  desc 'Convert every body to markdown and report what the conversion lost'
+  task :verify do
+    columns = %i[url_path body_html body_markdown body_blocks]
+    bodies = ofpr::Article.dataset.select(*columns).order(:id).all +
+             ofpr::Page.dataset.select(*columns).order(:url_path).all
+    faults = bodies.filter_map do |row|
+      complaints = port.check(row[:body_html], stored: row[:body_markdown],
+        stored_blocks: row[:body_blocks])
+      [row[:url_path], complaints] unless complaints.empty?
+    end
+    faults.each { |path, complaints| puts "  #{path}: #{complaints.join('; ')}" }
+    puts "#{bodies.size - faults.size} of #{bodies.size} bodies ported with nothing lost"
+    abort "#{faults.size} bodies lost something" unless faults.empty?
+  end
+
+  desc 'Print one body as markdown (URL=/path)'
+  task :show do
+    path = ENV.fetch('URL')
+    row = ofpr::Article.by_url(path) || ofpr::Page.dataset[url_path: path]
+    abort "no body at #{path}" unless row
+
+    puts ofpr::Markdown.of(row[:body_html])
+    complaints = port.check(row[:body_html])
+    warn "\n#{complaints.join("\n")}" unless complaints.empty?
+  end
+end
+
 desc 'Request every local url a running app links to and report the broken ones'
 task :links do
   require 'json'
@@ -106,32 +141,46 @@ task :links do
   seed = JSON.parse(File.read(SEED))
   pages = ['/', '/?start=10'] +
           seed.values_at('articles', 'pages').flatten.map { |row| row['url_path'] }
+  known = ofpr::Article.dataset.select_map(:url_path).to_set
+  known.merge(ofpr::Page.dataset.select_map(:url_path))
+  known.merge(ofpr::Article.section_counts.keys.map { |section| "/#{section}" })
   broken = {}
-  checked = 0
+  checked = inherited = 0
   Net::HTTP.start(base.host, base.port) do |http|
     pages.each do |page|
-      body = http.get(page).body.to_s
+      body = http.get(page == '/' ? page : "#{page}.html").body.to_s
       body.scan(%r{(?:src|href)="(/[^"]*)"}).flatten.uniq.each do |url|
         next if url == '/'
 
         url = url.gsub('&amp;', '&')
         checked += 1
         code = http.head(url).code
-        broken[url] = code unless code.start_with?('2', '3')
+        next if code.start_with?('2', '3')
+
+        ours?(url, known) ? broken[url] = code : inherited += 1
       end
     end
   end
-  puts "#{pages.size} pages, #{checked} links, #{broken.size} broken"
+  puts "#{pages.size} pages, #{checked} links, #{broken.size} broken, " \
+       "#{inherited} that an article wrote to a page the site never had"
   broken.sort.each { |url, code| puts "  #{code} #{url}" }
-  # Three of these the original 404s as well: its own long-gone forum, the cookie
-  # plugin's stylesheets, which test.ofpr.info also answers 404 for, and the one author
-  # page, which the capture never held.
-  expected = %r{\A/(ofpgm/forum/|plugins/system/fmalertcookies/|author/)}
-  unexpected = broken.keys.grep_v(expected)
-  abort "#{unexpected.size} broken links" unless unexpected.empty?
+  abort "#{broken.size} broken links" unless broken.empty?
 end
 
-desc 'Compare rendered pages against the captured ones (MIRROR=path, BASE=url, N=pages)'
+# A link a template makes has to resolve. A link an article's own text makes is
+# whatever its author typed in 2003 - an email with no mailto, a domain with no scheme -
+# and three of the site's own paths were never captured either: its forum, its author
+# pages, and the cookie plugin's stylesheets, which the live site 404s as well.
+NEVER_CAPTURED = %r{\A/(ofpgm/forum/|plugins/system/fmalertcookies/|author/)}
+
+def ours?(url, known)
+  return false if url.match?(NEVER_CAPTURED)
+
+  path = url.split('#').first.split('?').first.to_s.delete_suffix('.html')
+  known.include?(path) || path.start_with?('/assets/', '/images/', '/ofpgm/', '/archive')
+end
+
+desc 'Compare the facsimile at /archive against the captured pages (MIRROR, BASE, N)'
 task :compare do
   require 'net/http'
   base = URI(ENV.fetch('BASE', 'http://127.0.0.1:9292'))
@@ -140,7 +189,7 @@ task :compare do
   partial = whole = truncated = 0
   consent = false
   Net::HTTP.start(base.host, base.port) do |http|
-    consent = http.get('/').body.to_s.include?('fmalertcookies')
+    consent = http.get('/archive/').body.to_s.include?('fmalertcookies')
     pages.each do |file, path|
       capture = File.read(File.join(MIRROR, file), encoding: 'UTF-8')
       capture = ofpr::Skeleton.without_consent(capture) unless consent
@@ -148,7 +197,7 @@ task :compare do
       # describes no complete page.
       next truncated += 1 unless capture.include?('<head>') && capture.include?('</html>')
 
-      rendered = http.get(path).body.to_s
+      rendered = http.get("/archive#{path}").body.to_s
       if ofpr::Skeleton.degraded_pager?(capture)
         partial += 1
         want = [ofpr::Skeleton.of_without_numbers(capture), ofpr::Skeleton.pager_frame(capture)]
@@ -266,7 +315,9 @@ end
 def import_menu_pages
   table = ofpr::Page.dataset
   table.delete
-  menu_page_files.each { |path| table.insert(ofpr::Extractor.menu_page(path, root: MIRROR).to_h) }
+  menu_page_files.each do |path|
+    table.insert(insertable(ofpr::Extractor.menu_page(path, root: MIRROR).to_h))
+  end
   table.count
 end
 
@@ -323,6 +374,12 @@ end
 
 def html?(path)
   File.binread(path, 40).to_s.match?(/\A\s*<(!doctype html|html)/i)
+end
+
+# The blocks are a structure in a row and json text in the column, and the seed file
+# keeps them as json so a rule change shows up there as something a person can read.
+def insertable(row)
+  row.key?(:body_blocks) ? row.merge(body_blocks: JSON.generate(row[:body_blocks])) : row
 end
 
 def extract(path)

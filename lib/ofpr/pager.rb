@@ -19,6 +19,18 @@ module Ofpr
       @current = (start.to_i / per_page).clamp(0, @pages - 1) + 1
     end
 
+    # What the modern pager reads; `to_html` below is the captured markup, for the
+    # facsimile, and the two have to agree about which page is which.
+    attr_reader :current, :pages
+
+    def window = (first..last).to_a
+
+    def url_for(page) = url(offset(page))
+
+    def previous_url = @current > 1 ? url_for(@current - 1) : nil
+
+    def next_url = @current < @pages ? url_for(@current + 1) : nil
+
     def to_html
       return '' if @pages < 2
 

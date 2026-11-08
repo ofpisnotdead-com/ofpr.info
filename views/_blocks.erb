@@ -1,0 +1,25 @@
+<div class="body">
+  <% blocks.each do |block| %><% if block['type'] == 'prose' %><%== prose(block['markdown']) %>
+  <% elsif block['type'] == 'gallery' %><% shots = shown_pictures(block['pictures']) %><% unless shots.empty? %><div class="gallery">
+    <% shots.each do |shot| %><%== erb :_shot, locals: {shot: shot} %><% end %>
+  </div>
+  <% end %><% elsif block['type'] == 'download' %><div class="downloads">
+    <% block['links'].each do |link| %><%== erb :_download, locals: {link: link, size: nil} %><% end %>
+  </div>
+  <% elsif block['type'] == 'card' %><div class="card">
+    <% if block['picture'] %><a class="card__shot" href="<%= block['picture']['full'] || block['picture']['thumb'] %>">
+      <img src="<%= block['picture']['thumb'] %>" alt="<%= block['picture']['alt'] %>">
+    </a>
+    <% end %><dl class="card__facts">
+      <% card_fields(block).each do |label, value| %><div>
+        <% if label %><dt><%= label %></dt><% end %>
+        <dd><%== inline(value) %></dd>
+      </div>
+      <% end %>
+    </dl>
+    <% unless block['downloads'].empty? %><div class="card__downloads downloads">
+      <% block['downloads'].each do |link| %><%== erb :_download, locals: {link: link, size: card_size(block)} %><% end %>
+    </div>
+    <% end %></div>
+  <% end %><% end %>
+</div>

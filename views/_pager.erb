@@ -1,0 +1,9 @@
+<% if pager.pages > 1 %><nav class="pager" aria-label="Pages">
+  <% if pager.previous_url %><a class="pager__step" href="<%= pager.previous_url %>">Previous</a>
+  <% else %><span class="pager__step">Previous</span>
+  <% end %><% pager.window.each do |number| %><a href="<%= pager.url_for(number) %>"<%== ' aria-current="page"' if number == pager.current %>><%= number %></a>
+  <% end %><% if pager.next_url %><a class="pager__step" href="<%= pager.next_url %>">Next</a>
+  <% else %><span class="pager__step">Next</span>
+  <% end %><span class="pager__count">Page <%= pager.current %> of <%= pager.pages %></span>
+</nav>
+<% end %>
