@@ -107,4 +107,30 @@ RSpec.describe Ofpr::Needs do
 
     expect(names(markdown)).to eq(['RHS Misc. Pack 1.0'])
   end
+
+  it 'mends a name or a size that a stray line break cut in two' do
+    markdown = "Needed:\nRHS T-55 pack v.1.4 [9.7\n\nMB] from [**FTP#1**](#{files}/RHS_T55.rar)\nORCS's\n\n" \
+               "Shilka pack [6.3 MB] from [**FTP#1**](#{files}/rus_zsu.rar)"
+    items = needs(markdown).first[:items]
+
+    expect(items.map { |item| [item[:name], item[:size]] })
+      .to eq([['RHS T-55 pack v.1.4', '9.7 MB'], ["ORCS's Shilka pack", '6.3 MB']])
+  end
+
+  it 'ends a list at a ruler, an update note, or a second marker' do
+    markdown = "Needed:\nJAM 3 [13 MB] from [**FTP#1**](#{files}/J.rar)\n---\n- Updated RHS GAZ-66 Pack"
+
+    expect(names(markdown)).to eq(['JAM 3'])
+    expect(names("Needed:\nA [1 MB] from [**FTP#1**](#{files}/a.rar)\n\n**UPDATE:**\n\nThere is a low res version"))
+      .to eq(['A'])
+    expect(needs("Needed:\nA [1 MB] from [**FTP#1**](#{files}/a.rar)\n\nNeeded For The Mission:\n" \
+                 "B [2 MB] from [**FTP#1**](#{files}/b.rar)").size).to eq(2)
+  end
+
+  it 'keeps a second mirror with its pack rather than as a pack of its own' do
+    markdown = "Needed:\nFarmland Objects [4.1 MB] from [**FTP#1**](#{files}/Fml.zip) or [FTP#2](#{files}/Fml2.zip)"
+
+    expect(needs(markdown).first[:items])
+      .to match([a_hash_including(name: 'Farmland Objects', url: "#{files}/Fml.zip", alt: "#{files}/Fml2.zip")])
+  end
 end

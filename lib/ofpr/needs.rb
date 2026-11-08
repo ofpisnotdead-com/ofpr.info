@@ -6,12 +6,13 @@ module Ofpr
     WORD = /(?:needed|required)\s+addons|addons\s+(?:needed|required)|need's|needed|needs|you\s+need|
             requires|require|requirements|required/ix
     EXTRA = /optional(?:\s+addons)?|recommend(?:ed|ations?)(?:\s+addons)?/i
-    QUALIFIED = /(?:[\s*_]+(?:only|for|to|in|by)\b[a-z\s*_]{0,24}?)?/
+    QUALIFIED = /(?:[\s*_]+(?:only|for|to|in|by)\b[a-z\s*_]{0,24}?)?/i
     MARKER = /\A[\s*_\[]*(?:#{LEAD})?(?:#{WORD}|#{EXTRA})#{QUALIFIED}[\s*_]*:[\s*_]*/i
     DECORATION = %r{\A(?:\s*!\[[^\]]*\]\(/ofpgm/images/[^)]*\)\s*)+\z}
     CONTINUES = /\A[\s*_]*[+,&]/
     STOPS = /\A[\s*_]*(?:source|thanks|credits?|change\s?log|note|features?|readme|install|known|enjoy|have\sfun|
-            edit|links?\sfixed)\b/ix
+            edit|update|links?\sfixed)\b/ix
+    RULER = /\A(?:[-*_]\s*){3,}\z/
     SENTENCE = /[a-z]{3,}\.\s+[A-Z][a-z]+\s+[a-z]/
     LINK = NeedItems::LINK
     NOISE = NeedItems::NOISE
@@ -102,14 +103,17 @@ module Ofpr
         @style || !style
       end
 
+      def ends?(text) = text.match?(MARKER) || text.match?(STOPS) || text.start_with?('#', '![', '[![', '|')
+
       def furniture?(text) = text.gsub(NOISE, '').empty? || text.match?(DECORATION)
 
       def download_style?(text) = text[LINK, 1]&.match?(/\A[\s*_]*download/i)
 
       def item_line?(line)
         text = line.strip
+        return false if text.match?(RULER)
         return true if furniture?(text)
-        return false if text.match?(MARKER) || text.match?(STOPS) || text.start_with?('#', '![', '[![', '|')
+        return false if ends?(text)
 
         plain = NeedItems.clean(text.gsub(LINK, ' ').sub(NeedItems::NUMBERED, ''))
         plain.size <= 70 && !text.gsub(LINK, ' ').strip.match?(/[a-z]{2}[.!?]\z/i) && !plain.match?(SENTENCE)
