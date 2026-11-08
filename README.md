@@ -10,7 +10,7 @@ Repairs belong in `lib/ofpr/extractor.rb` or `lib/ofpr/links.rb`.
 
 ## Dependencies
 
-- Ruby 4.0.7
+- Ruby 4.0.9
 - Docker, with compose available (it runs PostgreSQL)
 
 ## Run locally
