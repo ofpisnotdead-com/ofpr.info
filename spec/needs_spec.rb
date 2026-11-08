@@ -84,4 +84,27 @@ RSpec.describe Ofpr::Needs do
 
     expect(item).to include(kind: 'file', name: 'RHS T-55 pack', size: '9.7 MB', file: 'RHS_T55Pack_v1.4.rar')
   end
+
+  it 'carries a list on past the separators between its packs, to packs that link an archive page' do
+    markdown = "Needed:\n\nCODE BLUE PACK [37 MB] from [**FTP#1**](#{files}/CB_AddOns.rar)\n\n" \
+               "![](/ofpgm/images/separator.gif)\n\n" \
+               'SEF CH53 PACK [40 MB] from [**FTP#1**](/addons/aircrafts/2166-ch-53-pack.html)'
+    items = needs(markdown).first[:items]
+
+    expect(items.map { |item| item[:name] }).to eq(['CODE BLUE PACK', 'SEF CH53 PACK'])
+    expect(items.last).to include(kind: 'page', url: '/addons/aircrafts/2166-ch-53-pack.html', size: '40 MB')
+  end
+
+  it 'reads a marker with a few words between it and its colon, and tells optional packs apart' do
+    expect(names("Needed **only for missions**:\nJAM 2 [5 MB] from [**FTP#1**](#{files}/JAM2.rar)")).to eq(['JAM 2'])
+    expect(needs("Optional:\nSFP Swedish Language Units [712 KB] from [**FTP#1**](#{files}/sv.rar)").first[:title])
+      .to eq('Optional')
+    expect(needs('Needed are : Mission Admins, Newsposters')).to be_empty
+  end
+
+  it 'does not take an abbreviation for the end of a sentence' do
+    markdown = "Needed:\nRHS Misc. Pack 1.0 [1 MB] from [**FTP#1**](#{files}/RHS_Misc_v1.00.rar)"
+
+    expect(names(markdown)).to eq(['RHS Misc. Pack 1.0'])
+  end
 end

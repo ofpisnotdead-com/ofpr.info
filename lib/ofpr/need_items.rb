@@ -9,20 +9,22 @@ module Ofpr
     MIRROR = /(?:ftp|mirror)\s*#?\s*(\d)/i
     HOSTS = /\A(?:ftp|mirror)\s*#?\s*\d\z|\A(?:download|here|link)\z/i
     NOISE = /\A[\s*_+,&:-]+|[\s*_+,&:-]+\z/
-    LABEL_NOISE = /need'?s?\s*:|download|\((?:ftp|mirror)\s*#?\s*\d\)|(?:ftp|mirror)\s*#?\s*\d/i
+    LABEL_NOISE = /need'?s?\s*:|optional\s*:|download|\((?:ftp|mirror)\s*#?\s*\d\)|(?:ftp|mirror)\s*#?\s*\d/i
     NUMBERED = /\A(?:\d+\\?\.|[-*+])\s*/
     SKIPPED = /\A(?:or|and|update|none|\+)\z|\Aby\s/i
     FROM = /\s*\bfrom[\s*_]*\z/i
     CUT = /\[[^\]]*\z/
+    NO_SIZE = /\[\s*[kmg]?b\s*\]/i
+    DECORATION = %r{!\[[^\]]*\]\(/ofpgm/images/[^)]*\)}
     INTERNAL = %r{\A/?(?:[a-z-]+/)*(\d+-[\w-]*)(?:\.html)?\z}
 
     class << self
       def of(markdown)
-        joined(markdown.lines(chomp: true)).flat_map { |line| line_items(line) }
+        joined(markdown.lines(chomp: true)).flat_map { |line| line_items(line.gsub(DECORATION, '')) }
       end
 
       def clean(text)
-        text.gsub(SIZE, ' ').gsub(LABEL_NOISE, ' ').delete('*').squeeze(' ').gsub(NOISE, '').strip
+        text.gsub(SIZE, ' ').gsub(NO_SIZE, ' ').gsub(LABEL_NOISE, ' ').delete('*').squeeze(' ').gsub(NOISE, '').strip
       end
 
       private
@@ -78,7 +80,11 @@ module Ofpr
         'link'
       end
 
-      def address(url) = url.match?(INTERNAL) ? "/#{url[INTERNAL, 1]}.html" : url
+      def address(url)
+        return url unless url.match?(INTERNAL)
+
+        url.start_with?('/') ? "#{url.delete_suffix('.html')}.html" : "/#{url[INTERNAL, 1]}.html"
+      end
 
       def file_of(url)
         return nil unless kind(url) == 'file'

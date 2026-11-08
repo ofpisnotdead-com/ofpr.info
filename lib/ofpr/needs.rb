@@ -5,11 +5,14 @@ module Ofpr
     LEAD = /(?:to run this \w+,?|for the [^:]{1,60}?,|objects|the \w+ will|edit:)[\s*_]+/i
     WORD = /(?:needed|required)\s+addons|addons\s+(?:needed|required)|need's|needed|needs|you\s+need|
             requires|require|requirements|required/ix
-    MARKER = /\A[\s*_\[]*(?:#{LEAD})?(?:#{WORD})[\s*_]*:[\s*_]*/i
+    EXTRA = /optional(?:\s+addons)?|recommend(?:ed|ations?)(?:\s+addons)?/i
+    QUALIFIED = /(?:[\s*_]+(?:only|for|to|in|by)\b[a-z\s*_]{0,24}?)?/
+    MARKER = /\A[\s*_\[]*(?:#{LEAD})?(?:#{WORD}|#{EXTRA})#{QUALIFIED}[\s*_]*:[\s*_]*/i
+    DECORATION = %r{\A(?:\s*!\[[^\]]*\]\(/ofpgm/images/[^)]*\)\s*)+\z}
     CONTINUES = /\A[\s*_]*[+,&]/
     STOPS = /\A[\s*_]*(?:source|thanks|credits?|change\s?log|note|features?|readme|install|known|enjoy|have\sfun|
             edit|links?\sfixed)\b/ix
-    SENTENCE = /[a-z]{2}\.\s+[A-Z]/
+    SENTENCE = /[a-z]{3,}\.\s+[A-Z][a-z]+\s+[a-z]/
     LINK = NeedItems::LINK
     NOISE = NeedItems::NOISE
 
@@ -49,8 +52,20 @@ module Ofpr
         rest = lines.drop(own).join("\n").strip
         after = chunks_after(chunks, at + 1, inline && !in_link, rest.empty?)
         markdown = [lines.take(own).join("\n"), *chunks[(at + 1)...after]].join("\n\n")
+        block = block(markdown, in_link)
+        [block, (rest unless rest.empty?), after] if block
+      end
+
+      def block(markdown, in_link)
         found = NeedItems.of(in_link ? markdown : markdown.sub(MARKER, ''))
-        [{type: 'needs', items: found, markdown: markdown}, (rest unless rest.empty?), after] unless found.empty?
+        {type: 'needs', title: title(markdown), items: found, markdown: markdown} unless found.empty?
+      end
+
+      def title(markdown)
+        word = markdown[MARKER].to_s
+        return 'Needed' unless word.match?(EXTRA)
+
+        word.match?(/recommend/i) ? 'Recommended' : 'Optional'
       end
 
       # How many lines of its paragraph the list holds: an inline list runs on through
@@ -87,12 +102,14 @@ module Ofpr
         @style || !style
       end
 
+      def furniture?(text) = text.gsub(NOISE, '').empty? || text.match?(DECORATION)
+
       def download_style?(text) = text[LINK, 1]&.match?(/\A[\s*_]*download/i)
 
       def item_line?(line)
         text = line.strip
-        return true if text.gsub(NOISE, '').empty?
-        return false if text.match?(STOPS) || text.start_with?('#', '![', '[![', '|')
+        return true if furniture?(text)
+        return false if text.match?(MARKER) || text.match?(STOPS) || text.start_with?('#', '![', '[![', '|')
 
         plain = NeedItems.clean(text.gsub(LINK, ' ').sub(NeedItems::NUMBERED, ''))
         plain.size <= 70 && !text.gsub(LINK, ' ').strip.match?(/[a-z]{2}[.!?]\z/i) && !plain.match?(SENTENCE)
