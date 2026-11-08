@@ -660,6 +660,8 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
   text-transform: uppercase;
 }
 .needs__get a:hover { background: var(--need-hover); color: #fff; text-decoration: none; }
+.needs__get .needs__alt { background: none; color: var(--need-ink); font: 13px/1 var(--body); letter-spacing: 0; padding: 0; text-transform: none; }
+.needs__get .needs__alt:hover { background: none; color: var(--need-ink); text-decoration: underline; }
 .needs__plain { display: grid; gap: var(--space); margin: calc(var(--space) * 3) 0 0; padding-left: calc(var(--space) * 4.5); }
 .needs__plain:first-child { margin-top: 0; }
 .needs__plain small { color: var(--text-faint); }

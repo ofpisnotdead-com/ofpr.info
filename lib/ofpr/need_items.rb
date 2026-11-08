@@ -14,6 +14,7 @@ module Ofpr
     SKIPPED = /\A(?:or|and|update|none|\+)\z|\Aby\s/i
     FROM = /\s*\bfrom[\s*_]*\z/i
     CUT = /\[[^\]]*\z/
+    POSSESSIVE = /\A[^\s\[]+['\u00B4]s\z/
     NO_SIZE = /\[\s*[kmg]?b\s*\]/i
     DECORATION = %r{!\[[^\]]*\]\(/ofpgm/images/[^)]*\)}
     INTERNAL = %r{\A/?(?:[a-z-]+/)*(\d+-[\w-]*)(?:\.html)?\z}
@@ -29,27 +30,52 @@ module Ofpr
 
       private
 
-      # "Name [size] from" ends a line whose link the next one carries, when it does.
+      # "Name [size] from" ends a line whose link the next one carries, when it does,
+      # and a stray line break can cut a size or a name in two, even across a blank line.
       def joined(lines)
         lines.each_with_object([]) do |line, out|
           last = out.last
-          hanging = last && !last.match?(LINK) &&
-                    (last.match?(CUT) || (last.match?(FROM) && line.match?(IN_LINK)))
-          hanging ? out[-1] = "#{last.rstrip} #{line.strip}" : out << line
+          next if line.strip.empty? && cut?(last)
+
+          hanging?(last, line) ? out[-1] = "#{last.rstrip} #{line.strip}" : out << line
         end
       end
 
+      def hanging?(last, line) = cut?(last) || (unlinked?(last) && last.match?(FROM) && line.match?(IN_LINK))
+
+      def cut?(line) = unlinked?(line) && (line.match?(CUT) || line.strip.match?(POSSESSIVE))
+
+      def unlinked?(line) = line && !line.match?(LINK)
+
       def line_items(line)
+        found, rest = linked_items(line)
+        tail = rest.gsub(NOISE, '')
+        found << plain_item(tail) if found.empty? && !tail.empty?
+        found.compact
+      end
+
+      def linked_items(line)
         last = 0
-        found = line.to_enum(:scan, LINK).filter_map do
+        found = []
+        line.to_enum(:scan, LINK).each do
           match = Regexp.last_match
           before = line[last...match.begin(0)]
           last = match.end(0)
-          link_item(match[1], bare(match[2]), before) unless match[1].strip.start_with?('![')
+          add_link(found, match[1], bare(match[2]), before)
         end
-        tail = line[last..].to_s.gsub(NOISE, '')
-        found << plain_item(tail) if found.empty? && !tail.empty?
-        found.compact
+        [found, line[last..].to_s]
+      end
+
+      def add_link(found, label, url, before)
+        return if label.strip.start_with?('![')
+        return found.last[:alt] = address(url) if other_mirror?(found, label, before)
+
+        found << link_item(label, url, before)
+      end
+
+      # "... from [FTP#1](a) or [FTP#2](b)" offers the same pack from a second mirror.
+      def other_mirror?(found, label, before)
+        found.any? && label.delete('*_').strip.match?(HOSTS) && before.gsub(NOISE, '').strip.match?(/\A(?:or)?\z/i)
       end
 
       def link_item(label, url, before)

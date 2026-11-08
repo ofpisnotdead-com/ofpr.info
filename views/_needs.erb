@@ -2,7 +2,8 @@
   <p class="needs__title"><span><%= title %></span><% if total %><span class="needs__total"><%= linked.size > 3 ? "#{linked.size} files, #{total}" : "#{total} in all" %></span><% end %></p>
   <% if linked.size.between?(1, 3) %><div class="needs__row">
     <% linked.each do |item| %><a class="need" href="<%= item['url'] %>"><span class="need__name"><%= item['name'] %></span><span class="need__about"><%= need_about(item) %></span></a>
-    <% if pages[item['url']] %><a class="need__page" href="<%= page_url(pages[item['url']]) %>">Addon page</a>
+    <% if item['alt'] %><a class="need__page" href="<%= item['alt'] %>">Mirror 2</a>
+    <% end %><% if pages[item['url']] %><a class="need__page" href="<%= page_url(pages[item['url']]) %>">Addon page</a>
     <% end %><% end %></div>
   <% elsif linked.any? %><div class="needs__table-wrap">
     <table class="needs__table">
@@ -12,7 +13,7 @@
           <td><%= item['name'] %></td>
           <td class="needs__size"><%= item['size'] %></td>
           <td><% if pages[item['url']] %><a class="need__page" href="<%= page_url(pages[item['url']]) %>">Page</a><% elsif item['kind'] == 'page' %><a class="need__page" href="<%= item['url'] %>">Page</a><% end %></td>
-          <td class="needs__get"><% unless item['kind'] == 'page' %><a href="<%= item['url'] %>"><%= item['kind'] == 'file' ? 'Get' : 'Site' %></a><% end %></td>
+          <td class="needs__get"><% unless item['kind'] == 'page' %><% if item['alt'] %><a class="needs__alt" href="<%= item['alt'] %>">Mirror 2</a> <% end %><a href="<%= item['url'] %>"><%= item['kind'] == 'file' ? 'Get' : 'Site' %></a><% end %></td>
         </tr>
         <% end %></tbody>
     </table>
