@@ -27,4 +27,13 @@ RSpec.describe Ofpr::Port do
     expect(described_class.check('<img src="/ofpgm/a.jpg">'))
       .to include('1 pictures became 2 in the markdown')
   end
+
+  it 'names a shape the markdown made out of a character somebody typed' do
+    expect(described_class.check('<p>&gt; one</p>'))
+      .to eq(['the markdown invented 1 <blockquote>'])
+  end
+
+  it 'says nothing about a list made out of the dashes an author typed' do
+    expect(described_class.check('<p>- one<br>- two</p>')).to be_empty
+  end
 end
