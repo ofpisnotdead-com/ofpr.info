@@ -30,6 +30,36 @@ RSpec.describe 'the site', type: :request do
     end
   end
 
+  describe 'what a page says when it is shared' do
+    it 'shares an article with its own picture, at full size' do
+      insert_article(id: 1, url_path: '/1-a', title: 'A thing',
+        body_html: '<a href="/ofpgm/big.jpg"><img src="/ofpgm/small.jpg"></a>')
+
+      get '/1-a.html'
+
+      expect(last_response.body).to include('<meta property="og:image" content="http://example.org/ofpgm/big.jpg">')
+      expect(last_response.body).to include('<meta property="og:type" content="article">')
+    end
+
+    it 'shares the site card rather than a thumbnail with nothing behind it' do
+      insert_page(body_html: '<a href="/mods.html#one"><img src="/ofpgm/mods-shot.gif"></a>')
+
+      get '/mods.html'
+
+      expect(last_response.body).to include('<meta property="og:image" content="http://example.org/images/share.jpg">')
+    end
+
+    it 'shares the site card and the site description on a listing' do
+      insert_article(id: 1, url_path: '/1-a', title: 'A thing')
+
+      get '/'
+
+      expect(last_response.body).to include('<meta property="og:image" content="http://example.org/images/share.jpg">')
+      expect(last_response.body).to include('<meta property="og:type" content="website">')
+      expect(last_response.body).to include(Ofpr::App::DESCRIPTION)
+    end
+  end
+
   describe 'a menu page' do
     it 'renders its body' do
       insert_page(body_html: '<p>every mod</p>')

@@ -6,6 +6,13 @@
   <title><%= page_title %></title>
   <% if meta_description %><meta name="description" content="<%= meta_description %>">
   <% end %><link href="<%= canonical %>" rel="canonical">
+  <meta property="og:site_name" content="OFP.info 2.5">
+  <meta property="og:type" content="<%= share_type %>">
+  <meta property="og:title" content="<%= share_title %>">
+  <meta property="og:description" content="<%= share_description %>">
+  <meta property="og:url" content="<%= absolute(canonical) %>">
+  <meta property="og:image" content="<%= share_image %>">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/images/favicon.ico" sizes="32x32">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
