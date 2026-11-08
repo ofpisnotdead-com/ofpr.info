@@ -1,8 +1,11 @@
 require 'json'
 require 'rack/utils'
+require 'strscan'
 
 MIRROR = ENV.fetch('MIRROR', File.expand_path('../ofp-archive-catalog/ofpr-mirror', __dir__))
 SEED = File.expand_path('db/seed.json', __dir__)
+OLD_IDS = File.expand_path('db/old_ids.tsv', __dir__)
+DUMP = ENV.fetch('DUMP', File.join(MIRROR, '_source/ofp-Fri.sql'))
 
 def ofpr
   require_relative 'lib/ofpr'
@@ -32,7 +35,8 @@ namespace :db do
       table.delete
       rows.each { |row| table.insert(insertable(row)) }
     end
-    puts "seeded #{seed[:articles].size} articles and #{seed[:pages].size} pages"
+    old = ofpr::OldId.load!
+    puts "seeded #{seed[:articles].size} articles, #{seed[:pages].size} pages and #{old} old ids"
   end
 end
 
@@ -48,7 +52,9 @@ namespace :mirror do
     end
     featured = mark_featured(table)
     pages = import_menu_pages
-    puts "imported #{ok} articles, #{failed} unusable, #{featured} featured, #{pages} menu pages"
+    old = ofpr::OldId.load!
+    puts "imported #{ok} articles, #{failed} unusable, #{featured} featured, " \
+         "#{pages} menu pages, #{old} old ids"
     Rake::Task['youtube:embed'].invoke
   end
 
@@ -79,6 +85,24 @@ namespace :youtube do
       end
     end
     puts "#{changed} bodies #{ENV['DRY_RUN'] ? 'would change' : 'changed'}"
+  end
+end
+
+namespace :old_ids do
+  desc 'Rebuild db/old_ids.tsv from the original database (DUMP=path)'
+  task :build do
+    abort "no dump at #{DUMP}" unless File.exist?(DUMP)
+
+    by_time = ofpr::Article.dataset.select(:id, :published_at, :title).all
+      .group_by { |row| row[:published_at]&.strftime('%Y-%m-%d %H:%M:%S') }
+    pairs = old_articles(DUMP).map { |row| [row[:id], matching_id(row, by_time)] }
+    File.write(OLD_IDS, old_ids_file(pairs))
+    puts "wrote #{pairs.size} old ids, #{pairs.count(&:last)} of them resolved, to #{OLD_IDS}"
+  end
+
+  desc 'Load db/old_ids.tsv'
+  task :load do
+    puts "loaded #{ofpr::OldId.load!} old ids"
   end
 end
 
@@ -416,4 +440,79 @@ def extract(path)
   row
 rescue ofpr::Extractor::Invalid
   nil
+end
+
+OLD_INSERT = 'INSERT INTO `english` VALUES '.freeze
+QUOTED = /(?:[^'\\]|\\.)*/m
+ESCAPES = {'n' => "\n", 'r' => "\r", 't' => "\t", '0' => "\0", 'Z' => "\x1A"}.freeze
+# id, rok, mesic, den, cas, sekce, autor, nadpis. The body follows and is skipped.
+OLD_FIELDS = 8
+
+def old_articles(path)
+  rows = []
+  File.foreach(path, encoding: Encoding::BINARY) do |line|
+    next unless line.start_with?(OLD_INSERT)
+
+    each_tuple(line) { |tuple| rows << old_row(tuple) }
+  end
+  rows
+end
+
+def old_row(tuple)
+  date = format('%<y>04d-%<m>02d-%<d>02d', y: tuple[1].to_i, m: tuple[2].to_i, d: tuple[3].to_i)
+  {id: Integer(tuple[0]),
+   at: "#{date} #{tuple[4]}",
+   title: tuple[7].to_s.dup.force_encoding('UTF-8').scrub('?')}
+end
+
+def each_tuple(line)
+  scanner = StringScanner.new(line)
+  scanner.skip_until(/VALUES /)
+  while scanner.skip(/\(/)
+    row = []
+    loop do
+      row << read_field(scanner, keep: row.size < OLD_FIELDS)
+      break unless scanner.skip(/,/)
+    end
+    scanner.skip(/\)/)
+    yield row
+    scanner.skip(/,/)
+  end
+end
+
+def read_field(scanner, keep: true)
+  return scanner.scan(/[^,)]*/) unless scanner.skip(/'/)
+
+  text = scanner.scan(QUOTED)
+  scanner.skip(/'/)
+  keep ? unescape(text) : nil
+end
+
+def unescape(text)
+  text.to_s.gsub(/\\(.)/m) { ESCAPES.fetch(Regexp.last_match(1), Regexp.last_match(1)) }
+end
+
+def matching_id(row, by_time)
+  candidates = by_time[row[:at]].to_a
+  return if candidates.empty?
+  return candidates.first[:id] if candidates.one?
+
+  named = candidates.select { |each| comparable(each[:title]) == comparable(row[:title]) }
+  (named.one? ? named : candidates).map { |each| each[:id] }.max
+end
+
+def comparable(title)
+  ofpr::Prose.decoded(title).downcase.gsub(/[^a-z0-9]/, '')
+end
+
+OLD_IDS_HEADER = <<~TEXT.freeze
+  # The old site's article ids and the ids the archive serves the same articles under.
+  # Built by `rake old_ids:build` from the English articles in the original database,
+  # joined on the moment each was published. A row with no second field is an article
+  # the rebuild does not carry, and all of those are the screenshots section.
+TEXT
+
+def old_ids_file(pairs)
+  lines = pairs.sort_by(&:first).map { |old, article| "#{old}\t#{article}" }
+  "#{OLD_IDS_HEADER}#{lines.join("\n")}\n"
 end

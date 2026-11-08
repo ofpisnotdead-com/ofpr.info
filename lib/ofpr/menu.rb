@@ -5,8 +5,7 @@ module Ofpr
     ITEMS = [
       {label: 'News', path: '/'},
       {label: 'Search', path: '/search'},
-      {label: 'Convert',
-       url: 'https://forums.bohemia.net/forums/topic/217443-ofpinfo-20/?do=findComment&comment=3414490'},
+      {label: 'Convert', path: '/convert'},
       {label: 'Addons', path: '/addons', children: [
         {label: 'Weapons', path: '/addons/weapons'},
         {label: 'Vehicles', path: '/addons/vehicles'},

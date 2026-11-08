@@ -443,6 +443,17 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
 .result__text { color: var(--text); margin: calc(var(--space) * 3) 0 0; }
 .highlight { background: rgba(216, 39, 49, .14); color: var(--text); font-weight: 600; }
 
+/* 8c ---- converting an old link -------------------------------------------- */
+
+.convert code {
+  background: var(--surface-dim);
+  border-radius: var(--radius);
+  font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace;
+  padding: 2px calc(var(--space) * 1.5);
+  white-space: nowrap;
+}
+.convert .finder:last-child { border-bottom: 0; padding-bottom: 0; }
+
 /* 9 ---- the ported body ---------------------------------------------------- */
 
 .body { margin-top: calc(var(--space) * 6); }

@@ -1,6 +1,7 @@
 require 'cgi'
 require 'sinatra/base'
 require_relative '../ofpr'
+require_relative 'redirects'
 require_relative 'presenter'
 
 module Ofpr
@@ -35,7 +36,7 @@ module Ofpr
       set :dump_errors, true
     end
 
-    helpers Presenter
+    helpers Redirects, Presenter
 
     helpers do
       def pager(base, start, total) = Pager.new(base, start, total)
@@ -141,7 +142,9 @@ module Ofpr
 
     # The original served the front page at both, and old links still point at the php.
     get('/') { river }
-    get('/index.php') { river }
+    get('/index.php') { showthis(params['showthis']) }
+
+    get(%r{/convert(?:\.html)?}) { convert }
 
     # Both forms post: the search page's own, and the module in the header, which posts
     # to the site root the way Joomla's index.php took it. The url contract is the get,
@@ -218,7 +221,7 @@ module Ofpr
 
     def serve_article(url_path)
       @article = Article.by_url(url_path)
-      halt 404 unless @article
+      return moved_to(Article.by_tail(url_path)) unless @article
 
       @page_title = @article[:title]
       @canonical = @article[:url_path]
