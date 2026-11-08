@@ -145,4 +145,12 @@ RSpec.describe Ofpr::Markdown do
   it 'still reads a rule standing on its own as a rule' do
     expect(convert('<p>one</p><p>---</p><p>two</p>')).to eq("one\n\n---\n\ntwo")
   end
+
+  it 'gives up the emphasis marks around a list rather than flatten it' do
+    expect(convert('<ul><i><li>one</li><li>two</li></i></ul>')).to eq("- one\n- two")
+  end
+
+  it 'gives up the emphasis marks around a heading as well' do
+    expect(convert('<b><h3>Mission I.</h3></b>')).to eq('### Mission I.')
+  end
 end
