@@ -20,8 +20,8 @@ module Ofpr
       private
 
       def downloads_only?(line)
-        line.gsub(Blocks::ELEMENT, '').strip.empty? && downloads(line).any? &&
-          downloads(line).size == line.scan(Blocks::ELEMENT).size
+        rest = line.gsub(Blocks::ELEMENT, '').gsub(Blocks::EMPHASIS_MARKS, '')
+        rest.strip.empty? && downloads(line).any? && downloads(line).size == line.scan(Blocks::ELEMENT).size
       end
 
       def downloads(text)

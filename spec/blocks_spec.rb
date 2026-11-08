@@ -36,6 +36,12 @@ RSpec.describe Ofpr::Blocks do
     expect(blocks.map { |block| block[:type] }).to eq(%w[prose])
   end
 
+  it 'reads a download wrapped in bold as a download' do
+    blocks = convert('**[DOWNLOAD (FTP#1) - BT MAZ-537 [7,8 MB]](https://files.ofpisnotdead.com/files/ofpd/u/BT_MAZ537.7z)**')
+
+    expect(blocks.map { |block| block[:type] }).to eq(%w[download])
+  end
+
   it 'reads the screenshot, the table and the download as one card' do
     expect(convert(card)).to eq([{
       type: 'card',

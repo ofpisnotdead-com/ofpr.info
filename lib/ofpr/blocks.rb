@@ -25,6 +25,7 @@ module Ofpr
     MIRROR = /(?:ftp|mirror)\s*#?\s*(\d)/i
     WRAPPED = /\A\[([^\[\]]*)\]\z/
     BOLD = '**'.freeze
+    EMPHASIS_MARKS = /[*_]+/
 
     class << self
       def of(markdown)
@@ -43,7 +44,7 @@ module Ofpr
 
       def block(chunk)
         return card(chunk) if chunk.match?(TABLE)
-        return prose(chunk) unless chunk.gsub(ELEMENT, '').strip.empty?
+        return prose(chunk) unless bare?(chunk)
 
         parts = elements(chunk)
         return download(parts) if parts.all? { |part| download?(part) }
@@ -74,6 +75,9 @@ module Ofpr
       end
 
       def prose(chunk) = {type: 'prose', markdown: chunk}
+
+      # Nothing but links and pictures, give or take the emphasis wrapped round them.
+      def bare?(chunk) = chunk.gsub(ELEMENT, '').gsub(EMPHASIS_MARKS, '').strip.empty?
 
       def gallery(parts) = {type: 'gallery', pictures: parts.map { |part| picture(part) }}
 
