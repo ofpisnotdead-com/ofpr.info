@@ -15,6 +15,14 @@ RSpec.describe Ofpr::Blocks do
     MARKDOWN
   end
 
+  it 'gives a video its player, in place of a line that only links it and after a sentence naming it' do
+    blocks = convert("Watch it [here](http://youtube.com/watch?v=kbHXMC2P-wg).\n\n" \
+                     'http://www.youtube.com/v/tPzvQRzPZtU')
+
+    expect(blocks.map { |block| [block[:type], block[:id]] })
+      .to eq([['prose', nil], %w[video kbHXMC2P-wg], %w[video tPzvQRzPZtU]])
+  end
+
   it 'reads the screenshot, the table and the download as one card' do
     expect(convert(card)).to eq([{
       type: 'card',
