@@ -12,6 +12,7 @@ require_relative 'ofpr/pager'
 require_relative 'ofpr/prose'
 require_relative 'ofpr/search_query'
 require_relative 'ofpr/structured_data'
+require_relative 'ofpr/withdrawn'
 
 module Ofpr
   def self.root = File.expand_path('..', __dir__)
