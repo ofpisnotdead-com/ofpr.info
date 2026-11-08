@@ -431,6 +431,22 @@ RSpec.describe 'the site', type: :request do
     end
   end
 
+  describe 'a withdrawn article' do
+    it 'answers 410 at its url, under any slug, and from its old id' do
+      insert_old_id(10_849, 9858)
+
+      ['/9858-area-51-mod-busted.html', '/9858-renamed.html'].each do |path|
+        get path
+
+        expect(last_response.status).to eq(410)
+        expect(last_response.body).to include('This article is private')
+      end
+
+      get '/index.php', showthis: '10849'
+      expect(last_response.status).to eq(410)
+    end
+  end
+
   describe 'a link kept from the old site' do
     it 'sends an old id to the article the archive serves now' do
       insert_article(id: 9845, url_path: '/9845-a-thing')

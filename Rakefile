@@ -208,14 +208,18 @@ end
 
 desc 'Check every captured listing against what the data lists (MIRROR=path)'
 task :compare do
-  same = differ = unusable = 0
-  listing_captures.each do |file, url|
-    capture = File.read(File.join(MIRROR, file), encoding: 'UTF-8')
+  same = differ = unusable = shifted = 0
+  captures = listing_captures.map { |file, url| [url, File.read(File.join(MIRROR, file), encoding: 'UTF-8')] }
+  withdrawn = withdrawn_from(captures)
+  captures.each do |url, capture|
     # A capture that lost its closing tag was truncated in transit and lists nothing.
     next unusable += 1 unless capture.include?('</html>')
 
     want = listed_in(capture).map(&:to_i)
     next unusable += 1 if want.empty?
+
+    listing, start = listing_place(url)
+    next shifted += 1 if withdrawn[listing] && start >= withdrawn[listing]
 
     got = listed_by_data(url)
     # A listing that fits on one page carries no pager and so no count to compare.
@@ -232,7 +236,7 @@ task :compare do
     end
   end
   puts "#{same} listings hold what the data holds, #{differ} differ, " \
-       "#{unusable} captures list nothing"
+       "#{unusable} captures list nothing, #{shifted} are shifted by a withdrawn article"
   abort "#{differ} listings differ" unless differ.zero?
 end
 
@@ -284,7 +288,8 @@ task default: :check
 # Every <id>-<slug>.html below the capture root, at any depth: the river sits at the
 # root and the addon and mission databases sit under their sections.
 def article_pages(root)
-  Dir.glob("#{root}/**/[0-9]*-*.html").reject { |p| p.include?('/_source/') }.sort
+  Dir.glob("#{root}/**/[0-9]*-*.html")
+    .reject { |p| p.include?('/_source/') || ofpr::Withdrawn.include?(File.basename(p)[/\A\d+/]) }.sort
 end
 
 # A seed has to cover the river and every section, so take a spread from each directory.
@@ -328,6 +333,19 @@ def listed_in(html)
   region = html[at...(html.index(PAGER_START, at) || html.length)]
   region.split(ITEM_SPLIT)[1..].to_a.filter_map { |item| item[ITEM_ID, 1] }
 end
+
+# A withdrawn article leaves the page that listed it, and every later page of that
+# listing, one item short, so those captures no longer say what the data should list.
+def withdrawn_from(captures)
+  captures.each_with_object({}) do |(url, capture), from|
+    next unless listed_in(capture).any? { |id| ofpr::Withdrawn.include?(id) }
+
+    listing, start = listing_place(url)
+    from[listing] = [from[listing], start].compact.min
+  end
+end
+
+def listing_place(url) = [url.sub(/[?&]start=\d+/, ''), url[/[?&]start=(\d+)/, 1].to_i]
 
 # What the data puts on that page, as ids in order. This is the whole of the check:
 # the markup is ours now, the ids and their order are the archive's.

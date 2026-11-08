@@ -220,6 +220,7 @@ module Ofpr
     end
 
     def serve_article(url_path)
+      withdrawn if Withdrawn.include?(url_path[Article::ID_IN_PATH, 1])
       @article = Article.by_url(url_path)
       return moved_to(Article.by_tail(url_path)) unless @article
 
