@@ -66,27 +66,6 @@ namespace :mirror do
   end
 end
 
-namespace :youtube do
-  desc 'Rebuild the blocks of every body naming a YouTube video (DRY_RUN=1 to only report)'
-  task :embed do
-    changed = 0
-    [ofpr::Article.dataset, ofpr::Page.dataset].each do |table|
-      rows = table.where(Sequel.ilike(:body_markdown, '%youtu%')).select(:url_path, :body_markdown, :body_blocks)
-      rows.each do |row|
-        blocks = JSON.parse(JSON.generate(ofpr::Blocks.of(row[:body_markdown])))
-        next if blocks == row[:body_blocks].to_a
-
-        changed += 1
-        puts "  #{row[:url_path]}: #{blocks.filter_map { |block| block['id'] if block['type'] == 'video' }.join(', ')}"
-        next if ENV['DRY_RUN']
-
-        table.where(url_path: row[:url_path]).update(body_blocks: JSON.generate(blocks))
-      end
-    end
-    puts "#{changed} bodies #{ENV['DRY_RUN'] ? 'would change' : 'changed'}"
-  end
-end
-
 namespace :old_ids do
   desc 'Rebuild db/old_ids.tsv from the original database (DUMP=path)'
   task :build do
@@ -141,6 +120,24 @@ namespace :port do
     faults.each { |path, complaints| puts "  #{path}: #{complaints.join('; ')}" }
     puts "#{bodies.size - faults.size} of #{bodies.size} bodies ported with nothing lost"
     abort "#{faults.size} bodies lost something" unless faults.empty?
+  end
+
+  desc 'Store the blocks these rules write for every body whose blocks differ (DRY_RUN=1 to only report)'
+  task :rebuild do
+    changed = 0
+    [ofpr::Article.dataset, ofpr::Page.dataset].each do |table|
+      table.select(:url_path, :body_markdown, :body_blocks).each do |row|
+        blocks = JSON.parse(JSON.generate(ofpr::Blocks.of(row[:body_markdown])))
+        next if blocks == row[:body_blocks].to_a
+
+        changed += 1
+        puts "  #{row[:url_path]}"
+        next if ENV['DRY_RUN']
+
+        table.where(url_path: row[:url_path]).update(body_blocks: JSON.generate(blocks))
+      end
+    end
+    puts "#{changed} bodies #{ENV['DRY_RUN'] ? 'would change' : 'changed'}"
   end
 
   desc 'Print one body as markdown (URL=/path)'

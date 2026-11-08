@@ -23,6 +23,19 @@ RSpec.describe Ofpr::Blocks do
       .to eq([['prose', nil], %w[video kbHXMC2P-wg], %w[video tPzvQRzPZtU]])
   end
 
+  it 'reads a download written on the line under its label as a download' do
+    blocks = convert("Latest downloadable version:  \n[**DOWNLOAD - Swissmod V1.0 [78 Mb]**](https://files.ofpisnotdead.com/files/ofpd/a/SwissMOD_Setup.exe)")
+
+    expect(blocks.map { |block| block[:type] }).to eq(%w[prose download])
+    expect(blocks.last[:links].first[:file]).to eq('SwissMOD_Setup.exe')
+  end
+
+  it 'leaves what an addon needs in its sentence' do
+    blocks = convert("Needed:  \n[**DOWNLOAD (FTP#1) - Cold War Assault v.1.99 [525 MB]**](https://files.ofpisnotdead.com/files/ofpd/p/CWA.zip)")
+
+    expect(blocks.map { |block| block[:type] }).to eq(%w[prose])
+  end
+
   it 'reads the screenshot, the table and the download as one card' do
     expect(convert(card)).to eq([{
       type: 'card',
