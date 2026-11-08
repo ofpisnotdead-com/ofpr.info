@@ -280,8 +280,6 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
 }
 .item:first-child { padding-top: 0; }
 .item:last-child { border-bottom: 0; padding-bottom: 0; }
-/* An item with no picture keeps the column its title starts in. */
-.item__text { grid-column: 2; }
 
 .item__shot { display: block; }
 .item__shot img {
@@ -294,6 +292,35 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
   background: var(--surface-dim);
 }
 .item__shot:hover img { border-color: var(--link); }
+
+/* A picture the archive never had, or whose file is gone. */
+.missing {
+  align-items: center;
+  aspect-ratio: 4 / 3;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 2px;
+  color: var(--text-faint);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space) * 1.5);
+  justify-content: center;
+  max-width: 100%;
+  width: 160px;
+}
+.item__shot .missing { width: 100%; }
+.item__shot:hover .missing { border-color: var(--link); }
+.missing svg {
+  fill: none;
+  height: 40px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  width: 40px;
+}
+.missing .missing__slash { stroke-width: 2.5; }
+.missing__label { font: 600 9px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; }
 
 .item__title { font-size: 21px; margin-bottom: calc(var(--space) * 2); }
 .item__title a { color: var(--text); }

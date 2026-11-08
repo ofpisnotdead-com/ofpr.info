@@ -1,8 +1,8 @@
 <article class="item">
-  <% shot = first_picture(article) %><% if shot %><a class="item__shot" href="<%= page_url(article[:url_path]) %>">
-    <img src="<%= asset(shot['thumb']) %>" alt="" loading="lazy">
+  <% shot = first_picture(article) %><a class="item__shot" href="<%= page_url(article[:url_path]) %>">
+    <% if missing_picture?(shot) %><%== erb :_missing %><% else %><img src="<%= asset(shot['thumb']) %>" alt="" loading="lazy"><% end %>
   </a>
-  <% end %><div class="item__text">
+  <div class="item__text">
     <p class="meta">
       <a class="chip" href="<%= page_url(section_path_of(article)) %>"><%= section_label_of(article) %></a>
       <span><%= date(article[:published_at]) %></span>

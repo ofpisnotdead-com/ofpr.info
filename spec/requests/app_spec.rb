@@ -460,6 +460,19 @@ RSpec.describe 'the site', type: :request do
     end
   end
 
+  describe 'a missing picture' do
+    it 'shows the placeholder for an item without a picture and for the old stand-in' do
+      insert_article(id: 5, url_path: '/5-no-picture', title: 'No picture here')
+      insert_article(id: 6, url_path: '/6-stand-in', title: 'Old stand-in',
+        body_html: '<p><img src="/ofpgm/news/pics/sectionpics/NoAvail.jpg"></p>')
+
+      get '/'
+
+      expect(last_response.body.scan('<span class="missing" role="img" aria-label="No picture">').size).to eq(3)
+      expect(last_response.body).not_to include('NoAvail.jpg')
+    end
+  end
+
   describe 'a withdrawn article' do
     it 'answers 410 at its url, under any slug, and from its old id' do
       insert_old_id(10_849, 9858)
