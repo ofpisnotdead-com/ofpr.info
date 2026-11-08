@@ -10,6 +10,9 @@ module Ofpr
   # which is where a url holding a bracket or a space goes wrong.
   module Port
     NOT_WORD = /[^\p{Alnum}]+/
+    # Shapes a markdown reader makes out of a character somebody typed. A list and a rule
+    # are not among them: hundreds of these bodies draw those on purpose and mean them.
+    INVENTED = %w[blockquote h1 h2 h3 h4 h5 h6 table].freeze
 
     class << self
       # The complaints about one body, empty when the port kept everything. The blocks
@@ -22,10 +25,18 @@ module Ofpr
         after = Markdown.dom(render(markdown))
         blocks = Blocks.of(markdown)
         [*kept(before, after, 'the markdown'),
+         *invented(before, after),
          *kept(after, Markdown.dom(render(unblock(blocks))), 'the blocks'),
          unstable(html, markdown),
          stale(stored, markdown, 'markdown'),
          stale(stored_blocks, json(blocks), 'blocks')].compact
+      end
+
+      def invented(before, after)
+        INVENTED.filter_map do |tag|
+          got = after.css(tag).size - before.css(tag).size
+          "the markdown invented #{got} <#{tag}>" if got.positive?
+        end
       end
 
       # Same links, same words, same pictures, going in and coming out again.
