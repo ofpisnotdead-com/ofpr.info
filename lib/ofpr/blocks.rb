@@ -1,5 +1,6 @@
 require 'uri'
 require_relative 'links'
+require_relative 'paragraph'
 require_relative 'youtube'
 
 module Ofpr
@@ -28,11 +29,17 @@ module Ofpr
     class << self
       def of(markdown)
         chunks = markdown.to_s.split(BLANK).map(&:strip).reject(&:empty?)
-        pieces = chunks.flat_map { |chunk| chunk.match?(TABLE) ? [chunk] : Youtube.split(chunk) }
+        pieces = chunks.flat_map { |chunk| pieces(chunk) }
         Youtube.after_sentences(join(pieces.map { |piece| piece.is_a?(Hash) ? piece : block(piece) }))
       end
 
       private
+
+      def pieces(chunk)
+        return [chunk] if chunk.match?(TABLE)
+
+        Youtube.split(chunk).flat_map { |piece| piece.is_a?(Hash) ? [piece] : Paragraph.apart(piece) }
+      end
 
       def block(chunk)
         return card(chunk) if chunk.match?(TABLE)
