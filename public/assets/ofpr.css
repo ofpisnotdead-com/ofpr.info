@@ -471,6 +471,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
 .body h4, .body h5, .body h6 { font-size: 18px; }
 .body hr { border: 0; border-top: 1px solid var(--border); margin: calc(var(--space) * 7) 0; }
 .body ul { margin: 0 0 calc(var(--space) * 4); padding-left: calc(var(--space) * 5); }
+.body li > ul { margin-bottom: 0; }
 
 /* The addon card, from the card block: a screenshot, the labelled fields, and the
    downloads, which the body wrote as three paragraphs around a table. */
@@ -516,6 +517,9 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
   max-width: min(320px, 100%);
 }
 .gallery a:hover img { border-color: var(--link); }
+/* A picture standing on its own, not a thumbnail of a bigger one. */
+.gallery--picture { justify-content: center; }
+.gallery--picture img { border: 0; border-radius: 0; max-width: 100%; }
 .has-viewer .gallery a, .has-viewer .card__shot { cursor: zoom-in; }
 
 .video {
