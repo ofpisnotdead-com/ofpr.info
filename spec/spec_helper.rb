@@ -26,6 +26,10 @@ module FixtureHelpers
     row
   end
 
+  def insert_old_id(old_id, article_id = nil)
+    Ofpr::OldId.dataset.insert(old_id: old_id, article_id: article_id)
+  end
+
   def insert_page(**attrs)
     row = {url_path: '/mods', title: 'MODS', body_html: '<p>mods</p>'}.merge(attrs)
     Ofpr::Page.dataset.insert(ported(row))
@@ -47,5 +51,5 @@ RSpec.configure do |config|
   config.include FixtureHelpers
   config.include Rack::Test::Methods, type: :request
 
-  config.before { [Ofpr::Article, Ofpr::Page].each { |model| model.dataset.delete } }
+  config.before { [Ofpr::Article, Ofpr::Page, Ofpr::OldId].each { |model| model.dataset.delete } }
 end

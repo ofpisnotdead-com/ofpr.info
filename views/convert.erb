@@ -1,0 +1,30 @@
+<div class="panel convert">
+  <h1 class="article__title">Convert an old link</h1>
+  <p>Old links work. If you kept one from the old site, swap its domain for
+    <code>ofpr.info</code> and it will take you to the article:
+    <code>ofp.gamepark.cz/index.php?showthis=7256</code> is
+    <a href="/index.php?showthis=7256"><code>ofpr.info/index.php?showthis=7256</code></a> now.</p>
+
+  <p>Or paste the old link below and click Find it.</p>
+
+  <form class="finder" action="/convert.html">
+    <input class="finder__word" type="text" name="link" value="<%= @link %>" placeholder="http://ofp.gamepark.cz/index.php?showthis=7256" aria-label="A link from the old site">
+    <button type="submit">Find it</button>
+  </form>
+
+  <% if @result.found? %><p class="finder__total"><% if @result.old_id %>Old id <strong><%= @result.old_id %></strong> is now<% else %>That one is<% end %>
+    <a href="<%= page_url(@result.article[:url_path]) %>"><%= page_url(@result.article[:url_path]) %></a></p>
+  <div class="stream"><%== erb :_card, locals: {article: @result.article} %></div>
+  <% elsif @result.kind == :dropped %><p class="finder__total">The old site had an article
+    at <strong><%= @result.old_id %></strong>, but the archive does not carry it: the ids
+    that lead nowhere are all its screenshots section, which the rebuild left out.</p>
+  <% elsif @result.kind == :absent %><p class="finder__total">The archive numbers that one
+    <strong><%= @result.article_id %></strong>, but this database does not hold the article.</p>
+  <% elsif @result.kind == :unknown %><p class="finder__total">Nothing here answers to
+    that one. The old site's English articles ran to 10,861, and each of the other
+    languages it published was numbered on its own.</p>
+  <% elsif @result.kind == :unreadable %><p class="finder__total">That does not read like
+    a link from the old site. One carries <code>showthis=</code> and a number, or is a
+    number on its own.</p>
+  <% end %>
+</div>

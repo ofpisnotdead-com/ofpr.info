@@ -1,11 +1,14 @@
 module Ofpr
   module Article
     PER_PAGE = 10
+    ID_IN_PATH = %r{(\d+)-[^/]*\z}
 
     class << self
       def dataset = Database.connection[:articles]
 
       def by_url(url_path) = dataset[url_path: url_path]
+
+      def by_tail(url_path) = dataset[id: url_path[ID_IN_PATH, 1].to_i]
 
       # The front page lists the unsectioned items only; a sectioned one is reached
       # through its own listing. The captured pages run from 10673 down to 2479

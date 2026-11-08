@@ -430,4 +430,77 @@ RSpec.describe 'the site', type: :request do
       expect(last_response.status).to eq(404)
     end
   end
+
+  describe 'a link kept from the old site' do
+    it 'sends an old id to the article the archive serves now' do
+      insert_article(id: 9845, url_path: '/9845-a-thing')
+      insert_old_id(10_834, 9845)
+
+      get '/index.php', showthis: '10834'
+
+      expect(last_response.status).to eq(301)
+      expect(last_response['Location']).to end_with('/9845-a-thing.html')
+    end
+
+    it 'answers 404 for an old id the archive does not carry' do
+      insert_old_id(2282)
+
+      get '/index.php', showthis: '2282'
+
+      expect(last_response.status).to eq(404)
+    end
+
+    it 'sends a bare url to the section the article sits in' do
+      insert_article(id: 1978, section: 'addons/aircrafts',
+        url_path: '/addons/aircrafts/1978-coast-guard')
+
+      get '/1978-coast-guard.html'
+
+      expect(last_response.status).to eq(301)
+      expect(last_response['Location']).to end_with('/addons/aircrafts/1978-coast-guard.html')
+    end
+
+    it 'takes the id as the address when the slug and the section disagree with it' do
+      insert_article(id: 1978, url_path: '/1978-coast-guard')
+
+      get '/addons/units/1978-whatever-was-typed.html'
+
+      expect(last_response.status).to eq(301)
+      expect(last_response['Location']).to end_with('/1978-coast-guard.html')
+    end
+
+    it 'answers 404 for an id no article has' do
+      get '/4242-nothing-here.html'
+
+      expect(last_response.status).to eq(404)
+    end
+  end
+
+  describe 'the converter' do
+    it 'answers a pasted old link with the url that replaced it' do
+      insert_article(id: 9845, url_path: '/9845-a-thing', title: 'A thing')
+      insert_old_id(10_834, 9845)
+
+      get '/convert.html', link: 'http://ofp.gamepark.cz/index.php?showthis=10834'
+
+      expect(last_response).to be_ok
+      expect(last_response.body).to include('/9845-a-thing.html')
+      expect(last_response.body).to include('Old id <strong>10834</strong>')
+    end
+
+    it 'says what became of an article the archive left out' do
+      insert_old_id(2282)
+
+      get '/convert.html', link: '2282'
+
+      expect(last_response.body).to include('does not carry it')
+    end
+
+    it 'offers the form on its own' do
+      get '/convert.html'
+
+      expect(last_response).to be_ok
+      expect(last_response.body).to include('name="link"')
+    end
+  end
 end

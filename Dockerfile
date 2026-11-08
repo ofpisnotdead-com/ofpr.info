@@ -33,6 +33,7 @@ COPY --chown=ofpr:ofpr lib lib
 COPY --chown=ofpr:ofpr views views
 COPY --chown=ofpr:ofpr public public
 COPY --chown=ofpr:ofpr db/migrations db/migrations
+COPY --chown=ofpr:ofpr db/old_ids.tsv db/old_ids.tsv
 
 USER ofpr
 EXPOSE 9292
