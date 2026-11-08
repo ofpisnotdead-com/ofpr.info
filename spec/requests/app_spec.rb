@@ -448,14 +448,14 @@ RSpec.describe 'the site', type: :request do
   end
 
   describe 'a long list of what a download needs' do
-    it 'is a table with the total size, folding after eight' do
+    it 'is a table with the total size, every pack shown' do
       packs = (1..9).map { |n| %(Pack #{n} [#{n} MB] from <a href="https://files.ofpisnotdead.com/files/ofpd/p/#{n}.rar">FTP#1</a>) }
       insert_article(id: 4, url_path: '/4-big-island', body_html: "<p>Needed:<br>#{packs.join('<br>')}</p>")
 
       get '/4-big-island.html'
 
       expect(last_response.body).to include('9 files, 45 MB')
-      expect(last_response.body.scan('<tr data-fold>').size).to eq(1)
+      expect(last_response.body.scan('<td class="needs__size">').size).to eq(9)
       expect(last_response.body).to include('<td>Pack 9</td>')
     end
   end
