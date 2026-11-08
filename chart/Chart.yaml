@@ -1,0 +1,7 @@
+apiVersion: v2
+name: ofpr-info
+description: >-
+  The ofpr.info archive: a Sinatra app and the postgres it reads. The article images
+  are not here - they are on the file server and CDN_BASE points the pages at them.
+type: application
+version: 0.1.0

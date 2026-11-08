@@ -1,0 +1,17 @@
+# public/ofpgm is a symlink into the 6.9 GB mirror; the images are served from the file
+# server and must never be pulled into the build context.
+public/ofpgm
+
+.git
+.github
+.rb
+coverage
+gen-docs
+script
+spec
+tmp
+*.log
+db/seed.json
+compose.yaml
+Rakefile
+rbproject.toml

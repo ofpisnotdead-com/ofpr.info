@@ -1,0 +1,75 @@
+# Defaults only. The real values live in the private CWR-deploy repo beside the other
+# services on the cluster; this file is what they override.
+
+replicaCount: 2
+
+image:
+  repository: ofpr-info/web
+  # Supplied at deploy time: --set image.tag=<git-sha>
+  tag: ''
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+# Renders the pull secret for the self-hosted registry, as the sibling services do.
+registryAuth:
+  enabled: false
+  secretName: registry-pull
+  server: ''
+  username: ''
+  password: ''
+
+service:
+  port: 80
+
+ingress:
+  enabled: false
+  className: nginx
+  host: ''
+  clusterIssuer: ''
+  tlsSecretName: ''
+
+# Where the 53,553 article images are served from. Empty and the app serves and
+# redirects them itself, which is for development only.
+cdnBase: ''
+
+postgres:
+  enabled: true
+  image: postgres:16-alpine
+  database: ofpr
+  username: ofpr
+  # Required. Keep it to characters that need no escaping in a url.
+  password: ''
+  image_pull_policy: IfNotPresent
+  persistence:
+    accessMode: ReadWriteOnce
+    size: 2Gi
+    storageClass: ''
+  resources: {}
+
+probes:
+  liveness:
+    initialDelaySeconds: 15
+    periodSeconds: 20
+    timeoutSeconds: 3
+  readiness:
+    initialDelaySeconds: 3
+    periodSeconds: 10
+    timeoutSeconds: 3
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 192Mi
+  limits:
+    memory: 512Mi
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: [ALL]

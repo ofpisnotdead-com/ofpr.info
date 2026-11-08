@@ -1,0 +1,29 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "ofpr-info.fullname" . }}
+  labels:
+    {{- include "ofpr-info.labels" . | nindent 4 }}
+  annotations:
+    {{- if .Values.ingress.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer | quote }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  tls:
+    - hosts:
+        - {{ required "ingress.host is required when ingress.enabled" .Values.ingress.host | quote }}
+      secretName: {{ include "ofpr-info.tlsSecretName" . }}
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "ofpr-info.fullname" . }}
+                port:
+                  name: http
+{{- end }}
