@@ -282,6 +282,58 @@ RSpec.describe 'the site', type: :request do
     end
   end
 
+  describe 'the failure page' do
+    # Specs let exceptions through so a failing example shows its backtrace; production
+    # does not, and this is what it serves instead.
+    it 'serves the site own page when something raises' do
+      allow(Ofpr::Article).to receive(:river).and_raise('the database went away')
+      Ofpr::App.set(:raise_errors, false)
+      Ofpr::App.set(:show_exceptions, false)
+
+      get '/'
+
+      expect(last_response.status).to eq(500)
+      expect(last_response.body).to include('Something went wrong')
+    ensure
+      Ofpr::App.set(:raise_errors, true)
+      Ofpr::App.set(:show_exceptions, false)
+    end
+  end
+
+  describe 'the health endpoint' do
+    # A pod that cannot reach postgres should still answer the probe, so this must not
+    # touch the database.
+    it 'answers without asking the database anything' do
+      allow(Ofpr::Article).to receive(:dataset).and_raise('the database is gone')
+
+      get '/healthz'
+
+      expect(last_response).to be_ok
+      expect(last_response.body).to eq("ok\n")
+    end
+  end
+
+  describe 'the picture path' do
+    it 'points a picture straight at the cdn rather than at the redirect' do
+      insert_article(body_html: '<img src="/ofpgm/news/a.jpg">')
+      Ofpr::App.set(:cdn_base, 'https://files.example.com/files/ofpgm')
+
+      get '/1-a-thing.html'
+
+      expect(last_response.body).to include('src="https://files.example.com/files/ofpgm/news/a.jpg"')
+    ensure
+      Ofpr::App.set(:cdn_base, '')
+    end
+
+    it 'leaves the path alone when no cdn is configured' do
+      insert_article(body_html: '<img src="/ofpgm/news/a.jpg">')
+
+      get '/1-a-thing.html'
+
+      expect(last_response.body).to include('src="/ofpgm/news/a.jpg"')
+    end
+  end
+
   describe 'the image path' do
     it 'redirects a captured ofpgm url to the cdn' do
       Ofpr::App.set(:cdn_base, 'https://files.example.com/ofpr')

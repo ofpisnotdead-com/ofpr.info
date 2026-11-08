@@ -1,6 +1,6 @@
 <article class="item">
   <% shot = first_picture(article) %><% if shot %><a class="item__shot" href="<%= page_url(article[:url_path]) %>">
-    <img src="<%= shot['thumb'] %>" alt="" loading="lazy">
+    <img src="<%= asset(shot['thumb']) %>" alt="" loading="lazy">
   </a>
   <% end %><div class="item__text">
     <p class="meta">

@@ -20,6 +20,9 @@ module Ofpr
       set :public_folder, File.join(Ofpr.root, 'public')
       set :erb, escape_html: true
       set :cdn_base, ENV.fetch('CDN_BASE', '')
+      # Off in production by default, which would send a 500 to the user and nothing to
+      # the log. The backtrace belongs in the pod's output.
+      set :dump_errors, true
     end
 
     helpers Presenter
@@ -93,6 +96,11 @@ module Ofpr
       def discord_url = DISCORD
     end
 
+    # What both probes ask, and it must not touch postgres. One database stands behind
+    # every pod, so making readiness depend on it would empty the service rather than
+    # route around anything, and restarting ruby has never fixed a database.
+    get('/healthz') { [200, {'content-type' => 'text/plain'}, "ok\n"] }
+
     # The original served the front page at both, and old links still point at the php.
     get('/') { river }
     get('/index.php') { river }
@@ -125,6 +133,12 @@ module Ofpr
     not_found do
       content_type :html
       erb :not_found
+    end
+
+    error do
+      content_type :html
+      status 500
+      erb :error
     end
 
     private

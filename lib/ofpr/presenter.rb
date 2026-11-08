@@ -6,6 +6,16 @@ module Ofpr
 
     def prose(markdown) = Prose.to_html(markdown)
 
+    # A picture lives under `/ofpgm`, which is the mirror in development and the file
+    # server in production. Pointing straight at it saves the redirect the route would
+    # otherwise answer with, once for every picture on the page.
+    def asset(path)
+      base = settings.cdn_base.to_s.delete_suffix('/')
+      return path if base.empty? || !path.to_s.start_with?('/ofpgm/')
+
+      "#{base}#{path.delete_prefix('/ofpgm')}"
+    end
+
     # A field holds a line, not a paragraph, so the wrapper kramdown puts round it
     # comes off; a link inside it survives.
     def inline(markdown) = Prose.to_html(markdown).strip.sub(%r{\A<p>(.*)</p>\z}m, '\\1')
