@@ -1,6 +1,6 @@
 {{- if .Values.ingress.enabled }}
 {{- $host := required "ingress.host is required when ingress.enabled" .Values.ingress.host }}
-{{- $hosts := concat (list $host) .Values.ingress.extraHosts }}
+{{- $certHosts := concat (list $host) .Values.ingress.redirectHosts }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -18,21 +18,19 @@ spec:
   ingressClassName: {{ .Values.ingress.className }}
   tls:
     - hosts:
-        {{- range $hosts }}
+        {{- range $certHosts }}
         - {{ . | quote }}
         {{- end }}
       secretName: {{ include "ofpr-info.tlsSecretName" . }}
   rules:
-    {{- range $hosts }}
-    - host: {{ . | quote }}
+    - host: {{ $host | quote }}
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: {{ include "ofpr-info.fullname" $ }}
+                name: {{ include "ofpr-info.fullname" . }}
                 port:
                   name: http
-    {{- end }}
 {{- end }}
