@@ -60,6 +60,16 @@ RSpec.describe 'the site', type: :request do
       expect(last_response.body).to include('/?expand=1&amp;limit=1000&amp;start=1000">Next')
     end
 
+    it 'drops the aside and keeps it dropped from one page to the next when asked to be wide' do
+      11.times { |i| insert_article(id: i + 1, url_path: "/#{i + 1}-a") }
+
+      get '/', expand: '1', wide: '1'
+
+      expect(last_response.body).to include('<main class="page page--wide">')
+      expect(last_response.body).not_to include('<aside')
+      expect(last_response.body).to include('/?expand=1&amp;wide=1&amp;start=10">Next')
+    end
+
     it 'ignores a limit on a listing that is not expanded' do
       11.times { |i| insert_article(id: i + 1, url_path: "/#{i + 1}-a") }
 
