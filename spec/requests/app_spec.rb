@@ -20,6 +20,23 @@ RSpec.describe 'the site', type: :request do
       expect(last_response.body.scan('<article class="item">').size).to eq(1)
     end
 
+    it 'shows the whole of every body when the listing is expanded' do
+      insert_article(id: 1, url_path: '/1-a', body_html: '<p>The opening.</p><p>And the rest of it.</p>')
+
+      get '/', expand: '1'
+
+      expect(last_response.body).to include('<article class="entry">')
+      expect(last_response.body).to include('<p>And the rest of it.</p>')
+    end
+
+    it 'stays expanded from one page to the next' do
+      11.times { |i| insert_article(id: i + 1, url_path: "/#{i + 1}-a") }
+
+      get '/', expand: '1'
+
+      expect(last_response.body).to include('/?expand=1&amp;start=10">Next')
+    end
+
     it 'serves the river at the url the original php used too' do
       insert_article(id: 1, url_path: '/1-a', title: 'An item')
 

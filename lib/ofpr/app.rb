@@ -39,7 +39,7 @@ module Ofpr
     helpers Redirects, Presenter
 
     helpers do
-      def pager(base, start, total) = Pager.new(base, start, total)
+      def pager(base, start, total) = Pager.new(expanded? ? "#{base}?expand=1" : base, start, total)
 
       # Stored text keeps the entities the capture had. The browser title is the one
       # place the rebuild prints them decoded.

@@ -354,6 +354,14 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
   text-transform: uppercase;
 }
 
+/* The same listing with every body in it rather than its opening line. */
+.entry { border-bottom: 1px solid var(--border); padding: calc(var(--space) * 6) 0; }
+.entry:first-child { padding-top: 0; }
+.entry:last-child { border-bottom: 0; padding-bottom: 0; }
+.entry__title { font-size: 26px; margin: calc(var(--space) * 3) 0 0; }
+.entry__title a { color: var(--text); }
+.entry__title a:hover { color: var(--link); text-decoration: none; }
+
 /* A group page: the sections that hang under Addons or Missions. */
 .groups {
   display: grid;
@@ -864,6 +872,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
   .masthead__inner { padding-inline: calc(var(--space) * 3); }
   .menu__inner { padding-inline: calc(var(--space) * 3); }
   .item__title { font-size: 19px; }
+  .entry__title { font-size: 22px; }
   .article__title { font-size: 25px; }
 }
 
