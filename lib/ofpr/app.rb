@@ -3,6 +3,7 @@ require 'sinatra/base'
 require_relative '../ofpr'
 require_relative 'redirects'
 require_relative 'presenter'
+require_relative 'expansion'
 
 module Ofpr
   class App < Sinatra::Base
@@ -36,10 +37,10 @@ module Ofpr
       set :dump_errors, true
     end
 
-    helpers Redirects, Presenter
+    helpers Redirects, Presenter, Expansion
 
     helpers do
-      def pager(base, start, total) = Pager.new(expanded? ? "#{base}?expand=1" : base, start, total)
+      def pager(base, start, total) = Pager.new(listing_base(base), start, total, per_page: per_page)
 
       # Stored text keeps the entities the capture had. The browser title is the one
       # place the rebuild prints them decoded.
@@ -191,7 +192,7 @@ module Ofpr
       @page_title = 'News'
       @canonical = '/'
       @nav_path = '/'
-      @articles = Article.river(start: @start)
+      @articles = Article.river(start: @start, per_page: per_page)
       @total = Article.count
       @pager_base = '/'
       erb :listing
@@ -235,7 +236,7 @@ module Ofpr
       @section = name
       @page_title = Menu.label("/#{name}") || name
       @canonical = "/#{name}"
-      @total, @articles = Article.section(name, start: @start)
+      @total, @articles = Article.section(name, start: @start, per_page: per_page)
       return serve_group("/#{name}") if @total.zero?
 
       @pager_base = "/#{name}.html"

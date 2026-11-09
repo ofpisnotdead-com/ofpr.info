@@ -30,8 +30,6 @@ module Ofpr
       card && card['rows'].first&.join(' - ')
     end
 
-    def expanded? = params.key?('expand')
-
     # The picture a listing shows: the card's screenshot, or the first thumbnail that
     # is not one of the site's own separators.
     def first_picture(article)

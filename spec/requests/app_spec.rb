@@ -37,6 +37,37 @@ RSpec.describe 'the site', type: :request do
       expect(last_response.body).to include('/?expand=1&amp;start=10">Next')
     end
 
+    it 'pages an expanded listing by the limit asked for, from one page to the next' do
+      25.times { |i| insert_article(id: i + 1, url_path: "/#{i + 1}-a") }
+
+      get '/', expand: '1', limit: '20'
+
+      expect(last_response.body.scan('<article class="entry">').size).to eq(20)
+      expect(last_response.body).to include('/?expand=1&amp;limit=20&amp;start=20">Next')
+
+      get '/', expand: '1', limit: '20', start: '20'
+
+      expect(last_response.body.scan('<article class="entry">').size).to eq(5)
+    end
+
+    it 'holds an expanded listing to a thousand a page' do
+      row = ported({slug: 'a', section: '', title: 'A', body_html: '<p>body</p>'})
+      Ofpr::Article.dataset.multi_insert(Array.new(1001) { |i| row.merge(id: i + 1, url_path: "/#{i + 1}-a") })
+
+      get '/', expand: '1', limit: '5000'
+
+      expect(last_response.body.scan('<article class="entry">').size).to eq(1000)
+      expect(last_response.body).to include('/?expand=1&amp;limit=1000&amp;start=1000">Next')
+    end
+
+    it 'ignores a limit on a listing that is not expanded' do
+      11.times { |i| insert_article(id: i + 1, url_path: "/#{i + 1}-a") }
+
+      get '/', limit: '100'
+
+      expect(last_response.body.scan('<article class="item">').size).to eq(10)
+    end
+
     it 'serves the river at the url the original php used too' do
       insert_article(id: 1, url_path: '/1-a', title: 'An item')
 

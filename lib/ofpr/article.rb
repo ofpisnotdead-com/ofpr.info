@@ -1,6 +1,7 @@
 module Ofpr
   module Article
     PER_PAGE = 10
+    MAX_PER_PAGE = 1000
     ID_IN_PATH = %r{(\d+)-[^/]*\z}
 
     class << self
@@ -59,12 +60,12 @@ module Ofpr
         dataset.exclude(section: '').group_and_count(:section).to_hash(:section, :count)
       end
 
-      def river(start: 0) = newest(river_scope, start)
+      def river(start: 0, per_page: PER_PAGE) = newest(river_scope, start, per_page)
 
       # Returns the total alongside the page, because every listing prints it.
-      def section(name, start: 0)
+      def section(name, start: 0, per_page: PER_PAGE)
         scope = dataset.where(section: name)
-        [scope.count, newest(scope, start)]
+        [scope.count, newest(scope, start, per_page)]
       end
 
       def search(query)
@@ -93,9 +94,9 @@ module Ofpr
 
       # Listings are ordered by the original ids, not by date: the captured pages
       # descend by id with 189 dates out of order among them.
-      def newest(scope, start)
+      def newest(scope, start, per_page)
         scope.order(Sequel.desc(:id))
-          .limit(PER_PAGE, [start.to_i, 0].max / PER_PAGE * PER_PAGE).all
+          .limit(per_page, [start.to_i, 0].max / per_page * per_page).all
       end
     end
   end
