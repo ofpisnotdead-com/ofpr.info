@@ -64,10 +64,25 @@ module Ofpr
       Article.pages_for(urls, besides: @article&.[](:url_path))
     end
 
+    def needs_items(items)
+      found = Article.downloads_at(items.filter_map { |item| item['url'] if item['kind'] == 'page' })
+      items.map do |item|
+        link = found[item['url']]
+        next item unless link
+
+        item.merge('url' => link['url'], 'file' => link['file'], 'mirror' => link['mirror'], 'kind' => 'file',
+          'size' => item['size'] || link['size'], 'page' => item['url'])
+      end
+    end
+
+    def need_page(item, pages)
+      item['page'] || (pages[item['url']] && page_url(pages[item['url']]))
+    end
+
     def need_about(item)
       case item['kind']
       when 'file' then download_about(item)
-      when 'page' then 'archive page'
+      when 'page' then 'addon page'
       else URI(item['url']).host.to_s.delete_prefix('www.')
       end
     rescue URI::InvalidURIError
