@@ -1,0 +1,9 @@
+<article class="entry">
+  <p class="meta">
+    <a class="chip" href="<%= page_url(section_path_of(article)) %>"><%= section_label_of(article) %></a>
+    <span><%= date(article[:published_at]) %></span>
+    <% unless article[:author].to_s.empty? %><span class="meta__sep">/</span> <span><%= article[:author] %></span><% end %>
+  </p>
+  <h2 class="entry__title"><a href="<%= page_url(article[:url_path]) %>"><%== article[:title] %></a></h2>
+  <%== erb :_blocks, locals: {blocks: blocks(article), centred: true} %>
+</article>

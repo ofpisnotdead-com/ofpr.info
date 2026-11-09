@@ -38,18 +38,21 @@
     .filter((link) => link.querySelector('img') && IMAGE.test(link.pathname));
   if (all.length === 0) return;
 
-  // A heading ends a gallery. On the mods page that gives each mod its own screenshots
-  // rather than one run through every mod on the page; an article, which has no
-  // headings, keeps all of its pictures together.
+  // A gallery ends at a heading and at the end of the body it is in. On the mods page
+  // that gives each mod its own screenshots rather than one run through every mod; an
+  // article, which has no headings, keeps all of its own pictures together and none of
+  // the next article's where a listing prints several bodies at once.
   const groups = [];
-  let run = null;
-  document.querySelectorAll('.body > *').forEach((node) => {
-    if (HEADING.test(node.tagName)) return (run = null);
+  document.querySelectorAll('.body').forEach((body) => {
+    let run = null;
+    [...body.children].forEach((node) => {
+      if (HEADING.test(node.tagName)) return (run = null);
 
-    const found = all.filter((link) => node.contains(link));
-    if (found.length === 0) return;
-    if (!run) groups.push((run = []));
-    run.push(...found);
+      const found = all.filter((link) => node.contains(link));
+      if (found.length === 0) return;
+      if (!run) groups.push((run = []));
+      run.push(...found);
+    });
   });
   if (groups.length === 0) groups.push(all);
 
