@@ -445,6 +445,23 @@ RSpec.describe 'the site', type: :request do
       expect(last_response.body).to include('<span class="need__name">JAM 3</span>')
       expect(last_response.body).to include('href="/addons/weapons/2-jam-3.html">Addon page</a>')
     end
+
+    it 'downloads the one file of an addon page it links to, and keeps a page with several as a page' do
+      ftp = 'https://files.ofpisnotdead.com/files/ofpd/unofaddons2'
+      insert_article(id: 7, url_path: '/addons/aircrafts/7-ch-53', section: 'addons/aircrafts',
+        body_html: %(<p><a href="#{ftp}/SEF_CH53.rar">DOWNLOAD - CH-53 [40 MB]</a></p>))
+      insert_article(id: 8, url_path: '/8-two-packs',
+        body_html: %(<p><a href="#{ftp}/a.rar">DOWNLOAD - A</a></p><p><a href="#{ftp}/b.rar">DOWNLOAD - B</a></p>))
+      needs = ['CH53 PACK [40 MB] from <a href="/addons/aircrafts/7-ch-53.html">FTP#1</a>',
+               'TWO PACKS from <a href="/8-two-packs.html">FTP#1</a>']
+      insert_article(id: 9, url_path: '/9-mission', body_html: "<p>Needed:<br>#{needs.join('<br>')}</p>")
+
+      get '/9-mission.html'
+
+      expect(last_response.body).to include(%(<a class="need" href="#{ftp}/SEF_CH53.rar">))
+      expect(last_response.body).to include('href="/addons/aircrafts/7-ch-53.html">Addon page</a>')
+      expect(last_response.body).to include('<a class="need" href="/8-two-packs.html">')
+    end
   end
 
   describe 'a long list of what a download needs' do

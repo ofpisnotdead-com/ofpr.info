@@ -35,6 +35,25 @@ module Ofpr
           .each_with_object({}) { |row, pages| pages[row[:url]] ||= row[:url_path] }
       end
 
+      def downloads_at(pages)
+        ids = pages.to_h { |page| [page[ID_IN_PATH, 1].to_i, page] }
+        return {} if ids.empty?
+
+        Database.connection.fetch(<<~SQL, ids.keys).all
+          SELECT a.id, l AS link
+          FROM articles a, jsonb_array_elements(a.body_blocks) b,
+               jsonb_array_elements(coalesce(b->'links', b->'downloads')) l
+          WHERE b->>'type' IN ('download', 'card') AND a.id IN ?
+        SQL
+          .group_by { |row| row[:id] }
+          .filter_map { |id, rows| (link = single_file(rows.map { |row| row[:link] })) && [ids[id], link] }
+          .to_h
+      end
+
+      def single_file(links)
+        links.min_by { |link| link['mirror'].to_i } if links.map { |link| link['file'] }.uniq.one?
+      end
+
       # Every section and how much is in it, for the menu and the sidebar, in one query.
       def section_counts
         dataset.exclude(section: '').group_and_count(:section).to_hash(:section, :count)
