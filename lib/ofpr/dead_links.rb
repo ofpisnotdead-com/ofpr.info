@@ -3,8 +3,7 @@ module Ofpr
   # the counts the updates page shows, and the list it offers for download.
   module DeadLinks
     KINDS = {'download' => 'downloads', 'image' => 'pictures', 'page' => 'hosted pages and files'}.freeze
-    # How many of each the imported articles ask for in all, from the audit of
-    # 2026-11-07 that found these. Only another import can move them.
+    # From the audit of 2026-11-07 that found these; only an import can move them.
     LINKED = {'download' => 5087, 'image' => 48_093, 'page' => 84}.freeze
 
     Row = Struct.new(:kind, :path, :links, :article, :title)
