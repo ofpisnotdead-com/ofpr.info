@@ -636,4 +636,31 @@ RSpec.describe 'the site', type: :request do
       expect(last_response.body).to include('name="link"')
     end
   end
+
+  describe 'the updates page' do
+    it 'serves it with or without the suffix' do
+      get '/updates.html'
+
+      expect(last_response).to be_ok
+      expect(last_response.body).to include('9 November 2026')
+
+      get '/updates'
+
+      expect(last_response).to be_ok
+    end
+
+    it 'counts the dead links it offers for download' do
+      get '/updates.html'
+
+      expect(last_response.body).to include(">#{Ofpr::DeadLinks.count('download')}<")
+    end
+
+    it 'hands the list over as a file' do
+      get '/dead-links.tsv'
+
+      expect(last_response).to be_ok
+      expect(last_response.headers['content-disposition']).to include('ofpr-dead-links.tsv')
+      expect(last_response.body.lines.grep_v(/\A#/).size).to eq(Ofpr::DeadLinks.all.size + 1)
+    end
+  end
 end

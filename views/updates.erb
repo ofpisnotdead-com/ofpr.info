@@ -1,0 +1,48 @@
+<div class="panel updates">
+  <h1 class="article__title listing__title">Updates</h1>
+  <p class="updates__lede">The articles are the old site's and do not change. What the
+    archive can still serve of what they point at does.</p>
+
+  <h2 class="stock__title">Dead links left</h2>
+  <ul class="stock">
+    <% Ofpr::DeadLinks::KINDS.each do |kind, label| %><li>
+      <p class="stock__count"><%= number(Ofpr::DeadLinks.count(kind)) %></p>
+      <p class="stock__label"><%= label %></p>
+      <p class="stock__note">of <%= number(Ofpr::DeadLinks.linked(kind)) %> linked</p>
+    </li>
+    <% end %>
+  </ul>
+  <p class="stock__get"><a href="/dead-links.tsv" download>Download the list</a>, every
+    one of them with an article that asks for it. If you have a file on an old drive,
+    the report link below is the way in.</p>
+
+  <section class="update">
+    <p class="update__date"><time datetime="2026-11-09">9 November 2026</time></p>
+    <h2 class="update__title">238 files back out of the archives</h2>
+    <ul>
+      <li><strong>100 downloads, 68 pictures and 70 files and pages from the hosted
+        sites</strong> restored, 2.9 GB of them, out of the Wayback Machine, GameFront's
+        mirror and a private archive of the old file sites.</li>
+      <li>15 are the nearest surviving copy rather than the release named, and 2 are
+        damaged, kept the way the only source left serves them.</li>
+      <li>A download that needs other addons now lists them, each one linked.</li>
+      <li>What is left was nearly all on <code>ofp.gamepark.cz</code>, which no web
+        archive ever crawled.</li>
+    </ul>
+  </section>
+
+  <section class="update">
+    <p class="update__date"><time datetime="2026-11-08">8 November 2026</time></p>
+    <h2 class="update__title">The archive is back</h2>
+    <ul>
+      <li><strong>10,245 articles</strong> at the addresses they were published at:
+        news from 2001 to 2019, addons, missions, MODS, patches and utilities.</li>
+      <li>Old <code>index.php?showthis=</code> links still land on the right article,
+        and <a href="<%= page_url('/convert') %>">Convert</a> looks one up.</li>
+      <li>Rebuilt pages: readable on a phone, a dark theme that follows the system,
+        pictures that open where they are, linked videos playing in place.</li>
+      <li>Search across every title, body and author, and the files served from
+        <a href="https://ofpisnotdead.com/">ofpisnotdead.com</a>.</li>
+    </ul>
+  </section>
+</div>

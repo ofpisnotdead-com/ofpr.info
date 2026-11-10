@@ -147,6 +147,13 @@ module Ofpr
 
     get(%r{/convert(?:\.html)?}) { convert }
 
+    get(%r{/updates(?:\.html)?}) { updates }
+
+    get('/dead-links.tsv') do
+      send_file DeadLinks.file, type: 'text/tab-separated-values;charset=utf-8',
+        disposition: :attachment, filename: 'ofpr-dead-links.tsv'
+    end
+
     # Both forms post: the search page's own, and the module in the header, which posts
     # to the site root the way Joomla's index.php took it. The url contract is the get,
     # so send the browser there.
@@ -211,6 +218,12 @@ module Ofpr
       redirect "/search.html?searchword=#{Rack::Utils.escape(params['searchword'].to_s)}" \
                "&ordering=#{params['ordering'] || 'newest'}" \
                "&searchphrase=#{params['searchphrase'] || 'all'}", 303
+    end
+
+    def updates
+      @page_title = 'Updates'
+      @canonical = '/updates'
+      erb :updates
     end
 
     def serve_page

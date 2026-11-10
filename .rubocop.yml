@@ -44,7 +44,7 @@ Metrics/AbcSize:
     - 'db/migrations/**/*'
     - 'spec/**/*'
 Metrics/ClassLength:
-  Max: 160
+  Max: 170
 Metrics/ParameterLists:
   CountKeywordArgs: false
 Metrics/BlockLength:
