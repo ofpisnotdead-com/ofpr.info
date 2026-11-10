@@ -258,7 +258,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
   gap: calc(var(--space) * 6);
   align-items: start;
 }
-.page--wide { grid-template-columns: minmax(0, 1fr); }
+.page--wide { max-width: none; grid-template-columns: minmax(0, 1fr); }
 .panel {
   background: var(--surface);
   border-radius: var(--radius);
