@@ -501,6 +501,49 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
 }
 .convert .finder:last-child { border-bottom: 0; padding-bottom: 0; }
 
+/* 8d ---- updates ------------------------------------------------------------ */
+
+.updates__lede { color: var(--text-muted); margin: 0; }
+
+.stock__title, .update__date {
+  color: var(--text-muted);
+  font: 600 11px/1 var(--sans);
+  letter-spacing: .08em;
+  margin: 0 0 calc(var(--space) * 3);
+  text-transform: uppercase;
+}
+.stock__title { margin-top: calc(var(--space) * 8); }
+.stock {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: calc(var(--space) * 3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.stock li {
+  background: var(--surface-dim);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: calc(var(--space) * 4) calc(var(--space) * 5);
+}
+.stock__count { font: 600 34px/1 var(--serif); margin: 0; }
+.stock__label { font-size: 15px; margin: calc(var(--space) * 1.5) 0 0; }
+.stock__note { color: var(--text-faint); font-size: 12px; margin: var(--space) 0 0; }
+
+.stock__get { font-size: 14px; margin: calc(var(--space) * 3) 0 0; }
+
+.update { margin-top: calc(var(--space) * 9); }
+.update__title { font-size: 21px; margin-bottom: calc(var(--space) * 3); }
+.updates ul { margin: 0; padding-left: calc(var(--space) * 5); }
+.updates li + li { margin-top: calc(var(--space) * 2); }
+.updates code {
+  background: var(--surface-dim);
+  border-radius: var(--radius);
+  font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace;
+  padding: 2px calc(var(--space) * 1.5);
+}
+
 /* 9 ---- the ported body ---------------------------------------------------- */
 
 .body { margin-top: calc(var(--space) * 6); }
@@ -762,6 +805,17 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
   font-size: 13px;
   padding: calc(var(--space) * 8) calc(var(--space) * 4);
   text-align: center;
+}
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space) * 2) calc(var(--space) * 6);
+  justify-content: center;
+}
+.footer__links a {
+  font: 600 11px/1 var(--sans);
+  letter-spacing: .06em;
+  text-transform: uppercase;
 }
 .footer a { color: rgba(255, 255, 255, .8); }
 .footer a:hover { color: #fff; }
