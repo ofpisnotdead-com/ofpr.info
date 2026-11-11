@@ -15,7 +15,7 @@ module Ofpr
     SECURE = 'https://files.ofpisnotdead.com/'.freeze
     LIVE_URL = %r{https://files\.ofpisnotdead\.com/}i
 
-    ANCHOR = %r{<a\s[^>]*href="([^"]*)"[^>]*>(.*?)</a>}mi
+    ANCHOR = %r{<a\s[^>]*href=(?:"([^"]*)"|([^\s>"]+))[^>]*>(.*?)</a>}mi
     # A link that only says which mirror it is: FTP#2, (from mirror #2), and the like.
     POINTER = /\b(?:ftp|mirror)\s*#?\s*\d\b/i
     # Often it says so with a button rather than words, and the mirror is in the file
@@ -104,7 +104,7 @@ module Ofpr
       # sits beside another link to the same file: after it, or before the link that
       # carries the wording. A file needed again further down keeps its own link there.
       def drop_duplicate_pointers(html)
-        anchors = html.scan(ANCHOR)
+        anchors = html.scan(ANCHOR).map { |quoted, bare, label| [quoted || bare, label] }
         dropped = anchors.each_index.select { |at| beside_its_file?(anchors, at) }
         return html if dropped.empty?
 
