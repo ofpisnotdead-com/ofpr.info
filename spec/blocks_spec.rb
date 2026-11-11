@@ -78,9 +78,24 @@ RSpec.describe Ofpr::Blocks do
                '![](/ofpgm/images/separator.gif)'
 
     galleries = convert(markdown)
-    expect(galleries.map { |block| block[:pictures].size }).to eq([2, 1])
     expect(galleries.map { |block| block[:pictures].map { |shot| shot[:decoration] } })
-      .to eq([[false, false], [true]])
+      .to eq([[false, false, true]])
+  end
+
+  it 'reads runs of thumbnails one after another as one gallery' do
+    markdown = "[![](/a1s.jpg)](/a1.jpg) [![](/a2s.jpg)](/a2.jpg)\n\n[![](/a3s.jpg)](/a3.jpg)"
+
+    blocks = convert(markdown)
+
+    expect(blocks.map { |block| block[:type] }).to eq(%w[gallery])
+    expect(blocks.first[:pictures].map { |shot| shot[:full] }).to eq(%w[/a1.jpg /a2.jpg /a3.jpg])
+  end
+
+  it 'leaves the screenshot before a card with the card rather than the gallery before it' do
+    blocks = convert("[![](/a1s.jpg)](/a1.jpg) [![](/a2s.jpg)](/a2.jpg)\n\n#{card}")
+
+    expect(blocks.map { |block| block[:type] }).to eq(%w[gallery card])
+    expect(blocks.first[:pictures].size).to eq(2)
   end
 
   it 'takes the head row as data when it is emphasised rather than a label' do
