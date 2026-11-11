@@ -300,7 +300,7 @@ RSpec.describe 'the site', type: :request do
     end
 
     it 'pages through the results with the query kept' do
-      (3..7).each do |id|
+      (3..12).each do |id|
         insert_article(id: id, url_path: "/#{id}-sand", title: "Desert sand #{id}",
           published_at: Time.utc(2005, 1, id))
       end
@@ -310,7 +310,7 @@ RSpec.describe 'the site', type: :request do
       get CGI.unescapeHTML(next_url)
 
       expect(last_response.body).to include('Page 2 of 2')
-      expect(last_response.body).to include('sand 7')
+      expect(last_response.body).to include('sand 12')
     end
 
     it 'shows as many results a page as asked, and keeps the size in the page links' do
@@ -320,12 +320,12 @@ RSpec.describe 'the site', type: :request do
       end
 
       get '/search', searchword: 'desert'
-      expect(last_response.body).to include('searchphrase=all&amp;start=5">Next')
+      expect(last_response.body).to include('searchphrase=all&amp;start=10">Next')
 
-      get '/search', searchword: 'desert', limit: '10'
-      expect(last_response.body.scan('class="result"').size).to eq(10)
-      expect(last_response.body).to include('&amp;limit=10&amp;start=10">Next')
-      expect(last_response.body).to include('<option value="10" selected>')
+      get '/search', searchword: 'desert', limit: '5'
+      expect(last_response.body.scan('class="result"').size).to eq(5)
+      expect(last_response.body).to include('&amp;limit=5&amp;start=5">Next')
+      expect(last_response.body).to include('<option value="5" selected>')
     end
 
     # The stored html has no spaces between an addon card's cells, so an excerpt taken
@@ -338,6 +338,15 @@ RSpec.describe 'the site', type: :request do
 
       expect(last_response.body)
         .to include('Author Size <span class="highlight">TheSun</span> 5,5 MB')
+    end
+
+    it 'marks every term once, never inside the mark of another or an entity' do
+      insert_article(id: 3, url_path: '/3-mig', title: 'MiG&#039;s 21', published_at: Time.utc(2006, 1, 1))
+
+      get '/search', searchword: "mig's"
+
+      expect(last_response.body)
+        .to include('<span class="highlight">MiG</span>&#039;<span class="highlight">s</span> 21')
     end
 
     it 'searches the body as well as the title' do
