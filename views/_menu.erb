@@ -8,7 +8,7 @@
     </button>
     <ul class="menu__list" id="menu-list">
       <% Ofpr::Menu::ITEMS.each do |item| %><li>
-        <a href="<%= menu_href(item) %>"<%== ' aria-current="page"' if menu_active?(item) %>><%= item[:label] %></a>
+        <a<%== ' class="menu__parent"' if item[:children] %> href="<%= menu_href(item) %>"<%== ' aria-current="page"' if menu_active?(item) %>><%= item[:label] %></a>
         <% if item[:children] %><ul>
           <% item[:children].each do |child| %><li><a href="<%= page_url(child[:path]) %>"><%= child[:label] %></a></li>
           <% end %></ul>
