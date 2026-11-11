@@ -6,7 +6,7 @@
 
 :root {
   /* the ramps: olive and paper, sampled off the running site */
-  --o-field: #5b6c61;
+  --o-field: #586b60;
   --o-field-dark: #49584f;
   --o-accent: #d82731;
   --o-accent-dark: #a81d26;
@@ -18,9 +18,6 @@
   --rule-200: #e5e5e5;
   --black-900: #1e1e1e;
   --black-800: #262626;
-  /* The banner carries this colour baked into the jpeg, so the band behind it is this
-     and not a themed name: the picture has to sit on it in either theme. */
-  --banner: #586b60;
 
   /* the semantic layer: a theme is these names pointed somewhere else */
   --bg: var(--o-field);
@@ -129,7 +126,9 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
 
 /* 3 ---- masthead ----------------------------------------------------------- */
 
-.masthead { background: var(--banner); }
+/* The banner carries this colour baked into the picture, so the band behind it takes
+   the raw olive rather than a themed name: the picture sits on it in either theme. */
+.masthead { background: var(--o-field); }
 .masthead__inner {
   max-width: 980px;
   margin: 0 auto;
