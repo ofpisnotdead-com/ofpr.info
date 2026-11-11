@@ -219,6 +219,13 @@ module Ofpr
         text
       end
 
+      # An emphasis left open across list items is reopened by the parser inside the item
+      # after the one it closes in. The marks around the list gave way, so these do too.
+      def carried?(node, name)
+        before = node.parent&.previous_element
+        node.parent&.name == 'li' && before&.name == name && !before.css(STRUCTURE).empty?
+      end
+
       def link(node, _name)
         href = Markdown.target(node['href'])
         core, lead, tail = spaced(inner(node))
@@ -232,7 +239,7 @@ module Ofpr
 
       # Bold inside bold is bold already, and markdown cannot nest the two marks.
       def emphasis(node, name)
-        return children(node) unless node.css(STRUCTURE).empty?
+        return children(node) unless node.css(STRUCTURE).empty? && !carried?(node, name)
 
         mark = EMPHASIS.fetch(name)
         mark = '' if node.ancestors.any? { |up| EMPHASIS[up.name.to_s.downcase] == mark }
