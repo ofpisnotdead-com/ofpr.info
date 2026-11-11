@@ -20,7 +20,7 @@
   --black-800: #262626;
   /* The banner carries this colour baked into the jpeg, so the band behind it is this
      and not a themed name: the picture has to sit on it in either theme. */
-  --banner: #5a6c60;
+  --banner: #586b60;
 
   /* the semantic layer: a theme is these names pointed somewhere else */
   --bg: var(--o-field);
