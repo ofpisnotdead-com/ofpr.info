@@ -100,38 +100,27 @@ module Ofpr
         text.gsub(/%([0-9A-Fa-f]{2})/) { Regexp.last_match(1).hex.chr }
       end
 
-      # Only an anchor whose own words are a mirror pointer is dropped, and only when the
-      # file it points at is already linked somewhere else in the same article.
+      # Only an anchor whose own words are a mirror pointer is dropped, and only when it
+      # sits beside another link to the same file: after it, or before the link that
+      # carries the wording. A file needed again further down keeps its own link there.
       def drop_duplicate_pointers(html)
-        seen, worded = census(html)
-        return html if seen.values.none? { |n| n > 1 }
+        anchors = html.scan(ANCHOR)
+        dropped = anchors.each_index.select { |at| beside_its_file?(anchors, at) }
+        return html if dropped.empty?
 
-        kept = Hash.new(0)
-        tidy(html.gsub(ANCHOR) { survivor(Regexp.last_match, seen, worded, kept) })
+        at = -1
+        tidy(html.gsub(ANCHOR) { dropped.include?(at += 1) ? '' : Regexp.last_match[0] })
       end
 
-      # How many links each file has, and how many of those say more than which mirror.
-      def census(html)
-        seen = Hash.new(0)
-        worded = Hash.new(0)
-        html.scan(ANCHOR) do |href, label|
-          next unless href.match?(LIVE_URL)
+      def beside_its_file?(anchors, at)
+        href, label = anchors[at]
+        return false unless href.match?(LIVE_URL) && pointer?(label)
 
-          seen[href] += 1
-          worded[href] += 1 unless pointer?(label)
-        end
-        [seen, worded]
+        follows = at.positive? && anchors[at - 1].first == href
+        follows || worded_next?(anchors[at + 1], href)
       end
 
-      # A file never loses every link: where nothing but pointers link it, the first of
-      # them stays, which is the one the page leads with.
-      def survivor(match, seen, worded, kept)
-        href = match[1]
-        return match[0] unless seen[href] > 1 && pointer?(match[2])
-
-        kept[href] += 1
-        worded[href].zero? && kept[href] == 1 ? match[0] : ''
-      end
+      def worded_next?(after, href) = after&.first == href && !pointer?(after[1])
 
       def pointer?(label)
         source = label[IMAGE, 1]
