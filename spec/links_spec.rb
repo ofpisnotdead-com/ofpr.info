@@ -36,6 +36,15 @@ RSpec.describe Ofpr::Links do
     expect(repair(html).scan('<a ').size).to eq(1)
   end
 
+  it 'keeps the link of a file needed again further down' do
+    pair = '<a href="http://ftp.armedassault.info/ofpd/jam.rar">FTP#1</a> ' \
+           '<small><a href="http://files.ofpisnotdead.com/files/ofpd/jam.rar">FTP#2</a></small>'
+    html = "JAM3 from #{pair}<br>Pack from <a href=\"http://ftp.armedassault.info/ofpd/p.zip\">FTP#1</a>" \
+           "<br>JAM 3 from #{pair}"
+
+    expect(repair(html).scan('jam.rar').size).to eq(2)
+  end
+
   it 'leaves two links on different files' do
     html = '<a href="http://ftp.armedassault.info/ofpd/a.zip">FTP#2</a>' \
            '<a href="http://ftp.armedassault.info/ofpd/b.zip">FTP#2</a>'
