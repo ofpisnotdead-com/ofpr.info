@@ -71,13 +71,12 @@ module Ofpr
       # Titles arrive from the capture with their entities already encoded, so escaping
       # again would turn &#039; into &amp;#039;.
       def highlight(text)
-        marked = text.to_s
-        @query.terms.each do |term|
-          marked = marked.gsub(/#{Regexp.escape(term)}/i) do
-            %(<span class="highlight">#{Regexp.last_match(0)}</span>)
-          end
+        terms = @query.terms.sort_by { |term| -term.size }
+        return text.to_s if terms.empty?
+
+        text.to_s.gsub(/(&#?\w+;)|#{Regexp.union(terms).source}/i) do
+          Regexp.last_match(1) || %(<span class="highlight">#{Regexp.last_match(0)}</span>)
         end
-        marked
       end
 
       # An article highlights the menu item it belongs to, which for a river article is
