@@ -48,9 +48,15 @@ module Ofpr
     # The path runs to the closing quote: plenty of these file names hold spaces.
     LINKED_PATH = /((?:src|href)="#{Regexp.escape(LIVE)})([^"]*)(")/i
 
+    # Links to a host that is gone, and what serves the same thing now: a copy on our
+    # host, one recovered from the Wayback Machine, or the video put up elsewhere.
+    # `db/replaced_links.tsv` holds them. A url broken over lines still counts as one.
+    REPLACED_FILE = File.expand_path('../../db/replaced_links.tsv', __dir__)
+    ATTRIBUTE = /\b(src|href)=(?:"([^"]*)"|([^\s>"]+))/i
+
     class << self
       def repair(html)
-        text = unmangle(trim(html.to_s)).gsub(DEAD, LIVE).gsub(INSECURE, SECURE)
+        text = replace(unmangle(trim(html.to_s))).gsub(DEAD, LIVE).gsub(INSECURE, SECURE)
         drop_duplicate_pointers(move(text))
       end
 
@@ -72,16 +78,30 @@ module Ofpr
       end
 
       def moved
-        @moved ||= File.exist?(MOVED_FILE) ? read_moved : {}
+        @moved ||= read_pairs(MOVED_FILE)
+      end
+
+      def replaced
+        @replaced ||= read_pairs(REPLACED_FILE)
       end
 
       private
 
-      def read_moved
-        File.readlines(MOVED_FILE, chomp: true).filter_map do |line|
-          from, to = line.split("\t", 2)
+      def read_pairs(file)
+        return {} unless File.exist?(file)
+
+        File.readlines(file, chomp: true).filter_map do |line|
+          from, to = line.split("\t")
           [from, to] if to && !from.start_with?('#')
         end.to_h
+      end
+
+      def replace(html)
+        html.gsub(ATTRIBUTE) do
+          match = Regexp.last_match
+          found = replaced[CGI.unescapeHTML(match[2] || match[3]).gsub(/\s+/, '')]
+          found ? %(#{match[1]}="#{found}") : match[0]
+        end
       end
 
       # The path sits in an attribute, so a space in it is written as an escape.
