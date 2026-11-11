@@ -150,6 +150,10 @@ RSpec.describe Ofpr::Markdown do
     expect(convert('<ul><i><li>one</li><li>two</li></i></ul>')).to eq("- one\n- two")
   end
 
+  it 'gives up the emphasis the parser carries into the item after a list it wrapped' do
+    expect(convert('<i>Said:<br><li>one<li>two<br>and more</i>')).not_to include('*')
+  end
+
   it 'gives up the emphasis marks around a heading as well' do
     expect(convert('<b><h3>Mission I.</h3></b>')).to eq('### Mission I.')
   end
