@@ -6,5 +6,5 @@
     <span><%= date(@article[:published_at]) %></span>
     <% unless @article[:author].to_s.empty? %><span class="meta__sep">/</span> <span><%== author_link %></span><% end %>
   </p>
-  <%== erb :_blocks, locals: {blocks: blocks(@article), centred: true} %>
+  <%== erb :_blocks, locals: {blocks: blocks(@article)} %>
 </article>

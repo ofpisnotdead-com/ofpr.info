@@ -1,6 +1,6 @@
 <div class="body">
   <% blocks.each do |block| %><% if block['type'] == 'prose' %><%== prose(block['markdown']) %>
-  <% elsif block['type'] == 'gallery' %><% shots = shown_pictures(block['pictures']) %><% unless shots.empty? %><% alone = shots.size == 1 && !shots.first['full'] %><div class="gallery<%= ' gallery--picture' if alone %><%= ' gallery--centred' if alone && centred %>">
+  <% elsif block['type'] == 'gallery' %><% shots = shown_pictures(block['pictures']) %><% unless shots.empty? %><% alone = shots.size == 1 && !shots.first['full'] %><div class="gallery<%= ' gallery--picture' if alone %>">
     <% shots.each do |shot| %><%== erb :_shot, locals: {shot: shot} %><% end %>
   </div>
   <% end %><% elsif block['type'] == 'download' %><div class="downloads">

@@ -5,5 +5,5 @@
     <% unless article[:author].to_s.empty? %><span class="meta__sep">/</span> <span><%= article[:author] %></span><% end %>
   </p>
   <h2 class="entry__title"><a href="<%= page_url(article[:url_path]) %>"><%== article[:title] %></a></h2>
-  <%== erb :_blocks, locals: {blocks: blocks(article), centred: true} %>
+  <%== erb :_blocks, locals: {blocks: blocks(article)} %>
 </article>
