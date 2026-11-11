@@ -1,0 +1,42 @@
+# Links to a host that is gone, and what serves the same thing now. `Links` rewrites
+# them at import. source: host, a copy already on files.ofpisnotdead.com under the
+# same file name; wayback, a copy recovered from the Wayback Machine and put up there;
+# video, the same film on a video site. Every target answered when this was written.
+#
+# link	replacement	source
+http://ab.vj.free.fr/RUSSIA%20BETA%20VERSION%200.35_tm.zip	https://files.ofpisnotdead.com/files/ofpd/islands2/RUSSIA%20BETA%20VERSION%200.35_tm.zip	host
+http://chucky.host.sk/vb-addon.exe	https://files.ofpisnotdead.com/files/ofpd/unofaddons0/vb-addon.exe	host
+http://cr-ofp.dyndns.org/downloads/addons/Baracken1_1.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons2/Baracken1_1.zip	host
+http://cr-ofp.dyndns.org/downloads/addons/RussianWeaponsPack11.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons/RussianWeaponsPack11.zip	host
+http://download.gamezone.cz/OFP/mody/CSLA2_Update1.exe	https://files.ofpisnotdead.com/files/ofpd/mods/CSLA2_Update1.exe	host
+http://flashpoint.gamezone.cz/_hosted/awol/Files/Frandsens_US_Marines_ResVersion.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons/Frandsens_US_Marines_ResVersion.zip	host
+http://german-club.com/skyler/Files/A318.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons/A318.zip	host
+http://hx3.de/files/ofpc/addons/ags_hckit1.3.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons2/ags_hckit1.3.zip	host
+http://korps.free.fr/AEOmisc.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons2/AEOmisc.zip	host
+http://koti.mbnet.fi/stede/flashpoint/SWRevolvers10.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons/SWRevolvers10.zip	host
+http://marines.gamersrevolt.com/official/DS_146fix.exe	https://files.ofpisnotdead.com/files/ofpd/mods/DS_146fix.exe	host
+http://members.hn.ozemail.com.au/morpj97/OFPEC_Blood.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons2/OFPEC_Blood.zip	host
+http://members.lycos.nl/nomansland/addons/FokkerE3_beta.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons/FokkerE3_beta.zip	host
+http://mods.kmarns.net/download/CoC_diver_v1.0.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons2/CoC_diver_v1.0.zip	host
+http://ofp.shafted.com.au/2006/flashpoint/hi_res_islands/HellsCircus_Europe_Island_Pack_Required_Addons.rar	https://files.ofpisnotdead.com/files/ofpd/islands2/HellsCircus_Europe_Island_Pack_Required_Addons.rar	host
+http://ofpc.de/files/mods/ffur/FFUR_isl_high_nordic.rar	https://files.ofpisnotdead.com/files/ofpd/mods/FFUR_isl_high_nordic.rar	host
+http://operationflashpoint.filefront.com/file/Farmland_Mod_Horror_Pack_3%3b69816	https://files.ofpisnotdead.com/files/ofpd/unofaddons2/FML_HP3.rar	host
+http://rh13179.rh-tec.com/downloads/inoffaddons/fahrzeuge/dkmm_xa188un.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons/dkmm_xa188un.zip	host
+http://rh13179.rh-tec.com/downloads/inoffaddons/fahrzeuge/res_dkmm_xa188un.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons/res_dkmm_xa188un.zip	host
+http://umf.free.fr/drno/drno_isl.zip	https://files.ofpisnotdead.com/files/ofpd/islands/drno_isl.zip	host
+http://www.astercity.net/~airwolf/Redwolf_english.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons2/Redwolf_english.zip	host
+http://www.cazadoresdemonte.com.ar/varios/staff/Final/MLV_MOD.exe	https://files.ofpisnotdead.com/files/ofpd/unofaddons2/MLV_MOD.exe	host
+http://www.dc3d.co.nz/Utopia/downloads/cwkuh1dn.rar	https://files.ofpisnotdead.com/files/ofpd/unofaddons2/cwkuh1dn.rar	host
+http://www.dkm-mod.mkdi.net/download/vehicles/xa-188/dkmm_xa188.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons/dkmm_xa188.zip	host
+http://www.dkm-mod.mkdi.net/download/vehicles/xa-188/res_dkmm_xa188.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons/res_dkmm_xa188.zip	host
+http://www.dkm-mod.mkdi.net/download/weapons/fnp90/dkmm_fnp90sd.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons/dkmm_fnp90sd.zip	host
+http://www.dkm.dds.nl/download/dkmm_bronco.exe	https://files.ofpisnotdead.com/files/ofpd/unofaddons/dkmm_bronco.exe	host
+http://www.downloads.thechainofcommand.net/zips/CoC_diver_v1.0.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons2/CoC_diver_v1.0.zip	host
+http://www.gol-clan.net/downloads/FFUR_SLX_Extra_Pack_1.2.rar	https://files.ofpisnotdead.com/files/ofpd/mods/FFUR_SLX_Extra_Pack_1.2.rar	host
+http://www.ofp-arma.cznhl.com/downloads/addons/Kla_PowerLines.rar	https://files.ofpisnotdead.com/files/ofpd/unofaddons2/Kla_PowerLines.rar	host
+http://www.ofp-arma.cznhl.com/downloads/addons/TMYK_BridgesV1.00.ace	https://files.ofpisnotdead.com/files/ofpd/unofaddons2/TMYK_BridgesV1.00.ace	host
+http://www.ofpbase.com/pafiledb/pafiledb.php?action=download&id=832	https://files.ofpisnotdead.com/files/ofpd/unofaddons2/Fml_objectsv1.20.zip	host
+http://www.operationnorthstar.com/dls/troopscpack_0.93.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons2/troopscpack_0.93.zip	host
+http://www.volny.cz/marfy_maac/download/maf_m1a1_nato_beta.zip	https://files.ofpisnotdead.com/files/war-of-desert/v1.01/War%20of%20Desert%20Addons/MAAC%20%26%20MARFY_Addons%20%28MAF%29/maf_m1a1_nato_beta.zip	host
+http://www.zwadar.d2.cz/zwa_cott.zip	https://files.ofpisnotdead.com/files/ofpd/unofaddons/zwa_cott.zip	host
+/ofpgm/_hosted/ofpmm/movies/WGL5.1Movie.zip	https://www.youtube.com/watch?v=6T6rcTyrguA	video

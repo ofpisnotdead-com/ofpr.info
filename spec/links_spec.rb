@@ -100,6 +100,22 @@ RSpec.describe Ofpr::Links do
     end
   end
 
+  describe 'a link to a host that is gone' do
+    before { allow(described_class).to receive(:replaced).and_return(replaced) }
+
+    let(:replaced) do
+      {'http://gone.example/a.php?id=1&dl=go' => 'https://files.ofpisnotdead.com/files/wayback/a.rar',
+       'http://gone.example/b.jpg' => 'https://files.ofpisnotdead.com/files/wayback/b.jpg'}
+    end
+
+    it 'points it at what serves the same file now, broken over lines or unquoted' do
+      html = "<a href=http://gone.example/a.php?id=1&amp;dl=go>a</a><img src=\"http://gone.\n\nexample/b.jpg\">"
+
+      expect(repair(html)).to eq('<a href="https://files.ofpisnotdead.com/files/wayback/a.rar">a</a>' \
+                                 '<img src="https://files.ofpisnotdead.com/files/wayback/b.jpg">')
+    end
+  end
+
   it 'trims a url that was written with space inside the quotes' do
     html = '<a href="https://files.ofpisnotdead.com/files/ofpd/mods/I44.rar ">x</a>'
 
