@@ -70,6 +70,15 @@ RSpec.describe 'the site', type: :request do
       expect(last_response.body).to include('/?expand=1&amp;wide=1&amp;start=10">Next')
     end
 
+    it 'lets a page take the whole window with wide=2 and keeps it from one page to the next' do
+      11.times { |i| insert_article(id: i + 1, url_path: "/#{i + 1}-a") }
+
+      get '/', wide: '2'
+
+      expect(last_response.body).to include('<main class="page page--wide page--full">')
+      expect(last_response.body).to include('/?wide=2&amp;start=10">Next')
+    end
+
     it 'ignores a limit on a listing that is not expanded' do
       11.times { |i| insert_article(id: i + 1, url_path: "/#{i + 1}-a") }
 
