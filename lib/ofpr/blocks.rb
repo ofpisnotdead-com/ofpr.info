@@ -1,4 +1,5 @@
 require 'uri'
+require_relative 'galleries'
 require_relative 'links'
 require_relative 'needs'
 require_relative 'paragraph'
@@ -32,7 +33,8 @@ module Ofpr
       def of(markdown)
         chunks = Needs.group(markdown.to_s.split(BLANK).map(&:strip).reject(&:empty?))
         pieces = chunks.flat_map { |chunk| chunk.is_a?(Hash) ? [chunk] : pieces(chunk) }
-        Youtube.after_sentences(join(pieces.map { |piece| piece.is_a?(Hash) ? piece : block(piece) }))
+        blocks = join(pieces.map { |piece| piece.is_a?(Hash) ? piece : block(piece) })
+        Youtube.after_sentences(Galleries.merge(blocks))
       end
 
       private
