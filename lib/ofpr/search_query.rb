@@ -9,7 +9,7 @@ module Ofpr
       'alpha' => Sequel.asc(:title)
     }.freeze
     LIMITS = [5, 10, 15, 20, 25, 30, 50, 100].freeze
-    PER_PAGE = LIMITS.first
+    PER_PAGE = 10
 
     attr_reader :word, :phrase, :ordering, :start, :per_page
 
