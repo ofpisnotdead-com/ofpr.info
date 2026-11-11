@@ -78,6 +78,13 @@ RSpec.describe Ofpr::Needs do
     expect(Ofpr::Blocks.of(markdown).map { |block| block[:type] }).to eq(%w[needs gallery needs prose])
   end
 
+  it 'names a link labelled with its site by the text in front of it' do
+    markdown = "Needed:\nMapfact Barracks [2,7 MB] from [**Mapfact**](http://www.mapfact.net/a)" \
+               "\nMAP Heaps V2.0 [229 kB] from [**Mapfact**](http://www.mapfact.net/b)"
+
+    expect(names(markdown)).to eq(['Mapfact Barracks', 'MAP Heaps V2.0'])
+  end
+
   it 'joins a name to its link when the link went onto the next line' do
     markdown = "Needed:\nRHS T-55 pack [9.7 MB] from\n[**FTP#1**](#{files}/RHS_T55Pack_v1.4.rar)"
     item = needs(markdown).first[:items].first
