@@ -16,6 +16,13 @@ RSpec.describe Ofpr::Links do
       .to eq('<a href="https://files.ofpisnotdead.com/files/ofpd/x.zip">our site</a>')
   end
 
+  it 'drops a mirror pointer written with its address unquoted' do
+    html = '<center>from <a href="http://ftp.armedassault.info/ofpd/x.zip"><b>FTP#1</b></a> or ' \
+           '<a href=http://files.ofpisnotdead.com/files/ofpd/x.zip>FTP#2</a></center>'
+
+    expect(repair(html)).to eq('<center>from <a href="https://files.ofpisnotdead.com/files/ofpd/x.zip"><b>FTP#1</b></a></center>')
+  end
+
   it 'writes the surviving links to https' do
     html = '<a href="http://files.ofpisnotdead.com/files/ofpd/x.zip">only link</a>'
 
