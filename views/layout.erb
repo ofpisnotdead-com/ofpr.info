@@ -37,7 +37,7 @@
 
 <%== erb :_menu %>
 
-<main class="page<%= ' page--wide' if wide? %>">
+<main class="page<%= ' page--wide' if wide? %><%= ' page--full' if full_width? %>">
   <%== yield %>
   <% unless wide? %><%== erb :_aside %><% end %>
 </main>

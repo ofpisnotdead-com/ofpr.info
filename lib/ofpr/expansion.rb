@@ -1,10 +1,12 @@
 module Ofpr
   # A debugging view of a listing: every body in full, and as many to a page as asked.
-  # Wide drops the aside so the content takes the whole page.
+  # Wide drops the aside, and wide=2 lets the content take the whole window too.
   module Expansion
     def expanded? = params.key?('expand')
 
     def wide? = params.key?('wide')
+
+    def full_width? = params['wide'] == '2'
 
     def per_page
       limit = params['limit'].to_i if expanded?
@@ -15,7 +17,7 @@ module Ofpr
       query = []
       query << 'expand=1' if expanded?
       query << "limit=#{per_page}" if expanded? && per_page != Article::PER_PAGE
-      query << 'wide=1' if wide?
+      query << "wide=#{full_width? ? 2 : 1}" if wide?
       query.empty? ? base : "#{base}?#{query.join('&')}"
     end
   end
