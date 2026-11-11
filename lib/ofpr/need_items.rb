@@ -85,10 +85,13 @@ module Ofpr
          mirror: (label[MIRROR, 1] || before.to_s[MIRROR, 1])&.to_i}
       end
 
-      # A link labelled only with its mirror, as in "JAM 3 [14,2 MB] from [FTP#1]", is
-      # named by the text in front of it.
+      # A link labelled only with its mirror or its site, as in "JAM 3 [14,2 MB] from
+      # [FTP#1]" or "Mapfact Barracks [2,7 MB] from [Mapfact]", is named by the text in
+      # front of it.
       def name_of(label, before)
         named = clean(label)
+        lead = before.match?(FROM) ? clean(before.sub(FROM, '')) : ''
+        return lead unless lead.empty?
         return named unless named.empty? || label.delete('*_').strip.match?(HOSTS)
 
         clean(before.sub(FROM, ''))
