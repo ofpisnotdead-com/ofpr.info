@@ -25,7 +25,8 @@ module Ofpr
     # with only inline tags between them were one word on the page, which is what
     # `Port` needs to know to tell a lost space from a kept one.
     BLOCK = (BREAKS + HEADINGS + %w[table thead tbody tfoot tr td th ul ol li br hr]).freeze
-    DROP = %w[script style].freeze
+    # PayPal's tracking pixel beside its donation button no longer loads.
+    DROP = ['script', 'style', 'img[src*="paypal.com"]'].freeze
     # A heading or a list standing inside an emphasis. The marks are inline, and the
     # newlines these need are collapsed to spaces by one, so the marks give way.
     STRUCTURE = (HEADINGS + %w[ul ol li table]).join(', ').freeze

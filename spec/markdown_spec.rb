@@ -154,6 +154,14 @@ RSpec.describe Ofpr::Markdown do
     expect(convert('<i>Said:<br><li>one<li>two<br>and more</i>')).not_to include('*')
   end
 
+  it 'drops the PayPal tracking pixel beside the donation button' do
+    form = '<form action="https://www.paypal.com/cgi-bin/webscr" method="post">' \
+           '<input type="image" src="/ofpgm/news/pics/PayPalDonate.gif" alt="Donate">' \
+           '<img src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1"></form>'
+
+    expect(convert(form)).to eq('![Donate](/ofpgm/news/pics/PayPalDonate.gif)')
+  end
+
   it 'gives up the emphasis marks around a heading as well' do
     expect(convert('<b><h3>Mission I.</h3></b>')).to eq('### Mission I.')
   end
