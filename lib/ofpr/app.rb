@@ -166,9 +166,12 @@ module Ofpr
     # development public/ofpgm is a symlink into the mirror, and Sinatra serves that
     # before any route, so this never runs there.
     get %r{/ofpgm/(.+)} do |path|
+      redirect "#{request.path_info.delete_prefix('/ofpgm')}#{kept_query}", 301 if path.start_with?('_hosted/')
       halt 404 if settings.cdn_base.to_s.empty?
       redirect "#{settings.cdn_base.delete_suffix('/')}/#{path}", 301
     end
+
+    get(%r{/_hosted/([a-z0-9]+)(/.*)?}) { |name, rest| hosted(name, rest) }
 
     get PATH do
       path = params['path'].delete_suffix('.html')

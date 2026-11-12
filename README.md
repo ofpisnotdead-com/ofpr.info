@@ -25,6 +25,14 @@ Open http://localhost:9292
 `bin/setup` seeds `db/seed.json`, which holds enough articles to cover the news river and
 every section, so development needs neither the capture nor a full import.
 
+The sites once hosted under `ofp.gamepark.cz/_hosted` answer at `/_hosted/<site>/`, from
+their rebuilt files. `db/hosted/<site>.tsv`, written by the site's rebuild, says where each
+old address leads, and `HOSTED_<SITE>` where the files are: a url, or a local directory.
+
+```bash
+HOSTED_OFPMM=/path/to/ofpmm/out bin/dev
+```
+
 ## Run tests
 
 ```bash
