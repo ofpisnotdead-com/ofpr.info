@@ -28,8 +28,12 @@ module Ofpr
     # PayPal's tracking pixel beside its donation button no longer loads.
     DROP = ['script', 'style', 'img[src*="paypal.com"]'].freeze
     # A heading or a list standing inside an emphasis. The marks are inline, and the
-    # newlines these need are collapsed to spaces by one, so the marks give way.
+    # newlines these need are collapsed to spaces by one, so each line of text inside
+    # carries its own marks instead.
     STRUCTURE = (HEADINGS + %w[ul ol li table]).join(', ').freeze
+    # A line of text: what opens it as a list item, the words, and the break after them.
+    # A heading is emphasised already, and a table row is not a line of text.
+    LINE = /^([ \t\u0002]*(?:-[ \t]+)?)(?![#|])([^\s\u0001\u0002](?:.*[^\s\u0001\u0002])?)([ \t\u0001]*)$/
     # Markdown reads a bracket, a space or a quote in a url as the end of it.
     PLAIN_URL = /\A[^\s()<>"]*\z/
     # Characters no url may hold raw, and which a few of these hrefs hold anyway:
@@ -221,7 +225,7 @@ module Ofpr
       end
 
       # An emphasis left open across list items is reopened by the parser inside the item
-      # after the one it closes in. The marks around the list gave way, so these do too.
+      # after the one it closes in, and runs on from there to the end of the body.
       def carried?(node, name)
         before = node.parent&.previous_element
         node.parent&.name == 'li' && before&.name == name && !before.css(STRUCTURE).empty?
@@ -240,10 +244,12 @@ module Ofpr
 
       # Bold inside bold is bold already, and markdown cannot nest the two marks.
       def emphasis(node, name)
-        return children(node) unless node.css(STRUCTURE).empty? && !carried?(node, name)
-
         mark = EMPHASIS.fetch(name)
         mark = '' if node.ancestors.any? { |up| EMPHASIS[up.name.to_s.downcase] == mark }
+        if !node.css(STRUCTURE).empty? || carried?(node, name)
+          return @out << inner(node).gsub(LINE, "\\1#{mark}\\2#{mark}\\3")
+        end
+
         core, lead, tail = spaced(inner(node))
         @out << lead << (core.empty? ? '' : "#{mark}#{core}#{mark}") << tail
       end
