@@ -1,3 +1,7 @@
+BHD_MOD/?cat=1	bhd/category/1.html
+BHD_MOD/?cat=2	bhd/category/2.html
+BHD_MOD/?cat=3	bhd/category/3.html
+BHD_MOD/?cat=5	bhd/category/5.html
 BHD_MOD/?p=1	bhd/1.html
 BHD_MOD/?p=13	bhd/13.html
 BHD_MOD/?p=14	bhd/14.html
@@ -48,6 +52,9 @@ BHD_MOD/?page_id=33	bhd/33.html
 BHD_MOD/?page_id=34	bhd/34.html
 BHD_MOD/?page_id=35	bhd/35.html
 BHD_MOD/?page_id=36	bhd/36.html
+BHD_MOD/?paged=2	bhd/page/2.html
+BHD_MOD/?paged=3	bhd/page/3.html
+BHD_MOD/forum/	bhd/forum/index.html
 BHD_MOD/forum/archive/index.php/t-2.html	bhd/forum/2.html
 BHD_MOD/forum/archive/index.php/t-20.html	bhd/forum/20.html
 BHD_MOD/forum/archive/index.php/t-23.html	bhd/forum/23.html
@@ -669,5 +676,6 @@ viewpage.php?page_id=1	pages/1.html
 viewpage.php?page_id=2	pages/2.html
 viewpage.php?page_id=3	pages/3.html
 infusions/the_kroax/*	movies.html
+BHD_MOD/forum/*	bhd/forum/index.html
 BHD_MOD/*	bhd/index.html
 *	index.html
