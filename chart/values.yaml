@@ -38,6 +38,12 @@ ingress:
 # redirects them itself, which is for development only.
 cdnBase: ''
 
+# The sites once hosted under ofp.gamepark.cz/_hosted, each by the name of its table in
+# db/hosted, and where its rebuilt files are fetched from. A site left out answers 404.
+#   hosted:
+#     ofpmm: https://files.ofpisnotdead.com/files/_hosted/ofpmm
+hosted: {}
+
 postgres:
   enabled: true
   image: postgres:16-alpine

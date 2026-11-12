@@ -36,6 +36,7 @@ COPY --chown=ofpr:ofpr db/migrations db/migrations
 COPY --chown=ofpr:ofpr db/dead_links.tsv db/dead_links.tsv
 COPY --chown=ofpr:ofpr db/old_ids.tsv db/old_ids.tsv
 COPY --chown=ofpr:ofpr db/small_thumbs.txt db/small_thumbs.txt
+COPY --chown=ofpr:ofpr db/hosted db/hosted
 
 USER ofpr
 EXPOSE 9292

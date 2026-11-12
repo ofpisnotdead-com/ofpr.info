@@ -16,6 +16,26 @@ module Ofpr
       redirect page_url(article[:url_path]), 301
     end
 
+    def kept_query = request.query_string.empty? ? '' : "?#{request.query_string}"
+
+    def hosted(name, rest)
+      site = Hosted[name]
+      halt 404 unless site&.enabled?
+      redirect "/_hosted/#{name}/", 301 unless rest
+      serve_hosted(site, request.path_info.delete_prefix("/_hosted/#{name}/"))
+    end
+
+    def serve_hosted(site, path)
+      target = site.target(path, request.query_string)
+      redirect "#{request.path_info.delete_suffix(path)}#{target}", 301 if target
+      found = site.fetch(path) or halt 404
+      redirect found.redirect, 302 if found.redirect
+      cache_control :public, max_age: 86_400
+      send_file found.file if found.file
+      content_type found.type || 'application/octet-stream'
+      found.body
+    end
+
     def convert
       @page_title = 'Convert an old link'
       @canonical = '/convert'

@@ -44,6 +44,10 @@ spec:
                   key: DATABASE_URL
             - name: CDN_BASE
               value: {{ .Values.cdnBase | quote }}
+            {{- range $site, $backend := .Values.hosted }}
+            - name: HOSTED_{{ upper $site }}
+              value: {{ $backend | quote }}
+            {{- end }}
           # /healthz answers without touching postgres, so a pod with no database still
           # reports honestly rather than being restarted in a loop.
           livenessProbe:
