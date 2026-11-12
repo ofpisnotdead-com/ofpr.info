@@ -146,12 +146,13 @@ RSpec.describe Ofpr::Markdown do
     expect(convert('<p>one</p><p>---</p><p>two</p>')).to eq("one\n\n---\n\ntwo")
   end
 
-  it 'gives up the emphasis marks around a list rather than flatten it' do
-    expect(convert('<ul><i><li>one</li><li>two</li></i></ul>')).to eq("- one\n- two")
+  it 'marks each item of a list an emphasis wraps rather than flatten it' do
+    expect(convert('<ul><i><li>one</li><li> two</li></i></ul>')).to eq("- *one*\n- *two*")
   end
 
-  it 'gives up the emphasis the parser carries into the item after a list it wrapped' do
-    expect(convert('<i>Said:<br><li>one<li>two<br>and more</i>')).not_to include('*')
+  it 'keeps a quote in italics across the list items it runs through, to the end' do
+    expect(convert('<i>Said:<br><li>one<li>two<br>and more</i>'))
+      .to eq("*Said:*  \n\n- *one*\n- *two*  \n*and more*")
   end
 
   it 'drops the PayPal tracking pixel beside the donation button' do
