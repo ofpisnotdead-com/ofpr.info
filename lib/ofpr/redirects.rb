@@ -26,9 +26,15 @@ module Ofpr
     end
 
     def serve_hosted(site, path)
+      index = site.fetch("#{path}index.html") if site.folder?(path, request.query_string)
+      return deliver(index) if index
+
       target = site.target(path, request.query_string)
       redirect "#{request.path_info.delete_suffix(path)}#{target}", 301 if target
-      found = site.fetch(path) or halt 404
+      deliver(site.fetch(path) || halt(404))
+    end
+
+    def deliver(found)
       redirect found.redirect, 302 if found.redirect
       cache_control :public, max_age: 86_400
       send_file found.file if found.file
