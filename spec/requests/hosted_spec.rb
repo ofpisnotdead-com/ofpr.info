@@ -8,6 +8,8 @@ RSpec.describe 'a site once hosted on gamepark', type: :request do
   before do
     FileUtils.mkdir_p(File.join(root, 'site/news'))
     File.write(File.join(root, 'site/news/12.html'), '<p>post</p>')
+    FileUtils.mkdir_p(File.join(root, 'site/bhd'))
+    File.write(File.join(root, 'site/bhd/index.html'), '<p>blog</p>')
     File.write(File.join(root, 'map.tsv'), <<~TSV)
       news.php?readmore=12\tnews/12.html
       BHD_MOD/forum/showthread.php?t=9\tbhd/forum/9.html
@@ -40,6 +42,14 @@ RSpec.describe 'a site once hosted on gamepark', type: :request do
 
     get '/_hosted/ofpmm/profile.php?lookup=7'
     expect(last_response.location).to end_with('/_hosted/ofpmm/index.html')
+  end
+
+  it 'serves the index of a folder of the rebuild at the folder, and sends a folder it lacks on' do
+    get '/_hosted/ofpmm/bhd/'
+    expect(last_response.body).to eq('<p>blog</p>')
+
+    get '/_hosted/ofpmm/BHD_MOD/'
+    expect(last_response.location).to end_with('/_hosted/ofpmm/bhd/index.html')
   end
 
   it 'serves a file of the rebuild from its backend at the address asked for' do

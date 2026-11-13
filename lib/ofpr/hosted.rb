@@ -40,6 +40,8 @@ module Ofpr
 
     def enabled? = !backend.empty?
 
+    def folder?(path, query) = query.empty? && (path.empty? || path.end_with?('/'))
+
     # Where an address leads when it is not a file of the rebuild. An address that ran
     # code on the old site, a script or a directory, always leads somewhere.
     def target(path, query)
