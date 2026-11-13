@@ -38,7 +38,9 @@ module Ofpr
       redirect found.redirect, 302 if found.redirect
       cache_control :public, max_age: 86_400
       send_file found.file if found.file
-      content_type found.type || 'application/octet-stream'
+      # As the backend gave it: an old page names its own encoding, which a charset added
+      # here would override.
+      response['content-type'] = found.type || 'application/octet-stream'
       found.body
     end
 

@@ -52,12 +52,19 @@ RSpec.describe 'a site once hosted on gamepark', type: :request do
     expect(last_response.location).to end_with('/_hosted/ofpmm/bhd/index.html')
   end
 
-  it 'serves a file of the rebuild from its backend at the address asked for' do
+  it 'serves a file of the rebuild from its backend at the address asked for, leaving its encoding to it' do
     get '/_hosted/ofpmm/news/12.html'
 
     expect(last_response).to be_ok
     expect(last_response.body).to eq('<p>post</p>')
-    expect(last_response.content_type).to start_with('text/html')
+    expect(last_response.content_type).to eq('text/html')
+  end
+
+  it 'finds a site in its folder under the base, unless the site has a backend of its own' do
+    allow(ENV).to receive(:fetch).and_call_original
+    allow(ENV).to receive(:fetch).with('HOSTED_BASE', '').and_return('https://files.example/_hosted/')
+
+    expect(Ofpr::Hosted.base('theofpfaq')).to eq('https://files.example/_hosted/theofpfaq')
   end
 
   it 'answers 404 for a file the backend does not have, or one outside it' do
