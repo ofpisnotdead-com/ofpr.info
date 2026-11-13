@@ -60,6 +60,14 @@ RSpec.describe 'a site once hosted on gamepark', type: :request do
     expect(last_response.content_type).to eq('text/html')
   end
 
+  it 'names the type of a file its backend sends as plain bytes by its name' do
+    site = Ofpr::Hosted.new(File.join(root, 'map.tsv'), 'https://files.example')
+
+    expect(site.send(:typed, 'application/octet-stream', 'avoncalling.wav')).to eq('audio/x-wav')
+    expect(site.send(:typed, 'application/octet-stream', 'data.bin')).to eq('application/octet-stream')
+    expect(site.send(:typed, 'text/html', 'news.htm')).to eq('text/html')
+  end
+
   it 'finds a site in its folder under the base, unless the site has a backend of its own' do
     allow(ENV).to receive(:fetch).and_call_original
     allow(ENV).to receive(:fetch).with('HOSTED_BASE', '').and_return('https://files.example/_hosted/')
