@@ -44,6 +44,8 @@ spec:
                   key: DATABASE_URL
             - name: CDN_BASE
               value: {{ .Values.cdnBase | quote }}
+            - name: HOSTED_BASE
+              value: {{ .Values.hostedBase | quote }}
             {{- range $site, $backend := .Values.hosted }}
             - name: HOSTED_{{ upper $site }}
               value: {{ $backend | quote }}

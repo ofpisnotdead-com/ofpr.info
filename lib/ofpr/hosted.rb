@@ -1,12 +1,13 @@
 require 'net/http'
+require 'rack/mime'
 require 'uri'
 
 module Ofpr
   # Sites the community once hosted under ofp.gamepark.cz/_hosted, rebuilt as static files
-  # and kept elsewhere. Each has a table in `db/hosted`, written by its rebuild, of where
-  # an address of the old site leads now: the exact address first, then a prefix ending
-  # in `*`. The files come from the site's backend, set in `HOSTED_<SITE>`: a url to fetch
-  # them from, or a directory holding them.
+  # and kept elsewhere. Each has a table in `db/hosted` of where an address of the old
+  # site leads now: the exact address first, then a prefix ending in `*`. The files come
+  # from the site's backend: a url to fetch them from, or a directory holding them, set in
+  # `HOSTED_<SITE>`, or else the site's folder under `HOSTED_BASE`.
   class Hosted
     DIR = File.expand_path('../../db/hosted', __dir__)
     # Fetched and passed on whole, so a thread is not held by a slow download; anything
@@ -21,9 +22,14 @@ module Ofpr
     def self.[](name)
       @sites ||= Dir[File.join(DIR, '*.tsv')].to_h do |file|
         site = File.basename(file, '.tsv')
-        [site, new(file, ENV.fetch("HOSTED_#{site.upcase}", ''))]
+        [site, new(file, ENV.fetch("HOSTED_#{site.upcase}") { base(site) })]
       end
       @sites[name]
+    end
+
+    def self.base(site)
+      base = ENV.fetch('HOSTED_BASE', '')
+      base.empty? ? '' : "#{base.delete_suffix('/')}/#{site}"
     end
 
     attr_reader :backend
@@ -66,9 +72,13 @@ module Ofpr
 
     def dynamic?(path, query) = path.empty? || path.end_with?('/', '.php') || !query.empty?
 
+    # Sending a page as a file would give its type a charset, so it is read whole instead.
     def local(path)
       file = File.join(backend, path)
-      Fetched.new(file:) if File.file?(file)
+      return unless File.file?(file)
+
+      type = Rack::Mime.mime_type(File.extname(file))
+      type.start_with?('text/') ? Fetched.new(File.binread(file), type) : Fetched.new(file:)
     end
 
     def remote(path)
@@ -80,7 +90,7 @@ module Ofpr
         next Fetched.new(nil, nil, uri.to_s) if head.content_length.to_i > LIMIT
 
         response = http.get(uri.request_uri)
-        Fetched.new(response.body, response.content_type) if response.is_a?(Net::HTTPOK)
+        Fetched.new(response.body, response['content-type']) if response.is_a?(Net::HTTPOK)
       end
     rescue URI::Error, SocketError, SystemCallError, Net::OpenTimeout, Net::ReadTimeout
       nil
