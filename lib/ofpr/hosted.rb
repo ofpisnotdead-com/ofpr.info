@@ -81,6 +81,14 @@ module Ofpr
       type.start_with?('text/') ? Fetched.new(File.binread(file), type) : Fetched.new(file:)
     end
 
+    # The file server names no type for some old formats, a sound or a Flash banner, and a
+    # page embedding one would offer it as a download; its name says what it is.
+    def typed(type, path)
+      return type unless type.to_s.empty? || type.start_with?('application/octet-stream')
+
+      Rack::Mime.mime_type(File.extname(path.split('?').first.to_s))
+    end
+
     def remote(path)
       uri = URI("#{backend}/#{path}")
       Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https', open_timeout: TIMEOUT,
@@ -90,7 +98,7 @@ module Ofpr
         next Fetched.new(nil, nil, uri.to_s) if head.content_length.to_i > LIMIT
 
         response = http.get(uri.request_uri)
-        Fetched.new(response.body, response['content-type']) if response.is_a?(Net::HTTPOK)
+        Fetched.new(response.body, typed(response['content-type'], path)) if response.is_a?(Net::HTTPOK)
       end
     rescue URI::Error, SocketError, SystemCallError, Net::OpenTimeout, Net::ReadTimeout
       nil
