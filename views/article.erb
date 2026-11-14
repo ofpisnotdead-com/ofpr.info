@@ -4,7 +4,7 @@
   <p class="meta article__meta">
     <a class="chip" href="<%= page_url(section_path) %>"><%= section_label_of(@article) %></a>
     <span><%= date(@article[:published_at]) %></span>
-    <% unless @article[:author].to_s.empty? %><span class="meta__sep">/</span> <span><%== author_link %></span><% end %>
+    <% unless @article[:author].to_s.empty? %><span class="meta__sep">/</span> <span><%== author_link(@article) %></span><% end %>
   </p>
   <%== erb :_blocks, locals: {blocks: blocks(@article)} %>
 </article>

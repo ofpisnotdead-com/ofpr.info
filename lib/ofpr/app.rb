@@ -4,6 +4,7 @@ require_relative '../ofpr'
 require_relative 'redirects'
 require_relative 'presenter'
 require_relative 'expansion'
+require_relative 'authors'
 
 module Ofpr
   class App < Sinatra::Base
@@ -37,7 +38,7 @@ module Ofpr
       set :dump_errors, true
     end
 
-    helpers Redirects, Presenter, Expansion
+    helpers Redirects, Presenter, Expansion, Authors
 
     helpers do
       def pager(base, start, total) = Pager.new(listing_base(base), start, total, per_page: per_page)
@@ -81,12 +82,6 @@ module Ofpr
 
       # An article highlights the menu item it belongs to, which for a river article is
       # News and for a section article is that section.
-      def author_link
-        name = @article[:author].to_s
-        url = @article[:author_url]
-        url ? %(<a rel="author" href="#{url}">#{name}</a>) : name
-      end
-
       def section_path = @article[:section].to_s.empty? ? '/' : "/#{@article[:section]}"
 
       # Which menu item the page belongs to: for an article, the section it sits in.
@@ -172,6 +167,8 @@ module Ofpr
     end
 
     get(%r{/_hosted/([a-z0-9]+)(/.*)?}) { |name, rest| hosted(name, rest) }
+
+    get(%r{/author/([^/]+?)(?:\.html)?}) { |slug| author_page(slug) }
 
     get PATH do
       path = params['path'].delete_suffix('.html')
