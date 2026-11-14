@@ -2,6 +2,7 @@
   <% if @section %><% above = trail("/#{@section}")[0...-1] %>
   <% unless above.empty? %><%== erb :_crumbs, locals: {steps: above, tail: nil} %><% end %>
   <h1 class="article__title listing__title"><%= @page_title %></h1>
+  <% end %><% if @author %><h1 class="article__title listing__title">News by <%= @author %></h1>
   <% end %><div class="stream">
     <% @articles.each do |article| %><%== erb(expanded? ? :_entry : :_card, locals: {article: article}) %><% end %>
   </div>

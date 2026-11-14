@@ -4,6 +4,12 @@ module Ofpr
   module Presenter
     def blocks(record) = record[:body_blocks] || []
 
+    def author_link(article)
+      name = Rack::Utils.escape_html(article[:author].to_s)
+      slug = Article.author_slug(article[:author])
+      slug.empty? ? name : %(<a rel="author" href="#{page_url("/author/#{slug}")}">#{name}</a>)
+    end
+
     def prose(markdown) = Prose.to_html(markdown)
 
     # A picture lives under `/ofpgm`, which is the mirror in development and the file

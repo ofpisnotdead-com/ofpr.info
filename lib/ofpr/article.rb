@@ -4,6 +4,8 @@ module Ofpr
     MAX_PER_PAGE = 1000
     ID_IN_PATH = %r{(\d+)-[^/]*\z}
 
+    AUTHOR_SLUG = Sequel.lit("trim(both '-' from regexp_replace(lower(author), '[^a-z0-9]+', '-', 'g'))")
+
     class << self
       def dataset = Database.connection[:articles]
 
@@ -61,6 +63,16 @@ module Ofpr
       end
 
       def river(start: 0, per_page: PER_PAGE) = newest(river_scope, start, per_page)
+
+      # An author's address is the name in lower case with a hyphen for each run of
+      # anything else, which AUTHOR_SLUG reproduces in the query.
+      def author_slug(name) = name.to_s.downcase.gsub(/[^a-z0-9]+/, '-').gsub(/\A-|-\z/, '')
+
+      def by_author(slug, start: 0, per_page: PER_PAGE)
+        scope = dataset.where(AUTHOR_SLUG => slug)
+        name = scope.get(:author) or return
+        [name, scope.count, newest(scope, start, per_page)]
+      end
 
       # Returns the total alongside the page, because every listing prints it.
       def section(name, start: 0, per_page: PER_PAGE)

@@ -262,6 +262,38 @@ RSpec.describe 'the site', type: :request do
     end
   end
 
+  describe 'an author' do
+    it 'lists every story the author wrote, linked from each byline' do
+      insert_article(id: 1, url_path: '/1-a', title: 'By the killer', author: 'Serial_Killer')
+      insert_article(id: 2, url_path: '/2-b', title: 'By Cervo', author: 'Cervo')
+
+      get '/author/serial-killer.html'
+
+      expect(last_response).to be_ok
+      expect(last_response.body).to include('News by Serial_Killer', 'By the killer')
+      expect(last_response.body).not_to include('By Cervo')
+
+      get '/1-a.html'
+      expect(last_response.body).to include('<a rel="author" href="/author/serial-killer.html">Serial_Killer</a>')
+    end
+
+    it 'sends the old profile address to the author rather than to the story of that number' do
+      insert_article(id: 635, url_path: '/addons/weapons/635-fn-herstal', author: 'SNK')
+      insert_article(id: 10_673, url_path: '/10673-pfc', author: 'RozekPoland')
+
+      get '/author/635-rozekpoland'
+
+      expect(last_response.status).to eq(301)
+      expect(last_response.location).to end_with('/author/rozekpoland.html')
+    end
+
+    it 'answers 404 for a name nobody wrote under' do
+      get '/author/nobody.html'
+
+      expect(last_response.status).to eq(404)
+    end
+  end
+
   # Addons and Missions hold no articles of their own, so without these the two
   # headings in the menu would be the only items that go nowhere.
   describe 'a menu group' do
