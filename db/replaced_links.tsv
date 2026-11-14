@@ -1,7 +1,8 @@
 # Links to a host that is gone, and what serves the same thing now. `Links` rewrites
 # them at import. source: host, a copy already on files.ofpisnotdead.com under the
 # same file name; wayback, a copy recovered from the Wayback Machine and put up there;
-# video, the same film on a video site. Every target answered when this was written.
+# video, the same film on a video site; hosted, a site rebuilt under /_hosted on ofpr.info;
+# site, a page of ofpr.info. Every target answered when this was written.
 #
 # link	replacement	source
 http://ab.vj.free.fr/RUSSIA%20BETA%20VERSION%200.35_tm.zip	https://files.ofpisnotdead.com/files/ofpd/islands2/RUSSIA%20BETA%20VERSION%200.35_tm.zip	host
@@ -62,3 +63,30 @@ http://www.ofrp.net/images/screens/smalls/goodies1.jpg	https://files.ofpisnotdea
 http://www.shauntbarry.pwp.blueyonder.co.uk/flashpoint/logo3.jpg	https://files.ofpisnotdead.com/files/wayback/shauntbarry.pwp.blueyonder.co.uk/flashpoint/logo3.jpg	wayback
 http://www.wintersofppub.com/files/I44OosterbeekTrailer.zip	https://files.ofpisnotdead.com/files/wayback/wintersofppub.com/files/I44OosterbeekTrailer.zip	wayback
 http://www.wintersofppub.com/files/I44OosterbeekTrailera.zip	https://files.ofpisnotdead.com/files/wayback/wintersofppub.com/files/I44OosterbeekTrailera.zip	wayback
+/ofpgm/_hosted/ofpmm	/_hosted/ofpmm/	hosted
+/ofpgm/_hosted/ofpmm/	/_hosted/ofpmm/	hosted
+/ofpgm/_hosted/ofpmm/BHD_MOD/	/_hosted/ofpmm/bhd/	hosted
+/ofpgm/_hosted/ofpmm/BHD_MOD/forum/	/_hosted/ofpmm/bhd/forum/	hosted
+/ofpgm/_hosted/ofpmm/infusions/the_kroax/click.php?url=63	/_hosted/ofpmm/movies.html	hosted
+/ofpgm/_hosted/ofpmm/news.php	/_hosted/ofpmm/	hosted
+/ofpgm/_hosted/ofpmm/news.php?readmore=12	/_hosted/ofpmm/news/12.html	hosted
+/ofpgm/_hosted/ofpmm/news.php?readmore=136	/_hosted/ofpmm/news/136.html	hosted
+/ofpgm/english/articles/mods.html	/mods.html	site
+http://ofp.info/brsseb	/_hosted/brsseb/	hosted
+http://ofp.info/brsseb/	/_hosted/brsseb/	hosted
+http://www.geocities.com/brsseb/	/_hosted/brsseb/	hosted
+http://www.theavonlady.org	/_hosted/theofpfaq/	hosted
+http://www.theavonlady.org/	/_hosted/theofpfaq/	hosted
+http://www.theavonlady.org/theofpfaq	/_hosted/theofpfaq/	hosted
+http://www.theavonlady.org/theofpfaq/	/_hosted/theofpfaq/	hosted
+http://www.theavonlady.org/theofpfaq/general/ofpengine.htm	/_hosted/theofpfaq/general/ofpengine.htm	hosted
+http://www.theavonlady.org/theofpfaq/index.htm	/_hosted/theofpfaq/	hosted
+http://www.theavonlady.org/theofpfaq/mom/	/_hosted/theofpfaq/mom/index.htm	hosted
+http://www.theavonlady.org/theofpfaq/sp/coldcream.htm	/_hosted/theofpfaq/sp/coldcream.htm	hosted
+http://www.theavonlady.org/theofpfaq/sp/leotard.htm	/_hosted/theofpfaq/sp/leotard.htm	hosted
+http://www.theavonlady.org/theofpfaq/sp/odenostalgia.htm	/_hosted/theofpfaq/sp/odenostalgia.htm	hosted
+http://www.theavonlady.org/theofpfaq/sp/rollon.htm	/_hosted/theofpfaq/sp/rollon.htm	hosted
+http://www.theavonlady.org/theofpfaq/sp/sarong.htm	/_hosted/theofpfaq/sp/sarong.htm	hosted
+http://www.theavonlady.org/theofpfaq/sp/stockings.htm	/_hosted/theofpfaq/sp/stockings.htm	hosted
+http://www.theavonlady.org/theofpfaq/sp/sunbloc.htm	/_hosted/theofpfaq/sp/sunbloc.htm	hosted
+/ofpgm/english/articles/mods.html#1	/mods.html#finnish-defence-forces-mod	site
