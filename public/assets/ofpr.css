@@ -830,6 +830,27 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.25; mar
   letter-spacing: .06em;
   text-transform: uppercase;
 }
+.footer__hosted {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space) * 2);
+  justify-content: center;
+  margin-bottom: calc(var(--space) * 4);
+}
+.footer__hosted img { display: block; image-rendering: pixelated; }
+/* The site never had a button of its own, so it gets the buttons' size in type. */
+.footer__badge {
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, .3);
+  display: flex;
+  font: 600 10px/1.1 var(--sans);
+  height: 30px;
+  justify-content: center;
+  padding: 0 calc(var(--space) * 2);
+  text-transform: uppercase;
+  width: 90px;
+}
 .footer a { color: rgba(255, 255, 255, .8); }
 .footer a:hover { color: #fff; }
 
