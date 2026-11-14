@@ -149,4 +149,11 @@ RSpec.describe Ofpr::Links do
 
     expect(repair(html)).to eq(html)
   end
+
+  it 'leaves out a withheld picture, and the link that held only it' do
+    html = '<p>see <a href="/team.html">About us</a></p>' \
+           '<a href="/team.html" target="_blank"><img src="/ofpgm/news/pics4/aboutus.jpg" border="0"></a>'
+
+    expect(described_class.repair(html)).to eq('<p>see <a href="/team.html">About us</a></p>')
+  end
 end

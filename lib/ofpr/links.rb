@@ -56,7 +56,7 @@ module Ofpr
 
     class << self
       def repair(html)
-        text = replace(unmangle(trim(html.to_s))).gsub(DEAD, LIVE).gsub(INSECURE, SECURE)
+        text = Withdrawn.without_pictures(replace(unmangle(trim(html.to_s)))).gsub(DEAD, LIVE).gsub(INSECURE, SECURE)
         drop_duplicate_pointers(move(text))
       end
 
