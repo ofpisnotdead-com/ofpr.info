@@ -15,7 +15,7 @@ module Ofpr
     LIMIT = 2 * 1024 * 1024
     TIMEOUT = 5
     # The session id a forum wrote into its links, which no table keeps every value of.
-    SESSION = /(?<=[?&])s=\h{32}(&|\z)/
+    SESSION = /(?<=[?&])s(?:id)?=\h{32}(&|\z)/
 
     Fetched = Struct.new(:body, :type, :redirect, :file)
 
@@ -60,7 +60,7 @@ module Ofpr
 
     # The path as it was asked for, still escaped.
     def fetch(path)
-      decoded = URI.decode_uri_component(path)
+      decoded = URI.decode_uri_component(path).b
       return if decoded.split('/').include?('..')
 
       backend.match?(%r{\Ahttps?://}i) ? remote(path) : local(decoded)
