@@ -37,6 +37,9 @@ RSpec.describe 'a site once hosted on gamepark', type: :request do
 
     get "/_hosted/ofpmm/BHD_MOD/forum/showthread.php?t=9&sid=#{'c6' * 16}"
     expect(last_response.location).to end_with('/_hosted/ofpmm/bhd/forum/9.html')
+
+    get "/_hosted/ofpmm/BHD_MOD/forum/showthread.php?t=9&PHPKITSID=#{'c6' * 16}"
+    expect(last_response.location).to end_with('/_hosted/ofpmm/bhd/forum/9.html')
   end
 
   it 'sends an old address it has no page for to the page of its part of the site' do
