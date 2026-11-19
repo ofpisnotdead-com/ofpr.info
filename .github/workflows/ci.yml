@@ -2,10 +2,19 @@ name: ci
 
 on:
   push:
+    branches: [main]
   pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   check:
+    name: Check (${{ matrix.backend }})
+    strategy:
+      fail-fast: false
+      matrix:
+        backend: [bundler, native]
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -22,12 +31,22 @@ jobs:
           --health-timeout 3s
           --health-retries 15
     env:
+      GH_TOKEN: ${{ github.token }}
+      BUNDLE_FROZEN: 'true'
       DATABASE_URL: postgres://ofpr:ofpr@localhost:5433/ofpr_test
     steps:
       - uses: actions/checkout@v7
-      - uses: ruby/setup-ruby@v1
+      - uses: RubyElders/rb-setup@v0.4.3
+        id: setup
         with:
-          bundler-cache: true
-      - run: bundle exec rubocop
-      - run: bundle exec rspec
-      - run: bundle exec bundle-audit check --update
+          sync: true
+          cache-ruby: true
+          package-backend: ${{ matrix.backend }}
+      - name: Report cache hits
+        run: |
+          echo "Ruby cache hit: ${{ steps.setup.outputs.ruby-cache-hit }}"
+          echo "Dependency cache hit: ${{ steps.setup.outputs.dependency-cache-hit }}"
+      - run: rb run lint
+      - run: rb run test
+      - run: rb run audit
+      - run: git diff --exit-code -- Gemfile.lock
