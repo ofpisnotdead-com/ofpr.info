@@ -14,8 +14,8 @@ module Ofpr
     # bigger is sent to the backend instead.
     LIMIT = 2 * 1024 * 1024
     TIMEOUT = 5
-    # The session id a forum wrote into its links, which no table keeps every value of.
-    SESSION = /(?<=[?&])s(?:id)?=\h{32}(&|\z)/
+    # The session id a forum or portal wrote into its links, which no table keeps every value of.
+    SESSION = /(?<=[?&])(?:s|sid|PHPKITSID)=\h{32}(&|\z)/i
 
     Fetched = Struct.new(:body, :type, :redirect, :file)
 
