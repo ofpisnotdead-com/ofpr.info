@@ -70,7 +70,7 @@ module Ofpr
 
     def exact(key) = @exact[key] || @exact[key.sub(%r{(\A|/)index\.php(?=\z|\?)}, '\1')]
 
-    def dynamic?(path, query) = path.empty? || path.end_with?('/', '.php') || !query.empty?
+    def dynamic?(path, query) = path.empty? || path.end_with?('/', '.php', '.asp') || !query.empty?
 
     # Sending a page as a file would give its type a charset, so it is read whole instead.
     def local(path)

@@ -48,6 +48,9 @@ RSpec.describe 'a site once hosted on gamepark', type: :request do
 
     get '/_hosted/ofpmm/profile.php?lookup=7'
     expect(last_response.location).to end_with('/_hosted/ofpmm/index.html')
+
+    get '/_hosted/ofpmm/editace.asp'
+    expect(last_response.location).to end_with('/_hosted/ofpmm/index.html')
   end
 
   it 'serves the index of a folder of the rebuild at the folder, and sends a folder it lacks on' do
